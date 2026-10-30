@@ -1,27 +1,161 @@
-import Image from "next/image";
+import { AtSign, Clock, MapPin, Phone } from "lucide-react";
+import Link from "next/link";
 
-export default function Home() {
+import { Cabecalho } from "@/components/marca/cabecalho";
+import { Logo } from "@/components/marca/logo";
+import { Rodape } from "@/components/marca/rodape";
+import { ServiceCard } from "@/components/marca/service-card";
+import { Splash } from "@/components/marca/splash";
+import { diaPorExtensoMinusculas, hojeEmLisboa, somarDias } from "@/lib/datas";
+import {
+  getDefinicoes,
+  getHorario,
+  getServicos,
+  getVagasDaJanela,
+} from "@/lib/dados";
+
+export const dynamic = "force-dynamic";
+
+const botao =
+  "inline-flex h-12 w-full items-center justify-center rounded-full bg-primary px-6 text-base font-bold text-primary-foreground no-underline transition-colors hover:bg-primary-pressed";
+
+function Linha({
+  icone,
+  children,
+}: {
+  icone: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-1 flex-col items-center justify-center gap-8 px-5 py-12 text-center">
-      <Image
-        src="/logo-cn-384.png"
-        alt="Logótipo Catarina Neves Nails Studio: unha cor de ameixa com o monograma CN"
-        width={192}
-        height={192}
-        priority
-        className="size-48 rounded-xl shadow-card"
-      />
-      <div className="flex flex-col items-center gap-3">
-        <h1 className="font-display text-[40px] leading-[44px] font-semibold text-foreground">
-          Catarina Neves
-          <span className="block text-[26px] leading-[30px] text-primary">
-            Nails Studio
-          </span>
-        </h1>
-        <p className="text-lg leading-7 text-muted-foreground">
-          As marcações online chegam em breve.
-        </p>
-      </div>
-    </main>
+    <div className="flex items-start gap-3 border-b border-border py-3.5 last:border-b-0">
+      <span className="mt-0.5 text-primary [&_svg]:size-5">{icone}</span>
+      <div className="text-base leading-6">{children}</div>
+    </div>
+  );
+}
+
+export default async function Home() {
+  const [servicos, def, horario] = await Promise.all([
+    getServicos(),
+    getDefinicoes(),
+    getHorario(),
+  ]);
+  const vagas = await getVagasDaJanela(def.max_advance_days);
+  const proxima = vagas[0];
+  const amanha = somarDias(hojeEmLisboa(), 1);
+  const textoProxima = proxima
+    ? `${proxima.dia === hojeEmLisboa() ? "hoje" : proxima.dia === amanha ? "amanhã" : diaPorExtensoMinusculas(proxima.dia)} às ${proxima.hora}`
+    : null;
+
+  const telefone = def.contact_phone;
+  const instagram = def.instagram?.replace(/^@/, "");
+
+  return (
+    <>
+      <Splash />
+      <Cabecalho />
+      <main className="mx-auto flex w-full max-w-xl flex-col gap-12 px-5 pt-1 pb-8">
+        <section className="flex flex-col gap-5">
+          <div className="flex h-[220px] items-center justify-center rounded-xl bg-blush">
+            <Logo
+              size={150}
+              alt="Logótipo Catarina Neves Nails Studio"
+              priority
+              className="rounded-[28px] shadow-card"
+            />
+          </div>
+          <h1 className="font-display text-[40px] leading-11 font-semibold text-balance">
+            Mãos cuidadas, com tempo para si.
+          </h1>
+          <p className="text-lg leading-7 text-muted-foreground">
+            Manicure e unhas de gel. Escolha o serviço e a hora em menos de um
+            minuto.
+          </p>
+          <div className="flex flex-col gap-3">
+            <Link href="/marcar" className={botao}>
+              Marcar
+            </Link>
+            {textoProxima ? (
+              <p className="tabular flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                <Clock aria-hidden className="size-4 text-success" />
+                Próxima hora livre: {textoProxima}
+              </p>
+            ) : null}
+          </div>
+        </section>
+
+        {servicos.length ? (
+          <section aria-labelledby="servicos" className="flex flex-col gap-3">
+            <h2
+              id="servicos"
+              className="mb-1 font-display text-[26px] leading-[30px] font-semibold"
+            >
+              Serviços
+            </h2>
+            {servicos.map((s) => (
+              <ServiceCard
+                key={s.id}
+                id={s.id}
+                nome={s.name}
+                precoCents={s.price_cents}
+              />
+            ))}
+          </section>
+        ) : null}
+
+        <section aria-labelledby="onde" className="flex flex-col gap-3">
+          <h2
+            id="onde"
+            className="font-display text-[26px] leading-[30px] font-semibold"
+          >
+            Onde estamos
+          </h2>
+          <div className="rounded-lg border border-border bg-card px-4 py-1">
+            {def.address ? (
+              <Linha icone={<MapPin aria-hidden />}>
+                <span className="whitespace-pre-line">{def.address}</span>
+              </Linha>
+            ) : null}
+            {horario.length ? (
+              <Linha icone={<Clock aria-hidden />}>
+                <span className="tabular">
+                  {horario.map((l, i) => (
+                    <span
+                      key={l}
+                      className={i ? "block text-muted-foreground" : "block"}
+                    >
+                      {l}
+                    </span>
+                  ))}
+                </span>
+              </Linha>
+            ) : null}
+            {instagram ? (
+              <Linha icone={<AtSign aria-hidden />}>
+                <a
+                  href={`https://www.instagram.com/${instagram}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex min-h-11 items-center text-foreground no-underline"
+                >
+                  @{instagram}
+                </a>
+              </Linha>
+            ) : null}
+            {telefone ? (
+              <Linha icone={<Phone aria-hidden />}>
+                <a
+                  href={`tel:${telefone.replace(/\s/g, "")}`}
+                  className="tabular inline-flex min-h-11 items-center text-foreground no-underline"
+                >
+                  {telefone}
+                </a>
+              </Linha>
+            ) : null}
+          </div>
+        </section>
+      </main>
+      <Rodape />
+    </>
   );
 }

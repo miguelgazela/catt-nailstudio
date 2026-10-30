@@ -135,3 +135,46 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Ecrã de abertura (arranque a frio) */
+#splash {
+  transition: opacity 250ms ease-out;
+  animation: splash-seguranca 0s linear 2s forwards;
+}
+#splash.splash-saiu {
+  opacity: 0;
+  pointer-events: none;
+}
+.sem-splash #splash {
+  display: none;
+}
+@keyframes splash-seguranca {
+  to {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+.splash-ponto {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--primary);
+  opacity: 0.25;
+  animation: splash-pulso 1.2s ease-in-out infinite;
+}
+.splash-ponto:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.splash-ponto:nth-child(3) {
+  animation-delay: 0.4s;
+}
+@keyframes splash-pulso {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}

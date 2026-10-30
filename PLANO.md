@@ -312,7 +312,7 @@ Resultado do M1 (migrations em `supabase/migrations`, testes em `supabase/tests/
 - Na nuvem (30 out 2026): 4 migrations aplicadas com `supabase db push --linked`, extensões `btree_gist`, `pgcrypto` e `pg_cron` ativas, os 2 jobs agendados, RLS ligado em todas as tabelas, lint limpo. Seed aplicado à mão na nuvem (30 out 2026): horário real e 3 serviços **placeholder** (apagar ou substituir pelos reais no M7, antes do piloto). Variáveis de ambiente de produção (Supabase e Turnstile) já na Vercel, só no ambiente Production.
 - Por fazer: testar duas marcações em simultâneo a sério no Playwright (M2); criar o utilizador admin da Catarina e a linha em `admins`; MFA e configuração de Auth no M3/M4.
 
-**M2. Página inicial e marcação sem conta** (3–4 dias)
+**M2. Página inicial e marcação sem conta** (3–4 dias) — **feito a 30 out 2026 (testado em local)**
 - Ecrã de abertura (só no arranque a frio), página inicial, escolher serviço, escolher dia e hora, os seus dados, confirmação, como nos mockups.
 - Componentes da marca: `Logo`, `ServiceCard`, `TimeSlot`, `CalendarDay`, `StatusBadge`.
 - Turnstile e rate limit por IP e por telemóvel no formulário.
@@ -320,6 +320,17 @@ Resultado do M1 (migrations em `supabase/migrations`, testes em `supabase/tests/
 - Estados de erro: hora acabou de ser ocupada, mês sem vagas, número bloqueado, limite sem conta.
 - Playwright: marcar como convidada do início ao fim; duas marcações na mesma hora ao mesmo tempo, só uma ganha.
 - Feito quando: uma pessoa consegue marcar no telemóvel, com a app na Vercel e a BD no projeto Supabase, e a marcação aparece na BD.
+
+Resultado do M2:
+- Páginas: `/` (hero, serviços, onde estamos com horário lido da BD, rodapé legal), `/marcar` (4 passos com o estado na URL: `?servico=…&dia=…&hora=…`; o botão voltar e os links partilháveis funcionam), `/marcar/confirmada?id=…`, `/privacidade` e `/termos` (**texto provisório**, a rever no M7). Ecrã de abertura só no arranque a frio (uma vez por sessão, sai assim que a página está pronta).
+- Componentes da marca em `components/marca/`: `Logo`, `ServiceCard`, `TimeSlot`, `CalendarDay`, `StatusBadge`, mais `DiaHora`, `FormDados`, `Turnstile`, `Passo`, `Cabecalho`, `Rodape`, `Splash`.
+- Servidor: Server Action `reservar` (zod, telemóvel normalizado para E.164, Turnstile, limite de pedidos por IP e por telemóvel, `book_appointment` com a chave secreta). O browser nunca fala com o Supabase. Erros: hora ocupada (volta ao passo 2 com aviso), número bloqueado, limite de convidada, telemóvel inválido, demasiados pedidos.
+- Limite de pedidos: migration `20261030130001_rate_limit.sql` (`rate_limit_hit`, tabela em `private`, job horário). A chave guardada é um hash com sal (`RATE_LIMIT_SALT`): nem o IP nem o telemóvel ficam em claro. Se o limitador falhar, deixa passar (o Turnstile e a BD continuam a proteger).
+- Testes Playwright (`pnpm test:e2e`, contra o Supabase local e chaves de teste do Turnstile): marcar do início ao fim, limite de convidada, telemóvel inválido e **duas marcações na mesma hora ao mesmo tempo (só uma ganha)**. Job `database` do CI corre pgTAP e Playwright.
+- Desvios do plano: datas com `Intl` (hora de Lisboa) em vez de `@date-fns/tz`, para poupar bundle; o separador "Com conta" fica para o M3; o `.ics` e os emails para o M5.
+- **Limitações até ao M5**: a convidada com email ainda não recebe email nem o link de cancelamento (o token é gerado mas não é entregue), por isso só cancela contactando o estúdio. O ecrã de confirmação não promete email.
+- Bundle (gzip): JS próprio da rota `/` ≈ 22 KiB e `/marcar` ≈ 27 KiB, além do runtime partilhado (≈ 170 KiB). Valores medidos nos chunks do cliente do build.
+- **Por fazer**: aplicar a migration do rate limit na nuvem (`supabase db push --linked`); preencher contactos e morada em `settings` (aparecem na página assim que existirem); texto "Sobre" e fotos quando a Catarina os enviar; ver CI e o deploy da Vercel depois do push.
 
 **M3. Conta da cliente** (2 dias)
 - Entrar com link por email (Supabase Auth), em qualquer ponto do fluxo.

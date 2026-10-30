@@ -33,3 +33,11 @@ jobs:
       - name: Supabase local (só BD e auth)
         run: supabase start -x studio,imgproxy,vector,logflare,edge-runtime,realtime,storage-api,supavisor,mailpit,postgres-meta
       - run: supabase test db
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
