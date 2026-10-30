@@ -287,7 +287,7 @@ Resultado do M0 (commit inicial local, sem remote):
 - **Por fazer** (precisa do Miguel): criar o repositório GitHub, fazer push para o CI correr e ligá-lo no dashboard da Vercel (deploy automático); criar os projetos Supabase na UE. A CSP usa `'unsafe-inline'` nos scripts: rever com nonces ao juntar Turnstile e Supabase (M2).
 - Nota de ferramentas: `pnpm` instalado globalmente (corepack estava avariado nesta máquina).
 
-**M1. Base de dados e regras** (2–3 dias) — **feito em local a 30 out 2026; falta aplicar na nuvem**
+**M1. Base de dados e regras** (2–3 dias) — **feito a 30 out 2026, aplicado no projeto Supabase na nuvem**
 - Migrations: `settings`, `services`, `weekly_hours`, `time_off`, `clients`, `appointments`, `admins`. Enums para estado e origem.
 - `btree_gist` + exclusion constraint contra sobreposições.
 - Funções SQL:
@@ -309,7 +309,8 @@ Resultado do M1 (migrations em `supabase/migrations`, testes em `supabase/tests/
 - Privacidade: `audit_log` por triggers (guarda colunas alteradas, nunca valores), `anonymize_client` (admin) e anonimização mensal de clientes inativas há 24 meses (`pg_cron`), contador de faltas automático.
 - Testes pgTAP (70, todos a passar em local; job `database` no CI): dupla marcação, limite sem conta, bloqueio, janela, 24 h, folgas, mudança de hora (25 out 2026, 28 mar e 31 out 2027), RLS por papel (público, cliente A não vê cliente B, admin) e privacidade.
 - Seed: horário real (segunda aberta e domingo fechado por confirmar) e 3 serviços **placeholder**. O seed não corre na nuvem com `db push`.
-- Por fazer: `supabase db push` para o projeto na nuvem (decisão do Miguel); confirmar na nuvem as extensões `pg_cron` e `btree_gist`; testar duas marcações em simultâneo a sério no Playwright (M2); criar o utilizador admin da Catarina e a linha em `admins`; MFA e configuração de Auth no M3/M4.
+- Na nuvem (30 out 2026): 4 migrations aplicadas com `supabase db push --linked`, extensões `btree_gist`, `pgcrypto` e `pg_cron` ativas, os 2 jobs agendados, RLS ligado em todas as tabelas, lint limpo. **A BD na nuvem está sem horário nem serviços** (o seed não foi aplicado): carregar o horário real (e serviços de teste) antes de testar o M2 contra a nuvem.
+- Por fazer: testar duas marcações em simultâneo a sério no Playwright (M2); criar o utilizador admin da Catarina e a linha em `admins`; MFA e configuração de Auth no M3/M4.
 
 **M2. Página inicial e marcação sem conta** (3–4 dias)
 - Ecrã de abertura (só no arranque a frio), página inicial, escolher serviço, escolher dia e hora, os seus dados, confirmação, como nos mockups.
