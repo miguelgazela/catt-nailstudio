@@ -9,14 +9,10 @@
     "lint": "eslint .",
     "typecheck": "next typegen && tsc --noEmit",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
-    "@opennextjs/cloudflare": "^1.20.15",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.65.0",
@@ -38,8 +34,7 @@
     "prettier": "^3.9.10",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4",
-    "typescript": "^5",
-    "wrangler": "^4.156.0"
+    "typescript": "^5"
   },
   "packageManager": "pnpm@10.34.9"
 }

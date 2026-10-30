@@ -35,7 +35,7 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  // Sem otimização de imagens em runtime (regra de alojamento, PLANO §3).
+  // Imagens otimizadas antes do upload (PLANO §10.2); sem otimização em runtime.
   images: { unoptimized: true },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
@@ -43,5 +43,3 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
-
-import("@opennextjs/cloudflare").then((m) => m.initOpenNextCloudflareForDev());

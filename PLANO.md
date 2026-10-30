@@ -20,8 +20,8 @@ Estado (30 out 2026): identidade e mockups da cliente e do painel feitos (secç�
 | Limite sem conta | 1 marcação futura por telemóvel |
 | Antecedência | Configurável: mínimo (ex: 2h) e máximo (ex: 6 semanas) |
 | Stack | Next.js (App Router) + Supabase (Postgres, Auth, RLS) |
-| Alojamento | Cloudflare Workers via OpenNext (`@opennextjs/cloudflare`). Plano grátis permite uso comercial |
-| Domínio/DNS | Registado e gerido no Cloudflare |
+| Alojamento | **Vercel Hobby** (decisão de 30 out 2026, substitui Cloudflare Workers/OpenNext). Plano grátis é só para uso não comercial: se a Vercel bloquear o projeto, passa a Pro (20 $/mês) |
+| Domínio/DNS | Registado e gerido no Cloudflare (DNS apontado para a Vercel) |
 | Branding | Direção "Nude & Ameixa", logótipo original do Higgsfield. Ver secção 6.1 |
 | UI | Tailwind v4 + shadcn/ui com os tokens do Design System. Mobile-first, PT-PT, AA |
 
@@ -52,7 +52,7 @@ Estado (30 out 2026): identidade e mockups da cliente e do painel feitos (secç�
 ## 3. Arquitetura
 
 ```
-Next.js (Cloudflare Workers + OpenNext, deploy via Workers Builds)
+Next.js (Vercel, deploy por push no GitHub)
  ├─ /            página pública: serviços, sobre, contactos
  ├─ /marcar      fluxo de marcação (serviço → dia → hora → dados → confirmar)
  ├─ /conta       marcações da cliente
@@ -75,8 +75,8 @@ Regras de alojamento (manter app portável e dentro dos limites):
 - Sem otimização `next/image` em runtime: imagens otimizadas antes do upload (ou loader próprio).
 - Sem ISR. Páginas dinâmicas ou estáticas simples.
 - Dependências leves: limite de bundle de 3 MiB comprimido no plano grátis.
-- Limite de ~10ms CPU por pedido no grátis (espera por rede não conta). Se excedido → Workers Paid (5$/mês).
-- Secrets via `wrangler secret` / dashboard. Config em `wrangler.jsonc` com `nodejs_compat`.
+- Funções na região `fra1` (Frankfurt), em `vercel.json`.
+- Secrets nas variáveis de ambiente da Vercel (Settings > Environment Variables), nunca no repositório.
 
 Fuso horário fixo: `Europe/Lisbon`. Guardar `timestamptz`, mostrar sempre em hora de Lisboa.
 
@@ -104,7 +104,7 @@ Cálculo de disponibilidade (servidor): cada período de `weekly_hours` é corta
 |---|---|---|---|
 | 0 | Recolher info da Catarina (secção 7) | Serviços, horários, regras reais | Em curso: horário respondido, faltam serviços, preços e contactos |
 | 1 | **Claude Design** (brief secção 6) | Identidade + ecrãs mobile cliente e admin | Feito, exceto template de email |
-| 2–7 | Desenvolvimento, lançamento e piloto | App online | Detalhado na secção 10 (M0 a M8). **M0 feito** (30 out 2026), online em `workers.dev` |
+| 2–7 | Desenvolvimento, lançamento e piloto | App online | Detalhado na secção 10 (M0 a M8). **M0 feito** (30 out 2026), falta ligar à Vercel |
 
 Fora da v1 (backlog): sinal/pagamento online (MB Way/Stripe), SMS/WhatsApp, lista de espera, extras/combos de serviços, galeria de trabalhos, reviews, várias profissionais, estatísticas.
 
@@ -186,7 +186,7 @@ O `globals.css` completo para Tailwind v4 + shadcn (`:root`, `.dark`, `@theme in
 | Item | Custo |
 |---|---|
 | Supabase free | 0€ (pausa após 7 dias sem atividade — marcações regulares evitam) |
-| Hosting | Cloudflare Workers grátis (uso comercial permitido). Se limites de CPU/bundle apertarem → Workers Paid 5$/mês |
+| Hosting | Vercel Hobby grátis (só uso não comercial). Se bloquearem → Vercel Pro 20 $/mês. Alternativa mais barata: Cloudflare Workers Paid 5 $/mês (ver nota do M0) |
 | Email (Resend free) | 0€ até 3000/mês, 100/dia |
 | Turnstile | 0€ |
 | Domínio .pt | ~10-20€/ano |
@@ -197,7 +197,7 @@ Nota: alternativas prontas (Fresha, Booksy, Treatwell) existem; Fresha é gráti
 
 - **RGPD e segurança**: detalhado na secção 11. Dados de saúde ficam fora da app; o risco que sobra é a Catarina escrevê-los nas notas por hábito.
 - **Concorrência**: dupla marcação resolvida na BD (exclusion constraint), não no frontend.
-- **Limites Cloudflare grátis**: deploy de teste cedo (fase 2) para medir bundle e CPU antes de crescer a app.
+- **Termos da Vercel Hobby**: plano só para uso não comercial; pode ser suspenso. Risco aceite pelo Miguel a 30 out 2026; plano B = Vercel Pro ou Cloudflare Workers Paid.
 - **Fuso/hora de verão**: testar dias de mudança de hora (março/outubro).
 - **Email em spam**: configurar SPF/DKIM/DMARC no domínio.
 - **Dependência de uma pessoa**: se a Catarina não atualizar folgas, clientes marcam em dias fechados → tornar bloquear dia muito rápido no painel.
@@ -211,7 +211,7 @@ Rascunho para discutir. As estimativas são em dias de trabalho focado e servem 
 Contas e acessos (Miguel):
 - Repositório GitHub privado.
 - Supabase: dois projetos, `staging` e `prod`. Supabase CLI local (Docker) para desenvolvimento.
-- Cloudflare: conta, Workers, Turnstile (site key de testes e de produção).
+- Vercel: conta (Hobby) e projeto ligado ao GitHub. Cloudflare: DNS e Turnstile (site key de testes e de produção).
 - Resend: conta e, mais tarde, domínio verificado.
 
 Respostas da Catarina que bloqueiam etapas (secção 7):
@@ -242,8 +242,8 @@ Design ainda em falta (não bloqueia M0 a M4):
 | Estado do fluxo de marcação | Na URL (`/marcar?servico=…&dia=…&hora=…`), para o botão voltar funcionar e o link poder ser partilhado |
 | Imagens | Redimensionadas no browser antes do upload (WebP, 800 px). Sem `next/image` em runtime |
 | Testes | Vitest (lógica), pgTAP via `supabase test db` (regras SQL), Playwright (fluxos principais) |
-| CI | GitHub Actions: lint, typecheck, testes, build OpenNext. Deploy por Workers Builds (`main` → staging; tag → prod) |
-| Erros | Logs do Cloudflare + página de erro própria. Sentry só se for preciso |
+| CI | GitHub Actions: lint, typecheck, testes, build. Deploy pela integração Vercel/GitHub (`main` → produção; branches → previews) |
+| Erros | Logs da Vercel + página de erro própria. Sentry só se for preciso |
 
 Estrutura de pastas proposta:
 
@@ -268,7 +268,7 @@ brand/                          logótipo original e recorte
 **M0. Fundações** (1–2 dias) — **feito a 30 out 2026** (falta só medir CPU e fazer push)
 - Criar o projeto Next.js com TypeScript, Tailwind v4, shadcn/ui, ESLint e Prettier.
 - Aplicar os tokens do Design System (`globals.css`), fontes e logótipo. Página "em breve" com a marca.
-- OpenNext + `wrangler.jsonc` (`nodejs_compat`) e primeiro deploy em `*.workers.dev`.
+- Alojamento na Vercel e primeiro deploy.
 - CI no GitHub Actions.
 - Segurança base: cabeçalhos HTTP (CSP, HSTS, etc.), Dependabot, secrets fora do repositório. Supabase criado numa região da UE.
 - Feito quando: a página "em breve" está online e o CI passa. Tamanho do bundle e CPU por pedido medidos e anotados aqui.
@@ -276,12 +276,10 @@ brand/                          logótipo original e recorte
 Resultado do M0 (commit inicial local, sem remote):
 - Next.js 16.4.3 (App Router, Turbopack), React 19, TypeScript strict, Tailwind v4, shadcn/ui (Button, estilo `base-nova` com base-ui, adaptado: pílula, alvos de 44 px), ESLint + Prettier, pnpm 10.
 - Tokens do DS em `app/globals.css` (claro e escuro), fontes Cormorant Garamond (500/600) e Manrope (400–700) via `next/font/google`, `lang="pt-PT"`. Página "em breve" com `public/logo-cn-384.png` (recorte original redimensionado, não vetorizado).
-- OpenNext + `wrangler.jsonc` (`nodejs_compat`); scripts `preview` e `deploy`. `opennextjs-cloudflare build` e `wrangler deploy --dry-run` passam.
+- Primeiro construído para Cloudflare Workers (OpenNext) e deployado em `workers.dev`; a 30 out 2026 mudou-se para Vercel Hobby (OpenNext e Wrangler removidos do projeto, `vercel.json` com `fra1`). O Worker `catt-nailstudio` em `workers.dev` pode ser apagado no dashboard Cloudflare.
 - Cabeçalhos em `next.config.ts` (CSP, HSTS, nosniff, Referrer-Policy, Permissions-Policy, frame-ancestors none), Dependabot, `.env.example`, CI (`.github/workflows/ci.yml`: install, lint, typecheck, build).
-- **Medições**: first load JS da página inicial ≈ 176 KiB comprimido (gzip), 570 KiB sem comprimir, mais 5 KiB de CSS. Worker OpenNext: 4,6 MiB sem comprimir, **984 KiB comprimido** (limite grátis 3 MiB). CPU por pedido: ver medição abaixo.
-- **Deploy feito** a 30 out 2026: https://catt-nailstudio.catt-nailstudio.workers.dev (arranque do Worker 16 ms). O certificado do subdomínio novo demorou alguns minutos a ativar. Nota: `pnpm deploy` é um comando nativo do pnpm; usar `pnpm run deploy`.
-- **CPU por pedido (30 out 2026, primeiros pedidos de teste, amostra pequena)**: P50 18,5 ms, P90 27,4 ms, P99 179 ms (arranque a frio). Acima dos ~10 ms do plano grátis. Rever depois de mais tráfego e do M2: se o P50 se mantiver acima de 10 ms, passar a Workers Paid (5 $/mês) ou aligeirar o servidor (menos dependências no Worker).
-- **Por fazer** (precisa do Miguel): criar o repositório GitHub e fazer push para o CI correr; criar os projetos Supabase na UE. A CSP usa `'unsafe-inline'` nos scripts: rever com nonces ao juntar Turnstile e Supabase (M2).
+- **Medições** (Cloudflare, antes da mudança): first load JS da página inicial ≈ 176 KiB comprimido (570 KiB sem comprimir), mais 5 KiB de CSS. Worker OpenNext 984 KiB comprimido. CPU por pedido no Worker: P50 18,5 ms, P90 27,4 ms, P99 179 ms (arranque a frio), acima dos ~10 ms do plano grátis, amostra pequena. Foi o que levou a testar a Vercel. Na Vercel o bundle do cliente é o mesmo; medir o tempo de resposta depois do deploy.
+- **Por fazer** (precisa do Miguel): `pnpm dlx vercel login`, `vercel link` e `vercel --prod` (ver README); ligar o repositório na Vercel; criar o repositório GitHub e fazer push para o CI correr; criar os projetos Supabase na UE. A CSP usa `'unsafe-inline'` nos scripts: rever com nonces ao juntar Turnstile e Supabase (M2).
 - Nota de ferramentas: `pnpm` instalado globalmente (corepack estava avariado nesta máquina).
 
 **M1. Base de dados e regras** (2–3 dias)
@@ -375,8 +373,8 @@ A app guarda dados pessoais de clientes (nome, telemóvel, email, histórico de 
 ### 11.1 Papéis e fornecedores
 
 - **Responsável pelo tratamento**: a Catarina (o estúdio). É quem responde às clientes e à CNPD.
-- **Subcontratantes**: Supabase (BD, autenticação, ficheiros), Cloudflare (alojamento, Turnstile), Resend (emails). Aceitar o DPA (acordo de tratamento de dados) de cada um e guardar cópia.
-- **Dados na UE**: projeto Supabase numa região europeia (ex.: Frankfurt). Resend com região UE. Cloudflare serve globalmente, mas não guarda dados de clientes (fica tudo no Supabase).
+- **Subcontratantes**: Supabase (BD, autenticação, ficheiros), Vercel (alojamento), Cloudflare (DNS, Turnstile), Resend (emails). Aceitar o DPA (acordo de tratamento de dados) de cada um e guardar cópia.
+- **Dados na UE**: projeto Supabase numa região europeia (ex.: Frankfurt). Resend com região UE. Vercel e Cloudflare servem globalmente (funções em `fra1`), mas não guardam dados de clientes (fica tudo no Supabase).
 - **Registo de atividades de tratamento**: uma página simples (que dados, para quê, quanto tempo, quem tem acesso). Guardar em `docs/rgpd/`.
 
 ### 11.2 Que dados, para quê e com que base legal
@@ -407,7 +405,7 @@ Regras que saem daqui:
 
 - Clientes sem marcações há **24 meses**: anonimizar automaticamente (`pg_cron` mensal).
 - Marcações canceladas e tokens de cancelamento: apagar o token quando a marcação passa.
-- Logs técnicos: os do Cloudflare e Supabase, com a retenção por omissão (dias). Nunca registar telemóvel, email ou notas nos logs da app.
+- Logs técnicos: os da Vercel e Supabase, com a retenção por omissão (dias). Nunca registar telemóvel, email ou notas nos logs da app.
 - Backups: os do Supabase (rotação automática). Um pedido de apagamento chega aos backups quando estes rodam. Explicar isso na política.
 
 ### 11.5 Segurança técnica
