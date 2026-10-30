@@ -330,7 +330,8 @@ Resultado do M2:
 - Desvios do plano: datas com `Intl` (hora de Lisboa) em vez de `@date-fns/tz`, para poupar bundle; o separador "Com conta" fica para o M3; o `.ics` e os emails para o M5.
 - **Limitações até ao M5**: a convidada com email ainda não recebe email nem o link de cancelamento (o token é gerado mas não é entregue), por isso só cancela contactando o estúdio. O ecrã de confirmação não promete email.
 - Bundle (gzip): JS próprio da rota `/` ≈ 22 KiB e `/marcar` ≈ 27 KiB, além do runtime partilhado (≈ 170 KiB). Valores medidos nos chunks do cliente do build.
-- **Por fazer**: aplicar a migration do rate limit na nuvem (`supabase db push --linked`); preencher contactos e morada em `settings` (aparecem na página assim que existirem); texto "Sobre" e fotos quando a Catarina os enviar; ver CI e o deploy da Vercel depois do push.
+- Migration do rate limit aplicada na nuvem a 30 out 2026 (3 jobs de cron ativos).
+- **Por fazer**: preencher contactos e morada em `settings` (aparecem na página assim que existirem); texto "Sobre" e fotos quando a Catarina os enviar; ver CI e o deploy da Vercel depois do push.
 
 **M3. Conta da cliente** (2 dias)
 - Entrar com link por email (Supabase Auth), em qualquer ponto do fluxo.
