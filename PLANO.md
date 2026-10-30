@@ -104,7 +104,7 @@ Cálculo de disponibilidade (servidor): cada período de `weekly_hours` é corta
 |---|---|---|---|
 | 0 | Recolher info da Catarina (secção 7) | Serviços, horários, regras reais | Em curso: horário respondido, faltam serviços, preços e contactos |
 | 1 | **Claude Design** (brief secção 6) | Identidade + ecrãs mobile cliente e admin | Feito, exceto template de email |
-| 2–7 | Desenvolvimento, lançamento e piloto | App online | Detalhado na secção 10 (M0 a M8). **M0 feito** (30 out 2026), falta ligar à Vercel |
+| 2–7 | Desenvolvimento, lançamento e piloto | App online | Detalhado na secção 10 (M0 a M8). **M0 feito** (30 out 2026), online em https://catt-nailstudio.vercel.app |
 
 Fora da v1 (backlog): sinal/pagamento online (MB Way/Stripe), SMS/WhatsApp, lista de espera, extras/combos de serviços, galeria de trabalhos, reviews, várias profissionais, estatísticas.
 
@@ -265,7 +265,7 @@ brand/                          logótipo original e recorte
 
 ### 10.3 Etapas
 
-**M0. Fundações** (1–2 dias) — **feito a 30 out 2026** (falta só medir CPU e fazer push)
+**M0. Fundações** (1–2 dias) — **feito a 30 out 2026** (falta só o push para o GitHub)
 - Criar o projeto Next.js com TypeScript, Tailwind v4, shadcn/ui, ESLint e Prettier.
 - Aplicar os tokens do Design System (`globals.css`), fontes e logótipo. Página "em breve" com a marca.
 - Alojamento na Vercel e primeiro deploy.
@@ -279,7 +279,8 @@ Resultado do M0 (commit inicial local, sem remote):
 - Primeiro construído para Cloudflare Workers (OpenNext) e deployado em `workers.dev`; a 30 out 2026 mudou-se para Vercel Hobby (OpenNext e Wrangler removidos do projeto, `vercel.json` com `fra1`). O Worker `catt-nailstudio` em `workers.dev` pode ser apagado no dashboard Cloudflare.
 - Cabeçalhos em `next.config.ts` (CSP, HSTS, nosniff, Referrer-Policy, Permissions-Policy, frame-ancestors none), Dependabot, `.env.example`, CI (`.github/workflows/ci.yml`: install, lint, typecheck, build).
 - **Medições** (Cloudflare, antes da mudança): first load JS da página inicial ≈ 176 KiB comprimido (570 KiB sem comprimir), mais 5 KiB de CSS. Worker OpenNext 984 KiB comprimido. CPU por pedido no Worker: P50 18,5 ms, P90 27,4 ms, P99 179 ms (arranque a frio), acima dos ~10 ms do plano grátis, amostra pequena. Foi o que levou a testar a Vercel. Na Vercel o bundle do cliente é o mesmo; medir o tempo de resposta depois do deploy.
-- **Por fazer** (precisa do Miguel): `pnpm dlx vercel login`, `vercel link` e `vercel --prod` (ver README); ligar o repositório na Vercel; criar o repositório GitHub e fazer push para o CI correr; criar os projetos Supabase na UE. A CSP usa `'unsafe-inline'` nos scripts: rever com nonces ao juntar Turnstile e Supabase (M2).
+- **Deploy feito** na Vercel Hobby a 30 out 2026: https://catt-nailstudio.vercel.app (build de 43 s, cabeçalhos de segurança confirmados).
+- **Por fazer** (precisa do Miguel): criar o repositório GitHub, fazer push para o CI correr e ligá-lo no dashboard da Vercel (deploy automático); criar os projetos Supabase na UE. A CSP usa `'unsafe-inline'` nos scripts: rever com nonces ao juntar Turnstile e Supabase (M2).
 - Nota de ferramentas: `pnpm` instalado globalmente (corepack estava avariado nesta máquina).
 
 **M1. Base de dados e regras** (2–3 dias)
