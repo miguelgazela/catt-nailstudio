@@ -309,7 +309,7 @@ Resultado do M1 (migrations em `supabase/migrations`, testes em `supabase/tests/
 - Privacidade: `audit_log` por triggers (guarda colunas alteradas, nunca valores), `anonymize_client` (admin) e anonimização mensal de clientes inativas há 24 meses (`pg_cron`), contador de faltas automático.
 - Testes pgTAP (70, todos a passar em local; job `database` no CI): dupla marcação, limite sem conta, bloqueio, janela, 24 h, folgas, mudança de hora (25 out 2026, 28 mar e 31 out 2027), RLS por papel (público, cliente A não vê cliente B, admin) e privacidade.
 - Seed: horário real (segunda aberta e domingo fechado por confirmar) e 3 serviços **placeholder**. O seed não corre na nuvem com `db push`.
-- Na nuvem (30 out 2026): 4 migrations aplicadas com `supabase db push --linked`, extensões `btree_gist`, `pgcrypto` e `pg_cron` ativas, os 2 jobs agendados, RLS ligado em todas as tabelas, lint limpo. **A BD na nuvem está sem horário nem serviços** (o seed não foi aplicado): carregar o horário real (e serviços de teste) antes de testar o M2 contra a nuvem.
+- Na nuvem (30 out 2026): 4 migrations aplicadas com `supabase db push --linked`, extensões `btree_gist`, `pgcrypto` e `pg_cron` ativas, os 2 jobs agendados, RLS ligado em todas as tabelas, lint limpo. Seed aplicado à mão na nuvem (30 out 2026): horário real e 3 serviços **placeholder** (apagar ou substituir pelos reais no M7, antes do piloto). Variáveis de ambiente de produção (Supabase e Turnstile) já na Vercel, só no ambiente Production.
 - Por fazer: testar duas marcações em simultâneo a sério no Playwright (M2); criar o utilizador admin da Catarina e a linha em `admins`; MFA e configuração de Auth no M3/M4.
 
 **M2. Página inicial e marcação sem conta** (3–4 dias)
