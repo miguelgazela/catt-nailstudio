@@ -1,0 +1,137 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Tokens do Design System "Nude & Ameixa" (claro e escuro). */
+:root {
+  --background: #f7f1ec;
+  --foreground: #2e1f26;
+  --card: #ffffff;
+  --card-foreground: #2e1f26;
+  --popover: #ffffff;
+  --popover-foreground: #2e1f26;
+  --primary: #7a3b52;
+  --primary-foreground: #ffffff;
+  --primary-pressed: #5c2a3d;
+  --secondary: #f1e6df;
+  --secondary-foreground: #5c2a3d;
+  --muted: #efe5de;
+  --muted-foreground: #6b5a60;
+  --accent: #f1e6df;
+  --accent-foreground: #5c2a3d;
+  --destructive: #b3261e;
+  --destructive-foreground: #ffffff;
+  --border: #e6d9d1;
+  --input: #9c8a91;
+  --ring: #7a3b52;
+  --success: #2f6b4f;
+  --success-surface: #e3f0e8;
+  --warning: #7a4f0e;
+  --warning-surface: #f6ead3;
+  --danger-text: #a3261e;
+  --danger-surface: #f8e1de;
+  --nude: #d9b8a7;
+  --blush: #f1d9cc;
+  --radius: 1rem;
+}
+
+.dark {
+  --background: #1c1418;
+  --foreground: #f5ece8;
+  --card: #271c21;
+  --card-foreground: #f5ece8;
+  --popover: #271c21;
+  --popover-foreground: #f5ece8;
+  --primary: #e3a9bc;
+  --primary-foreground: #2e1f26;
+  --primary-pressed: #efc3d1;
+  --secondary: #33252b;
+  --secondary-foreground: #f1d9cc;
+  --muted: #2e2227;
+  --muted-foreground: #bfaeb3;
+  --accent: #33252b;
+  --accent-foreground: #f1d9cc;
+  --destructive: #f2a39b;
+  --destructive-foreground: #2e1f26;
+  --border: #3a2b31;
+  --input: #8a747c;
+  --ring: #e3a9bc;
+  --success: #a8ddbf;
+  --success-surface: #1f3329;
+  --warning: #ebc27a;
+  --warning-surface: #3a2e17;
+  --danger-text: #f4aaa2;
+  --danger-surface: #3d1f1d;
+  --nude: #8c6556;
+  --blush: #4a3038;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-pressed: var(--primary-pressed);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-success-surface: var(--success-surface);
+  --color-warning: var(--warning);
+  --color-warning-surface: var(--warning-surface);
+  --color-danger: var(--danger-text);
+  --color-danger-surface: var(--danger-surface);
+  --color-nude: var(--nude);
+  --color-blush: var(--blush);
+
+  --font-display: var(--font-cormorant), Georgia, serif;
+  --font-heading: var(--font-cormorant), Georgia, serif;
+  --font-sans: var(--font-manrope), system-ui, sans-serif;
+
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --shadow-card:
+    0 1px 2px rgb(46 31 38 / 0.05), 0 4px 12px rgb(46 31 38 / 0.05);
+  --shadow-bar: 0 -8px 32px rgb(46 31 38 / 0.14);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background font-sans text-base text-foreground antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
