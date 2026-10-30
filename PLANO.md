@@ -104,7 +104,7 @@ Cálculo de disponibilidade (servidor): cada período de `weekly_hours` é corta
 |---|---|---|---|
 | 0 | Recolher info da Catarina (secção 7) | Serviços, horários, regras reais | Em curso: horário respondido, faltam serviços, preços e contactos |
 | 1 | **Claude Design** (brief secção 6) | Identidade + ecrãs mobile cliente e admin | Feito, exceto template de email |
-| 2–7 | Desenvolvimento, lançamento e piloto | App online | Detalhado na secção 10 (M0 a M8). **M0 feito** (30 out 2026), falta só o deploy `workers.dev` |
+| 2–7 | Desenvolvimento, lançamento e piloto | App online | Detalhado na secção 10 (M0 a M8). **M0 feito** (30 out 2026), online em `workers.dev` |
 
 Fora da v1 (backlog): sinal/pagamento online (MB Way/Stripe), SMS/WhatsApp, lista de espera, extras/combos de serviços, galeria de trabalhos, reviews, várias profissionais, estatísticas.
 
@@ -265,7 +265,7 @@ brand/                          logótipo original e recorte
 
 ### 10.3 Etapas
 
-**M0. Fundações** (1–2 dias) — **feito a 30 out 2026, exceto o deploy**
+**M0. Fundações** (1–2 dias) — **feito a 30 out 2026** (falta só medir CPU e fazer push)
 - Criar o projeto Next.js com TypeScript, Tailwind v4, shadcn/ui, ESLint e Prettier.
 - Aplicar os tokens do Design System (`globals.css`), fontes e logótipo. Página "em breve" com a marca.
 - OpenNext + `wrangler.jsonc` (`nodejs_compat`) e primeiro deploy em `*.workers.dev`.
@@ -279,7 +279,8 @@ Resultado do M0 (commit inicial local, sem remote):
 - OpenNext + `wrangler.jsonc` (`nodejs_compat`); scripts `preview` e `deploy`. `opennextjs-cloudflare build` e `wrangler deploy --dry-run` passam.
 - Cabeçalhos em `next.config.ts` (CSP, HSTS, nosniff, Referrer-Policy, Permissions-Policy, frame-ancestors none), Dependabot, `.env.example`, CI (`.github/workflows/ci.yml`: install, lint, typecheck, build).
 - **Medições**: first load JS da página inicial ≈ 176 KiB comprimido (gzip), 570 KiB sem comprimir, mais 5 KiB de CSS. Worker OpenNext: 4,6 MiB sem comprimir, **984 KiB comprimido** (limite grátis 3 MiB). CPU por pedido: por medir, só com o deploy.
-- **Por fazer** (precisa do Miguel): `pnpm wrangler login` e `pnpm deploy` para o primeiro deploy em `*.workers.dev`, medir CPU nos logs; criar o repositório GitHub e fazer push para o CI correr; criar os projetos Supabase na UE. A CSP usa `'unsafe-inline'` nos scripts: rever com nonces ao juntar Turnstile e Supabase (M2).
+- **Deploy feito** a 30 out 2026: https://catt-nailstudio.catt-nailstudio.workers.dev (arranque do Worker 16 ms). O certificado do subdomínio novo demorou alguns minutos a ativar. Nota: `pnpm deploy` é um comando nativo do pnpm; usar `pnpm run deploy`.
+- **Por fazer** (precisa do Miguel): ler o CPU por pedido no dashboard Cloudflare (Workers & Pages > catt-nailstudio > Metrics) e anotar aqui; criar o repositório GitHub e fazer push para o CI correr; criar os projetos Supabase na UE. A CSP usa `'unsafe-inline'` nos scripts: rever com nonces ao juntar Turnstile e Supabase (M2).
 - Nota de ferramentas: `pnpm` instalado globalmente (corepack estava avariado nesta máquina).
 
 **M1. Base de dados e regras** (2–3 dias)

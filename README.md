@@ -15,7 +15,7 @@ Precisa de conta Cloudflare e de login único (não feito pelo CI):
 
 ```bash
 pnpm wrangler login
-pnpm deploy       # build OpenNext + publicação em https://catt-nailstudio.<subdomínio>.workers.dev
+pnpm run deploy       # build OpenNext + publicação em https://catt-nailstudio.catt-nailstudio.workers.dev
 ```
 
 Secrets (a partir de M1): `pnpm wrangler secret put NOME`. Valores locais em `.env.local` (ver `.env.example`).
