@@ -210,7 +210,11 @@ Rascunho para discutir. As estimativas são em dias de trabalho focado e servem 
 
 Contas e acessos (Miguel):
 - Repositório GitHub privado.
-- Supabase: dois projetos, `staging` e `prod`. Supabase CLI local (Docker) para desenvolvimento.
+- Supabase: **um único projeto**, só desta app, região UE (decisão de 30 out 2026: o Miguel só tem um projeto livre no plano grátis). Faz de staging e de produção. Supabase CLI local (Docker) para desenvolvimento e testes (pgTAP, Playwright, CI), que fazem de staging a sério. Regras para isto ser seguro:
+  - Migrations só vão para o projeto na nuvem depois de passarem em local e no CI.
+  - Até ao piloto (M8) o projeto só tem dados fictícios; antes de abrir, apagar os dados de teste e carregar os serviços reais (M7). Depois disso, nada de testes manuais com dados reais fora do necessário.
+  - Os deploys de preview da Vercel não recebem as chaves do Supabase (só o ambiente Production), para uma branch de teste nunca escrever na BD.
+  - Backups do Supabase só no plano pago (Pro, 25 $/mês): sem backups diários automáticos no grátis, exportar a BD (`supabase db dump`) antes de migrations importantes e antes do lançamento. Ponderar o Pro quando houver dados reais.
 - Vercel: conta (Hobby) e projeto ligado ao GitHub. Cloudflare: DNS e Turnstile (site key de testes e de produção).
 - Resend: conta e, mais tarde, domínio verificado.
 
@@ -303,7 +307,7 @@ Resultado do M0 (commit inicial local, sem remote):
 - Texto informativo de privacidade no ecrã de dados (sem "aceito"), rodapé com Privacidade, Termos e Livro de Reclamações.
 - Estados de erro: hora acabou de ser ocupada, mês sem vagas, número bloqueado, limite sem conta.
 - Playwright: marcar como convidada do início ao fim; duas marcações na mesma hora ao mesmo tempo, só uma ganha.
-- Feito quando: uma pessoa consegue marcar no telemóvel em staging e a marcação aparece na BD.
+- Feito quando: uma pessoa consegue marcar no telemóvel, com a app na Vercel e a BD no projeto Supabase, e a marcação aparece na BD.
 
 **M3. Conta da cliente** (2 dias)
 - Entrar com link por email (Supabase Auth), em qualquer ponto do fluxo.
@@ -312,7 +316,7 @@ Resultado do M0 (commit inicial local, sem remote):
 - Página `/cancelar/[token]` para convidadas com email.
 - "Os meus dados": editar, exportar e apagar conta.
 - Mensagens que não revelam se um email tem conta.
-- Feito quando: o fluxo com conta e o cancelamento funcionam em staging, com testes Playwright.
+- Feito quando: o fluxo com conta e o cancelamento funcionam no projeto na nuvem, com testes Playwright (em local).
 
 **M4. Painel da Catarina** (4–5 dias)
 - Entrada e proteção do `/admin`, com MFA obrigatório e sessão que expira.
@@ -333,7 +337,7 @@ Resultado do M0 (commit inicial local, sem remote):
 - `.ics` e link "Adicionar ao Google Calendar".
 - Lembrete 24 h antes: `pg_cron` + Edge Function do Supabase.
 - Aviso à Catarina de novas marcações (se ativo nas definições).
-- Feito quando: marcar, cancelar e o lembrete enviam os emails certos em staging.
+- Feito quando: marcar, cancelar e o lembrete enviam os emails certos (com dados fictícios).
 
 **M6. PWA e acabamentos** (1–2 dias)
 - `manifest.webmanifest`, ícones PNG (192, 512, maskable, apple-touch) a partir do recorte do logótipo, splash iOS.
