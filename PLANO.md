@@ -287,7 +287,7 @@ Resultado do M0 (commit inicial local, sem remote):
 - **Por fazer** (precisa do Miguel): criar o repositório GitHub, fazer push para o CI correr e ligá-lo no dashboard da Vercel (deploy automático); criar os projetos Supabase na UE. A CSP usa `'unsafe-inline'` nos scripts: rever com nonces ao juntar Turnstile e Supabase (M2).
 - Nota de ferramentas: `pnpm` instalado globalmente (corepack estava avariado nesta máquina).
 
-**M1. Base de dados e regras** (2–3 dias)
+**M1. Base de dados e regras** (2–3 dias) — **feito em local a 30 out 2026; falta aplicar na nuvem**
 - Migrations: `settings`, `services`, `weekly_hours`, `time_off`, `clients`, `appointments`, `admins`. Enums para estado e origem.
 - `btree_gist` + exclusion constraint contra sobreposições.
 - Funções SQL:
@@ -299,6 +299,17 @@ Resultado do M0 (commit inicial local, sem remote):
 - Privacidade na BD: tokens de cancelamento guardados como hash, tabela `audit_log` com as ações da admin, função de anonimização e `pg_cron` mensal para clientes inativas há 24 meses.
 - Testes pgTAP: dupla marcação, limite sem conta, número bloqueado, 24 h, mudança de hora (último domingo de março e de outubro), e RLS: uma cliente não vê dados de outra, o público não lê `clients`.
 - Feito quando: os testes SQL passam em local e no CI.
+
+Resultado do M1 (migrations em `supabase/migrations`, testes em `supabase/tests/database`, seed em `supabase/seed.sql`):
+- Tabelas, enums, `btree_gist` e exclusion constraint (`appointments_no_overlap`), `admins`, `audit_log`. Esquema `public`, com funções internas em `private` (não expostas pela API).
+- Funções: `available_slots(de, ate)` (pública), `book_appointment(servico, inicio, nome, telemovel, email, user_id)` e `cancel_appointment(id, token, user_id)` (**só `service_role`**: o servidor chama depois do Turnstile e do rate limit, senão qualquer pessoa com a chave pública saltava essas proteções). Devolvem `jsonb` `{ok, error|appointment_id, cancel_token}`. Erros: `invalid_phone`, `invalid_name`, `invalid_email`, `invalid_service`, `blocked`, `outside_window`, `slot_taken`, `guest_limit`, `phone_in_use`; no cancelamento `not_found`, `not_cancellable`, `too_late`.
+- Token de cancelamento: gerado na BD (32 bytes), devolvido uma só vez, guardado como sha256. Só convidadas com email recebem token. Apagado ao cancelar e por job diário depois da marcação passar.
+- Limite de convidada: 1 marcação futura por telemóvel, com `pg_advisory_xact_lock` por telemóvel contra pedidos em simultâneo. Conta: sem limite.
+- RLS em todas as tabelas; `anon` só lê serviços ativos, definições e horário (privilégios revogados nas restantes). Clientes escrevem só pelas funções.
+- Privacidade: `audit_log` por triggers (guarda colunas alteradas, nunca valores), `anonymize_client` (admin) e anonimização mensal de clientes inativas há 24 meses (`pg_cron`), contador de faltas automático.
+- Testes pgTAP (70, todos a passar em local; job `database` no CI): dupla marcação, limite sem conta, bloqueio, janela, 24 h, folgas, mudança de hora (25 out 2026, 28 mar e 31 out 2027), RLS por papel (público, cliente A não vê cliente B, admin) e privacidade.
+- Seed: horário real (segunda aberta e domingo fechado por confirmar) e 3 serviços **placeholder**. O seed não corre na nuvem com `db push`.
+- Por fazer: `supabase db push` para o projeto na nuvem (decisão do Miguel); confirmar na nuvem as extensões `pg_cron` e `btree_gist`; testar duas marcações em simultâneo a sério no Playwright (M2); criar o utilizador admin da Catarina e a linha em `admins`; MFA e configuração de Auth no M3/M4.
 
 **M2. Página inicial e marcação sem conta** (3–4 dias)
 - Ecrã de abertura (só no arranque a frio), página inicial, escolher serviço, escolher dia e hora, os seus dados, confirmação, como nos mockups.
