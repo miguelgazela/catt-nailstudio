@@ -278,9 +278,10 @@ Resultado do M0 (commit inicial local, sem remote):
 - Tokens do DS em `app/globals.css` (claro e escuro), fontes Cormorant Garamond (500/600) e Manrope (400–700) via `next/font/google`, `lang="pt-PT"`. Página "em breve" com `public/logo-cn-384.png` (recorte original redimensionado, não vetorizado).
 - OpenNext + `wrangler.jsonc` (`nodejs_compat`); scripts `preview` e `deploy`. `opennextjs-cloudflare build` e `wrangler deploy --dry-run` passam.
 - Cabeçalhos em `next.config.ts` (CSP, HSTS, nosniff, Referrer-Policy, Permissions-Policy, frame-ancestors none), Dependabot, `.env.example`, CI (`.github/workflows/ci.yml`: install, lint, typecheck, build).
-- **Medições**: first load JS da página inicial ≈ 176 KiB comprimido (gzip), 570 KiB sem comprimir, mais 5 KiB de CSS. Worker OpenNext: 4,6 MiB sem comprimir, **984 KiB comprimido** (limite grátis 3 MiB). CPU por pedido: por medir, só com o deploy.
+- **Medições**: first load JS da página inicial ≈ 176 KiB comprimido (gzip), 570 KiB sem comprimir, mais 5 KiB de CSS. Worker OpenNext: 4,6 MiB sem comprimir, **984 KiB comprimido** (limite grátis 3 MiB). CPU por pedido: ver medição abaixo.
 - **Deploy feito** a 30 out 2026: https://catt-nailstudio.catt-nailstudio.workers.dev (arranque do Worker 16 ms). O certificado do subdomínio novo demorou alguns minutos a ativar. Nota: `pnpm deploy` é um comando nativo do pnpm; usar `pnpm run deploy`.
-- **Por fazer** (precisa do Miguel): ler o CPU por pedido no dashboard Cloudflare (Workers & Pages > catt-nailstudio > Metrics) e anotar aqui; criar o repositório GitHub e fazer push para o CI correr; criar os projetos Supabase na UE. A CSP usa `'unsafe-inline'` nos scripts: rever com nonces ao juntar Turnstile e Supabase (M2).
+- **CPU por pedido (30 out 2026, primeiros pedidos de teste, amostra pequena)**: P50 18,5 ms, P90 27,4 ms, P99 179 ms (arranque a frio). Acima dos ~10 ms do plano grátis. Rever depois de mais tráfego e do M2: se o P50 se mantiver acima de 10 ms, passar a Workers Paid (5 $/mês) ou aligeirar o servidor (menos dependências no Worker).
+- **Por fazer** (precisa do Miguel): criar o repositório GitHub e fazer push para o CI correr; criar os projetos Supabase na UE. A CSP usa `'unsafe-inline'` nos scripts: rever com nonces ao juntar Turnstile e Supabase (M2).
 - Nota de ferramentas: `pnpm` instalado globalmente (corepack estava avariado nesta máquina).
 
 **M1. Base de dados e regras** (2–3 dias)
