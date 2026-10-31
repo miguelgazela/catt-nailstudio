@@ -367,6 +367,16 @@ export type Database = {
         Args: { p_appointment?: string; p_token?: string; p_user_id?: string };
         Returns: Json;
       };
+      claim_client: {
+        Args: {
+          p_email: string;
+          p_name: string;
+          p_phone: string;
+          p_user_id: string;
+        };
+        Returns: Json;
+      };
+      delete_my_data: { Args: { p_user_id: string }; Returns: Json };
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
       rate_limit_hit: {
         Args: { p_key: string; p_limit: number; p_window_seconds: number };

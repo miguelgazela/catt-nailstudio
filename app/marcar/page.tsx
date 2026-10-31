@@ -1,10 +1,13 @@
 import Link from "next/link";
 
 import { DiaHora } from "@/components/marca/dia-hora";
+import { FormConta } from "@/components/marca/form-conta";
 import { FormDados } from "@/components/marca/form-dados";
 import { Passo } from "@/components/marca/passo";
 import { Rodape } from "@/components/marca/rodape";
 import { ServiceCard } from "@/components/marca/service-card";
+import { getUtilizador } from "@/lib/auth";
+import { getFicha } from "@/lib/conta";
 import {
   diaPorExtenso,
   hojeEmLisboa,
@@ -77,6 +80,13 @@ export default async function Marcar({ searchParams }: PageProps<"/marcar">) {
   const horaValida =
     dia && hora && vagas.some((v) => v.dia === dia && v.hora === hora);
   if (dia && hora && horaValida) {
+    const utilizador = await getUtilizador();
+    const ficha = utilizador ? await getFicha(utilizador.id) : null;
+    const modo =
+      um(sp.modo) === "conta" || (utilizador && um(sp.modo) !== "convidada")
+        ? "conta"
+        : "convidada";
+    const base = `/marcar?servico=${servico.id}&dia=${dia}&hora=${hora}`;
     return (
       <>
         <Passo n={3} voltar={`/marcar?servico=${servico.id}&dia=${dia}`} />
@@ -103,12 +113,54 @@ export default async function Marcar({ searchParams }: PageProps<"/marcar">) {
               Alterar
             </Link>
           </div>
-          <FormDados
-            servicoId={servico.id}
-            dia={dia}
-            hora={hora}
-            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ""}
-          />
+          <nav aria-label="Como quer marcar" className="flex gap-2">
+            {(
+              [
+                ["convidada", "Sem conta"],
+                ["conta", "Com conta"],
+              ] as const
+            ).map(([k, rotulo]) => (
+              <Link
+                key={k}
+                href={`${base}&modo=${k}`}
+                aria-current={modo === k ? "page" : undefined}
+                className={`inline-flex min-h-11 flex-1 items-center justify-center rounded-full border text-[15px] font-semibold no-underline ${modo === k ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground"}`}
+              >
+                {rotulo}
+              </Link>
+            ))}
+          </nav>
+          {modo === "conta" ? (
+            utilizador ? (
+              <FormConta
+                servicoId={servico.id}
+                dia={dia}
+                hora={hora}
+                ficha={ficha}
+                email={utilizador.email}
+              />
+            ) : (
+              <div className="flex flex-col gap-3 rounded-lg border border-border bg-card px-4 py-5">
+                <p className="text-base leading-6">
+                  Entre com o seu email, sem palavra-passe. Enviamos-lhe um link
+                  e volta a este passo.
+                </p>
+                <Link
+                  href={`/entrar?next=${encodeURIComponent(`${base}&modo=conta`)}`}
+                  className="inline-flex h-12 w-full items-center justify-center rounded-full bg-primary text-base font-bold text-primary-foreground no-underline hover:bg-primary-pressed"
+                >
+                  Entrar com email
+                </Link>
+              </div>
+            )
+          ) : (
+            <FormDados
+              servicoId={servico.id}
+              dia={dia}
+              hora={hora}
+              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ""}
+            />
+          )}
         </main>
         <Rodape />
       </>

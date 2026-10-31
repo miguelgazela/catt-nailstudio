@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { after } from "next/server";
 import { z } from "zod";
 
+import { getUtilizador } from "@/lib/auth";
 import { emLisboa } from "@/lib/datas";
 import { carregarPorId, enviarConfirmacao } from "@/lib/email/marcacao";
 import { permitido, verificarTurnstile } from "@/lib/seguranca";
@@ -95,6 +96,31 @@ export async function reservar(
     };
   }
 
+  return concluir({
+    servico: d.servico,
+    dia: d.dia,
+    hora: d.hora,
+    nome: d.nome,
+    telefone: telefone!,
+    email: d.email || undefined,
+    valores,
+  });
+}
+
+type Pedido = {
+  servico: string;
+  dia: string;
+  hora: string;
+  nome: string;
+  telefone: string;
+  email?: string;
+  userId?: string;
+  valores: NonNullable<EstadoForm["valores"]>;
+};
+
+/** Reserva a hora e reage a cada resposta da BD. Partilhado pela marcação sem conta e com conta. */
+async function concluir(d: Pedido): Promise<EstadoForm> {
+  const { valores } = d;
   // Encontra a hora exata (instante) a partir do dia e da hora de Lisboa.
   const { data: vagas } = await supabasePublico().rpc("available_slots", {
     p_from: d.dia,
@@ -111,8 +137,9 @@ export async function reservar(
     p_service: d.servico,
     p_starts_at: vaga.starts_at,
     p_name: d.nome,
-    p_phone: telefone!,
-    p_email: d.email || undefined,
+    p_phone: d.telefone,
+    p_email: d.email,
+    p_user_id: d.userId,
   });
   const r = data as {
     ok?: boolean;
@@ -146,6 +173,11 @@ export async function reservar(
         erro: "Já tem uma marcação futura com este número. Para marcar outra, contacte o estúdio.",
         valores,
       };
+    case "phone_in_use":
+      return {
+        erro: "Não conseguimos usar este número. Contacte o estúdio.",
+        valores,
+      };
     case "invalid_phone":
       return {
         campos: { tel: "Número inválido. Escreva os 9 números do telemóvel." },
@@ -154,4 +186,64 @@ export async function reservar(
     default:
       return { erro: MENSAGEM_GERAL, valores };
   }
+}
+
+export type EstadoConta = {
+  erro?: string;
+  campos?: { nome?: string; tel?: string };
+};
+
+/** Marcar com conta: a identidade vem da sessão (já passou pelo Turnstile ao entrar), por isso só há limite por conta. */
+export async function reservarComConta(
+  _anterior: EstadoConta,
+  formData: FormData,
+): Promise<EstadoConta> {
+  const u = await getUtilizador();
+  const servico = String(formData.get("servico") ?? "");
+  const dia = String(formData.get("dia") ?? "");
+  const hora = String(formData.get("hora") ?? "");
+  if (!u)
+    redirect(
+      `/entrar?next=${encodeURIComponent(`/marcar?servico=${servico}&dia=${dia}&hora=${hora}&modo=conta`)}`,
+    );
+  if (
+    !z.string().uuid().safeParse(servico).success ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(dia) ||
+    !/^\d{2}:\d{2}$/.test(hora)
+  ) {
+    return { erro: MENSAGEM_GERAL };
+  }
+
+  // Quem já tem ficha marca com os dados dela; quem ainda não tem preenche aqui.
+  const { data: ficha } = await supabaseAdmin()
+    .from("clients")
+    .select("name, phone")
+    .eq("user_id", u.id)
+    .maybeSingle();
+  const nome = ficha?.name ?? String(formData.get("nome") ?? "").trim();
+  const bruto = ficha?.phone ?? String(formData.get("tel") ?? "");
+  const campos: NonNullable<EstadoConta["campos"]> = {};
+  if (!nome || nome.length > 100) campos.nome = "Escreva o seu nome.";
+  const telefone = normalizarTelemovel(bruto);
+  if (!telefone)
+    campos.tel = "Número inválido. Escreva os 9 números do telemóvel.";
+  if (Object.keys(campos).length) return { campos };
+
+  if (!(await permitido(`marcar-conta:${u.id}`, 10, 600))) {
+    return {
+      erro: "Fez demasiados pedidos. Espere uns minutos e tente outra vez.",
+    };
+  }
+
+  const r = await concluir({
+    servico,
+    dia,
+    hora,
+    nome,
+    telefone: telefone!,
+    email: u.email ?? undefined,
+    userId: u.id,
+    valores: { nome, tel: bruto, email: u.email ?? "" },
+  });
+  return { erro: r.erro, campos: r.campos };
 }
