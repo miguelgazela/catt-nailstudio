@@ -1,12 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { gerarIcs, linkGoogleCalendar } from "../calendario";
-import {
-  emailAvisoEstudio,
-  emailCancelamento,
-  emailConfirmacao,
-  emailLembrete,
-} from "./modelos";
+import { emailConfirmacao, emailLembrete } from "./modelos";
 
 // 13 nov 2026, 10:00 em Lisboa (inverno, UTC+0)
 const d = {
@@ -93,22 +88,9 @@ describe("emails", () => {
     expect(e.html).toContain("&lt;script&gt;");
   });
 
-  it("lembrete e cancelamento", () => {
+  it("lembrete", () => {
     expect(emailLembrete(d).assunto).toBe(
       "Lembrete: sexta, 13 de novembro, 10:00",
     );
-    const c = emailCancelamento(d);
-    expect(c.assunto).toBe("Marcação cancelada");
-    expect(c.html).toContain("https://exemplo.pt/marcar");
-  });
-
-  it("aviso à Catarina leva nome e telemóvel", () => {
-    const a = emailAvisoEstudio(d, "nova", {
-      nome: "Ana",
-      telefone: "+351912345678",
-    });
-    expect(a.assunto).toBe("Nova marcação: sexta, 13 de novembro, 10:00");
-    expect(a.texto).toContain("Cliente: Ana");
-    expect(a.texto).toContain("Telemóvel: +351912345678");
   });
 });

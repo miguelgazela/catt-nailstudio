@@ -351,6 +351,7 @@ Resultado do M2:
 - Horário semanal, bloqueios e férias.
 - Serviços: lista, ordem (botões, não só arrastar), editar, foto, ativo/inativo.
 - Clientes: pesquisa, filtros, ficha com notas, histórico e bloqueio.
+- Notificações push (Web Push) para a Catarina quando há uma marcação nova ou cancelada, no lugar de emails: chaves VAPID, subscrição guardada por dispositivo (só admins), envio a partir de `book_appointment`/`cancel_appointment` via a app, opção nas definições (`settings.notify_on_booking`). No iPhone só funciona com a app instalada no ecrã inicial (iOS 16.4 ou mais), por isso depende do M6. Até lá, a Catarina vê as marcações no painel.
 - Definições.
 - Vista de computador da semana.
 - Feito quando: a Catarina consegue gerir uma semana fictícia sozinha no telemóvel (teste com ela).
@@ -364,14 +365,14 @@ Resultado do M2:
 - Feito quando: marcar, cancelar e o lembrete enviam os emails certos (com dados fictícios).
 
 Resultado do M5 (código):
-- Modelos em `lib/email/modelos.ts` (HTML de tabelas com os tokens do DS, texto simples e anexo `.ics`): confirmação (com "Adicionar ao Google Calendar" e link para cancelar), lembrete, cancelamento e aviso à Catarina. Teste visual feito; as fontes de email caem para Georgia e Arial/Manrope do sistema.
+- Modelos em `lib/email/modelos.ts` (HTML de tabelas com os tokens do DS, texto simples e anexo `.ics`): confirmação (com "Adicionar ao Google Calendar" e link para cancelar), lembrete. **Sem email de cancelamento à cliente nem avisos por email à Catarina** (decisão de 31 out 2026: a página já confirma e os avisos à Catarina passam a ser notificações push; poupa envios). Teste visual feito; as fontes de email caem para Georgia e Arial/Manrope do sistema.
 - Envio por Resend em `lib/email/enviar.ts` (chamada HTTP direta, sem SDK). Os emails saem depois da resposta (`after`), por isso uma falha de email nunca estraga a marcação. Sem `RESEND_API_KEY` não envia.
 - Calendário: `.ics` em UTC (com testes) em `/marcar/confirmada/calendario?id=…` e link do Google; ecrã de confirmação com os dois.
-- `/cancelar/[token]` (página, Server Action com limite por IP, e `/cancelar/ok`): cancela com `cancel_appointment`, regra das 24 h no servidor, link morre depois de usado. Envia email de cancelamento à cliente e à Catarina.
+- `/cancelar/[token]` (página, Server Action com limite por IP, e `/cancelar/ok`): cancela com `cancel_appointment`, regra das 24 h no servidor, link morre depois de usado. Não envia emails.
 - Lembrete 24 h: em vez de Edge Function, o job `send-reminders` do `pg_cron` (de 30 em 30 min) chama `POST /api/lembretes` com `pg_net`; o endereço e o segredo estão no Vault (`site_url`, `cron_secret`). Assim os modelos ficam num só sítio (TypeScript). Só lembra quem marcou com mais de 25 h de antecedência, e reserva a marcação antes de enviar (nunca envia duas vezes). O lembrete não leva link de cancelar (o token já só existe como hash e às 24 h a janela de cancelamento fecha).
 - Migration `20261031100001_emails.sql`: `settings.notify_on_booking`, `appointments.reminder_sent_at`, job.
 - Testes: Vitest (`pnpm test`, 12 testes: `.ics`, DST, modelos, escape de HTML, regras do lembrete) e Playwright (9: cancelar por link, link inventado, `.ics`, lembretes só com segredo e só uma vez).
-- **Por fazer (Miguel)**: conta no Resend e chave; no Vercel as variáveis `RESEND_API_KEY`, `EMAIL_FROM`, `SITE_URL` e `CRON_SECRET`; aplicar a migration na nuvem e criar os dois segredos no Vault; preencher `settings.contact_email` para a Catarina receber avisos. Enquanto não houver domínio verificado, o Resend só envia para o email do dono da conta.
+- **Por fazer (Miguel)**: conta no Resend e chave; no Vercel as variáveis `RESEND_API_KEY`, `EMAIL_FROM`, `SITE_URL` e `CRON_SECRET`; aplicar a migration na nuvem e criar os dois segredos no Vault. Enquanto não houver domínio verificado, o Resend só envia para o email do dono da conta.
 
 **M6. PWA e acabamentos** (1–2 dias)
 - `manifest.webmanifest`, ícones PNG (192, 512, maskable, apple-touch) a partir do recorte do logótipo, splash iOS.

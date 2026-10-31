@@ -2,9 +2,7 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { after } from "next/server";
 
-import { carregarPorToken, enviarCancelamento } from "@/lib/email/marcacao";
 import { permitido } from "@/lib/seguranca";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
@@ -19,18 +17,12 @@ export async function cancelarMarcacao(formData: FormData) {
     redirect(`/cancelar/${token}`);
   }
 
-  // Lê os dados antes: depois de cancelar o token deixa de existir.
-  const antes = await carregarPorToken(token);
-
   const { data } = await supabaseAdmin().rpc("cancel_appointment", {
     p_token: token,
   });
   const r = data as { ok?: boolean; error?: string } | null;
 
-  if (r?.ok && antes) {
-    after(() => enviarCancelamento(antes));
-    redirect("/cancelar/ok");
-  }
+  if (r?.ok) redirect("/cancelar/ok");
   if (r?.error === "too_late") redirect(`/cancelar/${token}?erro=tarde`);
   redirect(`/cancelar/${token}`);
 }

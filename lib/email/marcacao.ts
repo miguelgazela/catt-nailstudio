@@ -4,13 +4,7 @@ import { createHash } from "node:crypto";
 
 import { supabaseAdmin } from "../supabase/admin";
 import { enviarEmail } from "./enviar";
-import {
-  type DadosMarcacao,
-  emailAvisoEstudio,
-  emailCancelamento,
-  emailConfirmacao,
-  emailLembrete,
-} from "./modelos";
+import { type DadosMarcacao, emailConfirmacao, emailLembrete } from "./modelos";
 
 export const urlDoSite = () =>
   (process.env.SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
@@ -19,7 +13,6 @@ export type MarcacaoCompleta = {
   marcacao: DadosMarcacao;
   estado: string;
   cliente: { nome: string; telefone: string | null; email: string | null };
-  estudio: { email: string | null; avisar: boolean };
 };
 
 const SELECT =
@@ -40,7 +33,7 @@ async function montar(
 ): Promise<MarcacaoCompleta> {
   const { data: s } = await supabaseAdmin()
     .from("settings")
-    .select("contact_phone, contact_email, address, notify_on_booking")
+    .select("contact_phone, address")
     .single();
   return {
     marcacao: {
@@ -58,10 +51,6 @@ async function montar(
       nome: l.clients?.name ?? "",
       telefone: l.clients?.phone ?? null,
       email: l.clients?.email ?? null,
-    },
-    estudio: {
-      email: s?.contact_email ?? null,
-      avisar: s?.notify_on_booking ?? false,
     },
   };
 }
@@ -90,40 +79,15 @@ export async function carregarPorToken(
   return data ? montar(data as unknown as Linha, token) : null;
 }
 
-/** Confirmação à cliente (se deixou email) e aviso à Catarina (se ativo e com email). Nunca lança. */
+/** Confirmação à cliente (se deixou email). Nunca lança. A Catarina não recebe email: ver notificações push (M4). */
 export async function enviarConfirmacao(m: MarcacaoCompleta): Promise<void> {
   try {
     if (m.cliente.email) {
       const e = emailConfirmacao(m.marcacao);
       await enviarEmail({ para: m.cliente.email, ...e, anexos: e.anexos });
     }
-    if (m.estudio.avisar && m.estudio.email && m.cliente.telefone) {
-      const e = emailAvisoEstudio(m.marcacao, "nova", {
-        nome: m.cliente.nome,
-        telefone: m.cliente.telefone,
-      });
-      await enviarEmail({ para: m.estudio.email, ...e });
-    }
   } catch {
-    console.error("Falha ao enviar emails da marcação");
-  }
-}
-
-export async function enviarCancelamento(m: MarcacaoCompleta): Promise<void> {
-  try {
-    if (m.cliente.email) {
-      const e = emailCancelamento({ ...m.marcacao, tokenCancelar: null });
-      await enviarEmail({ para: m.cliente.email, ...e });
-    }
-    if (m.estudio.avisar && m.estudio.email && m.cliente.telefone) {
-      const e = emailAvisoEstudio(m.marcacao, "cancelada", {
-        nome: m.cliente.nome,
-        telefone: m.cliente.telefone,
-      });
-      await enviarEmail({ para: m.estudio.email, ...e });
-    }
-  } catch {
-    console.error("Falha ao enviar emails do cancelamento");
+    console.error("Falha ao enviar o email da marcação");
   }
 }
 
