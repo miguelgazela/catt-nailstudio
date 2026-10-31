@@ -2,6 +2,7 @@ import "server-only";
 
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
+import { cache } from "react";
 
 import { COOKIE_PAINEL, lerCookiePainel } from "./sessao-painel";
 import { supabaseSessao } from "./supabase/sessao";
@@ -10,10 +11,16 @@ export { caminhoSeguro } from "./caminho";
 
 export type Utilizador = { id: string; email: string | null };
 
-export async function getUtilizador(): Promise<Utilizador | null> {
+// Uma só leitura da sessão por pedido: o layout e a página chamam isto várias vezes, e cada
+// cliente novo voltava a verificar o token (e a ir buscar as chaves públicas ao Supabase).
+const lerClaims = cache(async () => {
   const sb = await supabaseSessao();
   const { data } = await sb.auth.getClaims();
-  const c = data?.claims;
+  return data?.claims ?? null;
+});
+
+export async function getUtilizador(): Promise<Utilizador | null> {
+  const c = await lerClaims();
   if (!c?.sub) return null;
   return { id: c.sub, email: typeof c.email === "string" ? c.email : null };
 }
@@ -33,7 +40,7 @@ export async function exigirCliente(destino: string): Promise<Utilizador> {
 }
 
 /** A pessoa está na tabela `admins`? (o RLS deixa cada admin ler só a própria linha) */
-export async function eAdmin(): Promise<boolean> {
+export const eAdmin = cache(async (): Promise<boolean> => {
   const u = await getUtilizador();
   if (!u) return false;
   const sb = await supabaseSessao();
@@ -43,7 +50,7 @@ export async function eAdmin(): Promise<boolean> {
     .eq("user_id", u.id)
     .maybeSingle();
   return Boolean(data);
-}
+});
 
 /**
  * Páginas do painel. Quem não entrou vai para /entrar; quem entrou mas não é admin
@@ -54,9 +61,7 @@ export async function eAdmin(): Promise<boolean> {
 export async function exigirAdmin(destino = "/admin"): Promise<Utilizador> {
   const u = await exigirUtilizador(destino);
   if (!(await eAdmin())) notFound();
-  const sb = await supabaseSessao();
-  const { data } = await sb.auth.getClaims();
-  if (data?.claims?.aal !== "aal2") {
+  if ((await lerClaims())?.aal !== "aal2") {
     redirect(`/admin/mfa?next=${encodeURIComponent(destino)}`);
   }
   const sessao = lerCookiePainel((await cookies()).get(COOKIE_PAINEL)?.value);
