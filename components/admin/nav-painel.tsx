@@ -36,7 +36,7 @@ export function NavPainel() {
   return (
     <nav
       aria-label="Painel"
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] shadow-bar md:static md:border-0 md:bg-transparent md:pb-0 md:shadow-none"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card pr-[env(safe-area-inset-right)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] shadow-bar md:static md:border-0 md:bg-transparent md:p-0 md:shadow-none"
     >
       <ul className="mx-auto flex max-w-xl md:max-w-none md:gap-1">
         {ITENS.map(({ href, rotulo, Icone, base }) => {

@@ -16,7 +16,7 @@ export default async function LayoutPainel({
 }: LayoutProps<"/admin">) {
   await exigirAdmin("/admin");
   return (
-    <div className="flex min-h-full flex-1 flex-col pb-20 md:pb-0">
+    <div className="flex min-h-full flex-1 flex-col pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between gap-4 px-5">
           <Link

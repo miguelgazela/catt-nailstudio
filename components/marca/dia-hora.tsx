@@ -213,7 +213,7 @@ export function DiaHora({
       </main>
 
       <div className="fixed inset-x-0 bottom-0 bg-card shadow-bar">
-        <div className="mx-auto flex w-full max-w-xl items-center gap-4 px-5 pt-3.5 pb-7">
+        <div className="mx-auto flex w-full max-w-xl items-center gap-4 px-5 pt-3.5 pb-[max(1.75rem,env(safe-area-inset-bottom))]">
           <div className="tabular flex min-w-0 flex-1 flex-col gap-0.5">
             <span className="truncate text-base font-semibold">
               {dia && hora

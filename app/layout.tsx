@@ -27,6 +27,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: "#7A3B52",
   colorScheme: "light",
+  // Ocupa o ecrã todo no iPhone; as barras fixas usam env(safe-area-inset-*) para fugir aos cantos.
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
