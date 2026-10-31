@@ -34,7 +34,11 @@ export async function enviarLinkDeEntrada(
       return;
     }
     const link = `${urlDoSite()}/auth/confirmar?token_hash=${encodeURIComponent(token)}&type=magiclink&next=${encodeURIComponent(destino)}`;
-    const e = emailEntrada({ link, siteUrl: urlDoSite() });
+    const e = emailEntrada({
+      link,
+      siteUrl: urlDoSite(),
+      codigo: data?.properties?.email_otp,
+    });
     await enviarEmail({ para: email, ...e });
   } catch {
     console.error("Falha ao enviar o link de entrada");

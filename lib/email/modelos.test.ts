@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { gerarIcs, linkGoogleCalendar } from "../calendario";
-import { emailConfirmacao, emailLembrete } from "./modelos";
+import { emailConfirmacao, emailEntrada, emailLembrete } from "./modelos";
 
 // 13 nov 2026, 10:00 em Lisboa (inverno, UTC+0)
 const d = {
@@ -97,6 +97,17 @@ describe("emails", () => {
     expect(emailLembrete(d).texto).toContain(
       "pelo link do email de confirmação",
     );
+  });
+
+  it("entrada: link e código (para a app instalada)", () => {
+    const e = emailEntrada({
+      link: "https://exemplo.pt/auth/confirmar?x",
+      siteUrl: "https://exemplo.pt",
+      codigo: "482913",
+    });
+    expect(e.html).toContain("482913");
+    expect(e.html).toContain("Código: 482913");
+    expect(e.texto).toContain("Ou escreva este código na app: 482913");
   });
 
   it("escapa HTML vindo de dados", () => {

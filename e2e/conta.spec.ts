@@ -97,6 +97,33 @@ test("pedido de entrada no painel: quem não é admin não recebe link nem fica 
   expect(data.users.some((u) => u.email === email)).toBe(false);
 });
 
+test("entrar com o código do email (app instalada, onde o link abre noutro browser)", async ({
+  page,
+}) => {
+  const email = `codigo${aleatorio(6)}@example.com`;
+  const db = admin();
+  await db.auth.admin.createUser({ email, email_confirm: true });
+  await page.goto("/entrar");
+  await page.getByLabel("Email").fill(email);
+  const enviar = page.getByRole("button", { name: "Enviar link" });
+  await expect(enviar).toBeEnabled({ timeout: 30_000 });
+  await enviar.click();
+  await expect(page.getByLabel("Código do email")).toBeVisible();
+
+  await page.getByLabel("Código do email").fill("000000");
+  await page.getByRole("button", { name: "Entrar com o código" }).click();
+  await expect(page.getByText("Código errado ou expirado")).toBeVisible();
+
+  // O código do email (os emails não saem nos testes): o último gerado é o válido.
+  const { data } = await db.auth.admin.generateLink({
+    type: "magiclink",
+    email,
+  });
+  await page.getByLabel("Código do email").fill(data.properties!.email_otp);
+  await page.getByRole("button", { name: "Entrar com o código" }).click();
+  await expect(page).toHaveURL(/\/conta$/);
+});
+
 test("email inválido mostra erro no campo", async ({ page }) => {
   await page.goto("/entrar");
   await page.getByLabel("Email").fill("isto-nao-e-email");

@@ -229,21 +229,26 @@ export function emailLembrete(d: DadosMarcacao): EmailPronto {
   };
 }
 
-/** Link para entrar (sem palavra-passe). Válido 1 hora. */
+/** Link e código para entrar (sem palavra-passe). Válidos 1 hora. O código serve na app instalada,
+ * onde o link abriria fora dela (noutro browser, sem a sessão). */
 export function emailEntrada(d: {
   link: string;
   siteUrl: string;
+  codigo?: string;
 }): EmailPronto {
   const nota =
-    "O link serve uma vez e expira numa hora. Se não pediu para entrar, ignore este email: ninguém entra sem ele.";
+    "O link e o código servem uma vez e expiram numa hora. Se não pediu para entrar, ignore este email: ninguém entra sem eles.";
   return {
     assunto: "O seu link para entrar",
     html: html({
-      prehead: "Carregue no botão para entrar.",
+      prehead: d.codigo
+        ? `Código: ${d.codigo}`
+        : "Carregue no botão para entrar.",
       titulo: "Entrar",
-      intro:
-        "Carregue no botão para entrar na sua conta. Não precisa de palavra-passe.",
-      linhas: [],
+      intro: d.codigo
+        ? "Carregue no botão para entrar na sua conta. Se estiver na app instalada no telemóvel, escreva lá este código."
+        : "Carregue no botão para entrar na sua conta. Não precisa de palavra-passe.",
+      linhas: d.codigo ? [["Código", d.codigo]] : [],
       botoes: [{ texto: "Entrar", href: d.link, principal: true }],
       nota,
       motivo: "pediu para entrar na sua conta",
@@ -253,6 +258,7 @@ export function emailEntrada(d: {
       "Entrar",
       "",
       `Abra este link para entrar: ${d.link}`,
+      ...(d.codigo ? [`Ou escreva este código na app: ${d.codigo}`] : []),
       "",
       nota,
     ].join("\n"),
