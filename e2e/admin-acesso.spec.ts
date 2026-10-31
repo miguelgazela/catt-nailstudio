@@ -69,6 +69,11 @@ test('admin não tem área de cliente: /conta leva ao painel e /marcar não most
   await page.getByRole("button", { name: "Entrar no painel" }).click();
   await expect(page.getByRole("heading", { name: "Agenda" })).toBeVisible();
 
+  // "Entrar" na página inicial leva a admin ao painel.
+  await page.goto("/");
+  await page.getByRole("link", { name: "Entrar", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Agenda" })).toBeVisible();
+
   // A área de cliente não existe para admins.
   await page.goto("/conta/dados");
   await expect(page.getByRole("heading", { name: "Agenda" })).toBeVisible();

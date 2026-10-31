@@ -20,7 +20,7 @@ export default async function Entrar({ searchParams }: PageProps<"/entrar">) {
 
   return (
     <>
-      <Cabecalho />
+      <Cabecalho semEntrar />
       <main className="mx-auto flex w-full max-w-xl flex-col gap-5 px-5 pt-4 pb-10">
         <h1 className="font-display text-[32px] leading-9 font-semibold">
           Entrar

@@ -42,7 +42,7 @@ export default async function Dados({
 
   return (
     <>
-      <Cabecalho />
+      <Cabecalho semEntrar />
       <main className="mx-auto flex w-full max-w-xl flex-col gap-6 px-5 pt-4 pb-10">
         <div className="flex flex-col gap-1">
           <Link

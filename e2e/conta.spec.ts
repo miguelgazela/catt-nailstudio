@@ -54,6 +54,18 @@ test("sem sessão, /conta manda para entrar e volta depois", async ({
   await expect(page.getByRole("heading", { name: "Entrar" })).toBeVisible();
 });
 
+test("a página inicial tem 'Entrar' (na app instalada não há barra de endereço)", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: "Entrar", exact: true }).click();
+  await expect(page).toHaveURL(/\/entrar\?next=%2Fconta/);
+  // Na própria página de entrar não aparece outra vez.
+  await expect(
+    page.getByRole("link", { name: "Entrar", exact: true }),
+  ).toHaveCount(0);
+});
+
 test("pedir o link mostra sempre a mesma resposta, haja conta ou não", async ({
   page,
 }) => {

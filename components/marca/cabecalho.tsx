@@ -2,9 +2,14 @@ import Link from "next/link";
 
 import { Logo } from "./logo";
 
-export function Cabecalho() {
+/**
+ * "Entrar" leva a /conta: sem sessão vai para /entrar e volta; cliente vê as marcações;
+ * admin é mandada para o painel. Sem ler a sessão aqui, as páginas estáticas continuam estáticas.
+ * Na app instalada não há barra de endereço, por isso este é o caminho para entrar.
+ */
+export function Cabecalho({ semEntrar = false }: { semEntrar?: boolean }) {
   return (
-    <header className="mx-auto flex h-16 w-full max-w-xl items-center px-5">
+    <header className="mx-auto flex h-16 w-full max-w-xl items-center justify-between gap-3 px-5">
       <Link
         href="/"
         className="flex min-h-11 items-center gap-2.5 text-foreground no-underline"
@@ -14,6 +19,14 @@ export function Cabecalho() {
           Catarina Neves
         </span>
       </Link>
+      {semEntrar ? null : (
+        <Link
+          href="/conta"
+          className="inline-flex min-h-11 items-center px-1 text-[15px] font-semibold text-primary underline-offset-4 hover:underline"
+        >
+          Entrar
+        </Link>
+      )}
     </header>
   );
 }
