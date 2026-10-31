@@ -35,6 +35,9 @@ const r = spawnSync(
       NEXT_PUBLIC_TURNSTILE_SITE_KEY: "1x00000000000000000000AA",
       TURNSTILE_SECRET_KEY: "1x0000000000000000000000000000000AA",
       RATE_LIMIT_SALT: "e2e",
+      CRON_SECRET: "e2e-cron",
+      EMAIL_DRY_RUN: "1",
+      SITE_URL: "http://localhost:3100",
     },
   },
 );

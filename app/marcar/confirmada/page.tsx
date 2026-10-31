@@ -1,9 +1,10 @@
-import { CalendarClock, Check } from "lucide-react";
+import { CalendarClock, CalendarPlus, Check } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Rodape } from "@/components/marca/rodape";
 import { StatusBadge } from "@/components/marca/status-badge";
+import { linkGoogleCalendar } from "@/lib/calendario";
 import { diaPorExtenso, emLisboa, intervalo, precoEmEuros } from "@/lib/datas";
 import { getDefinicoes } from "@/lib/dados";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -17,7 +18,7 @@ export const dynamic = "force-dynamic";
 export default async function Confirmada({
   searchParams,
 }: PageProps<"/marcar/confirmada">) {
-  const { id } = await searchParams;
+  const { id, e } = await searchParams;
   if (typeof id !== "string" || !/^[0-9a-f-]{36}$/.test(id)) notFound();
 
   // O id (uuid aleatório) é a prova de que a marcação é desta pessoa. Não mostramos dados pessoais.
@@ -52,8 +53,9 @@ export default async function Confirmada({
             Marcação confirmada
           </h1>
           <p className="text-base leading-6 text-muted-foreground">
-            A sua hora está reservada. Tire uma captura deste ecrã ou guarde a
-            data no calendário.
+            {e === "1"
+              ? "A sua hora está reservada. Enviámos os detalhes para o seu email."
+              : "A sua hora está reservada. Guarde a data no calendário ou tire uma captura deste ecrã."}
           </p>
         </div>
 
@@ -70,6 +72,30 @@ export default async function Confirmada({
             </div>
           ))}
         </dl>
+
+        <div className="flex flex-col gap-2">
+          <a
+            href={`/marcar/confirmada/calendario?id=${id}`}
+            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary text-base font-bold text-primary-foreground no-underline transition-colors hover:bg-primary-pressed"
+          >
+            <CalendarPlus aria-hidden className="size-[18px]" />
+            Adicionar ao calendário
+          </a>
+          <a
+            href={linkGoogleCalendar({
+              id,
+              inicio: new Date(data.starts_at),
+              titulo: `${data.services?.name ?? "Marcação"}, Catarina Neves Nails Studio`,
+              descricao: "Pagamento no estúdio. Pode cancelar até 24 h antes.",
+              local: def.address,
+            })}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex h-12 w-full items-center justify-center rounded-full border border-input bg-card text-base font-bold text-foreground no-underline transition-colors hover:bg-accent"
+          >
+            Abrir no Google Calendar
+          </a>
+        </div>
 
         <p className="flex items-start gap-2.5 text-sm leading-5 text-muted-foreground">
           <CalendarClock aria-hidden className="mt-0.5 size-[18px] shrink-0" />

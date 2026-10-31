@@ -2,9 +2,11 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import { z } from "zod";
 
 import { emLisboa } from "@/lib/datas";
+import { carregarPorId, enviarConfirmacao } from "@/lib/email/marcacao";
 import { permitido, verificarTurnstile } from "@/lib/seguranca";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { supabasePublico } from "@/lib/supabase/public";
@@ -116,11 +118,19 @@ export async function reservar(
     ok?: boolean;
     error?: string;
     appointment_id?: string;
+    cancel_token?: string | null;
   } | null;
   if (error || !r) return { erro: MENSAGEM_GERAL, valores };
 
   if (r.ok && r.appointment_id) {
-    redirect(`/marcar/confirmada?id=${r.appointment_id}`);
+    const id = r.appointment_id;
+    // Emails depois da resposta: se falharem, a marcação mantém-se.
+    after(async () => {
+      const m = await carregarPorId(id, r.cancel_token);
+      if (m) await enviarConfirmacao(m);
+    });
+    const comEmail = d.email && process.env.RESEND_API_KEY ? "&e=1" : "";
+    redirect(`/marcar/confirmada?id=${id}${comEmail}`);
   }
   switch (r.error) {
     case "slot_taken":

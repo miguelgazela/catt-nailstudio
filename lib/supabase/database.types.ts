@@ -62,6 +62,7 @@ export type Database = {
           note: string | null;
           origin: Database["public"]["Enums"]["appointment_origin"];
           price_cents: number;
+          reminder_sent_at: string | null;
           service_id: string;
           starts_at: string;
           status: Database["public"]["Enums"]["appointment_status"];
@@ -78,6 +79,7 @@ export type Database = {
           note?: string | null;
           origin?: Database["public"]["Enums"]["appointment_origin"];
           price_cents: number;
+          reminder_sent_at?: string | null;
           service_id: string;
           starts_at: string;
           status?: Database["public"]["Enums"]["appointment_status"];
@@ -93,6 +95,7 @@ export type Database = {
           note?: string | null;
           origin?: Database["public"]["Enums"]["appointment_origin"];
           price_cents?: number;
+          reminder_sent_at?: string | null;
           service_id?: string;
           starts_at?: string;
           status?: Database["public"]["Enums"]["appointment_status"];
@@ -229,6 +232,7 @@ export type Database = {
           instagram: string | null;
           max_advance_days: number;
           min_notice_minutes: number;
+          notify_on_booking: boolean;
           policy_text: string;
           updated_at: string;
         };
@@ -242,6 +246,7 @@ export type Database = {
           instagram?: string | null;
           max_advance_days?: number;
           min_notice_minutes?: number;
+          notify_on_booking?: boolean;
           policy_text?: string;
           updated_at?: string;
         };
@@ -254,6 +259,7 @@ export type Database = {
           instagram?: string | null;
           max_advance_days?: number;
           min_notice_minutes?: number;
+          notify_on_booking?: boolean;
           policy_text?: string;
           updated_at?: string;
         };
