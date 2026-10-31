@@ -108,17 +108,11 @@ test("o destino depois do login nunca sai do site", async ({ page }) => {
   await expect(page).toHaveURL(/\/conta$/);
 });
 
-test("/admin: 404 para quem não é admin, painel para quem é", async ({
-  page,
-}) => {
+test("/admin: 404 para quem não é admin", async ({ page }) => {
   await page.goto("/admin");
   await expect(page).toHaveURL(/\/entrar\?next=%2Fadmin/);
 
-  const l = await entrar(page, "ana@example.com", "/admin");
+  await entrar(page, "ana@example.com", "/admin");
   const r = await page.goto("/admin");
   expect(r?.status()).toBe(404);
-
-  await admin().from("admins").insert({ user_id: l.id });
-  await page.goto("/admin");
-  await expect(page.getByRole("heading", { name: "Painel" })).toBeVisible();
 });

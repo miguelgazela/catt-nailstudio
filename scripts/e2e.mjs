@@ -37,7 +37,7 @@ const r = spawnSync(
       RATE_LIMIT_SALT: "e2e",
       CRON_SECRET: "e2e-cron",
       EMAIL_DRY_RUN: "1",
-      SITE_URL: "http://localhost:3100",
+      SITE_URL: `http://localhost:${process.env.E2E_PORT ?? 3100}`,
     },
   },
 );

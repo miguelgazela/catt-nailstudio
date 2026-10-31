@@ -33,6 +33,14 @@ export default async function Entrar({ searchParams }: PageProps<"/entrar">) {
             Este link já não é válido. Peça um novo.
           </p>
         ) : null}
+        {erro === "sessao" ? (
+          <p
+            role="status"
+            className="rounded-lg bg-warning-surface px-4 py-3 text-sm leading-5 text-warning"
+          >
+            O painel fechou por segurança. Peça um novo link para entrar.
+          </p>
+        ) : null}
         <FormEntrar
           siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ""}
           destino={destino}
