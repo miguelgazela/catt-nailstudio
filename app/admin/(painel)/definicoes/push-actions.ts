@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { exigirAdmin } from "@/lib/auth";
 import { notificarAdmins } from "@/lib/push";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { supabaseSessao } from "@/lib/supabase/sessao";
 
 const sub = z.object({
@@ -11,21 +12,24 @@ const sub = z.object({
   keys: z.object({ p256dh: z.string().max(200), auth: z.string().max(100) }),
 });
 
+// Grava com a chave de serviço: o upsert precisa de UPDATE, que o RLS não dá às admins.
+// Seguro porque exigirAdmin já confirmou quem é, e o user_id vem da sessão, não do browser.
 export async function guardarSubscricao(bruta: unknown, agente: string) {
   const u = await exigirAdmin("/admin/definicoes");
   const p = sub.safeParse(bruta);
   if (!p.success) return { ok: false as const };
-  const sb = await supabaseSessao();
-  const { error } = await sb.from("push_subscriptions").upsert(
-    {
-      user_id: u.id,
-      endpoint: p.data.endpoint,
-      p256dh: p.data.keys.p256dh,
-      auth: p.data.keys.auth,
-      user_agent: agente.slice(0, 200),
-    },
-    { onConflict: "endpoint" },
-  );
+  const { error } = await supabaseAdmin()
+    .from("push_subscriptions")
+    .upsert(
+      {
+        user_id: u.id,
+        endpoint: p.data.endpoint,
+        p256dh: p.data.keys.p256dh,
+        auth: p.data.keys.auth,
+        user_agent: agente.slice(0, 200),
+      },
+      { onConflict: "endpoint" },
+    );
   return { ok: !error };
 }
 

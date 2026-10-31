@@ -37,6 +37,9 @@ const r = spawnSync(
       RATE_LIMIT_SALT: "e2e",
       CRON_SECRET: "e2e-cron",
       EMAIL_DRY_RUN: "1",
+      // Só a metade pública de um par de teste: mostra o botão "Ativar"; sem a privada nada é enviado.
+      NEXT_PUBLIC_VAPID_PUBLIC_KEY:
+        "BFWJllTdAgxvrO8C6ntIRhDBO0RAcC1D1QPthLBsU7exUWtkzp3AXaUa09oZqpdNneOHfE3ldx3sZ6OA1bDeLDM",
       SITE_URL: `http://localhost:${process.env.E2E_PORT ?? 3100}`,
     },
   },

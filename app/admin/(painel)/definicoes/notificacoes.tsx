@@ -42,7 +42,10 @@ export function Notificacoes({
       if (Notification.permission === "denied") return setEstado("negado");
       const reg = await navigator.serviceWorker.getRegistration("/sw.js");
       const s = await reg?.pushManager.getSubscription();
-      setEstado(s ? "ligado" : "desligado");
+      if (!s) return setEstado("desligado");
+      // O browser pode estar subscrito sem o servidor saber (ex.: falhou ao gravar): volta a gravar.
+      const r = await guardarSubscricao(s.toJSON(), navigator.userAgent);
+      setEstado(r.ok ? "ligado" : "desligado");
     })().catch(() => setEstado("sem-suporte"));
   }, [chavePublica]);
 
@@ -60,7 +63,11 @@ export function Notificacoes({
           applicationServerKey: chaveParaBytes(chavePublica!),
         });
         const r = await guardarSubscricao(sub.toJSON(), navigator.userAgent);
-        if (!r.ok) throw new Error("guardar");
+        if (!r.ok) {
+          // Não deixa o browser subscrito sem o servidor saber.
+          await sub.unsubscribe();
+          throw new Error("guardar");
+        }
         setEstado("ligado");
       } catch {
         setMsg("Não foi possível ativar. Tente outra vez.");
