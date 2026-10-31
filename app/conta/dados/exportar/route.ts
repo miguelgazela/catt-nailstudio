@@ -1,4 +1,4 @@
-import { getUtilizador } from "@/lib/auth";
+import { eAdmin, getUtilizador } from "@/lib/auth";
 import { supabaseSessao } from "@/lib/supabase/sessao";
 
 export const dynamic = "force-dynamic";
@@ -8,6 +8,7 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   const u = await getUtilizador();
   if (!u) return new Response("Não autenticado", { status: 401 });
+  if (await eAdmin()) return new Response("Não disponível", { status: 404 });
 
   const sb = await supabaseSessao();
   const [{ data: ficha }, { data: marcacoes }] = await Promise.all([

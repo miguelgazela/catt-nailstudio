@@ -25,6 +25,13 @@ export async function exigirUtilizador(destino: string): Promise<Utilizador> {
   return u;
 }
 
+/** Área de cliente (/conta). Admin não é cliente: vai para o painel. */
+export async function exigirCliente(destino: string): Promise<Utilizador> {
+  const u = await exigirUtilizador(destino);
+  if (await eAdmin()) redirect("/admin");
+  return u;
+}
+
 /** A pessoa está na tabela `admins`? (o RLS deixa cada admin ler só a própria linha) */
 export async function eAdmin(): Promise<boolean> {
   const u = await getUtilizador();

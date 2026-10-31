@@ -4,7 +4,7 @@ import { Aviso, campoTexto } from "@/components/marca/aviso";
 import { BotaoSair } from "@/components/marca/botao-sair";
 import { Cabecalho } from "@/components/marca/cabecalho";
 import { Rodape } from "@/components/marca/rodape";
-import { exigirUtilizador } from "@/lib/auth";
+import { exigirCliente } from "@/lib/auth";
 import { getFicha, getJanelaDeCancelamento, getMarcacoes } from "@/lib/conta";
 import { type MarcacaoConta, podeCancelar, separar } from "@/lib/conta-regras";
 import { diaPorExtenso, emLisboa, intervalo, precoEmEuros } from "@/lib/datas";
@@ -69,7 +69,7 @@ function Linha({ m, cancelavel }: { m: MarcacaoConta; cancelavel: boolean }) {
 }
 
 export default async function Conta({ searchParams }: PageProps<"/conta">) {
-  const u = await exigirUtilizador("/conta");
+  const u = await exigirCliente("/conta");
   const sp = await searchParams;
   const erro = ERROS[um(sp.erro) ?? ""];
   const ficha = await getFicha(u.id);

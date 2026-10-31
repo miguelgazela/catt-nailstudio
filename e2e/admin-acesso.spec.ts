@@ -59,6 +59,40 @@ test("o painel fecha quando a sessão expira", async ({ page, context }) => {
   await expect(page.getByRole("heading", { name: "Agenda" })).toBeVisible();
 });
 
+test('admin não tem área de cliente: /conta leva ao painel e /marcar não mostra "Com conta"', async ({
+  page,
+}) => {
+  const a = await criarAdmin();
+  await page.goto(await novoLink(a.email, "/conta"));
+  await expect(page).toHaveURL(/\/admin\/mfa/);
+  await page.getByLabel("Código da app").fill(totp(a.segredo));
+  await page.getByRole("button", { name: "Entrar no painel" }).click();
+  await expect(page.getByRole("heading", { name: "Agenda" })).toBeVisible();
+
+  // A área de cliente não existe para admins.
+  await page.goto("/conta/dados");
+  await expect(page.getByRole("heading", { name: "Agenda" })).toBeVisible();
+  expect((await page.request.get("/conta/dados/exportar")).status()).toBe(404);
+
+  // Em /marcar só aparece "Sem conta" (marca-se no painel).
+  const { data: s } = await db()
+    .from("services")
+    .select("id")
+    .eq("active", true)
+    .limit(1)
+    .single();
+  await page.goto(`/marcar?servico=${s!.id}`);
+  const horas = page
+    .getByRole("group", { name: "Horas livres" })
+    .getByRole("button");
+  await horas.first().click();
+  await page.getByRole("link", { name: "Continuar" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Os seus dados" }),
+  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "Com conta" })).toHaveCount(0);
+});
+
 test("quem não é admin continua a ver 404 (sem pedir MFA)", async ({
   page,
 }) => {

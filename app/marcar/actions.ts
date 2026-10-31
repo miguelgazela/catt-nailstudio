@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { after } from "next/server";
 import { z } from "zod";
 
-import { getUtilizador } from "@/lib/auth";
+import { eAdmin, getUtilizador } from "@/lib/auth";
 import { emLisboa } from "@/lib/datas";
 import { carregarPorId, enviarConfirmacao } from "@/lib/email/marcacao";
 import { permitido, verificarTurnstile } from "@/lib/seguranca";
@@ -206,6 +206,9 @@ export async function reservarComConta(
     redirect(
       `/entrar?next=${encodeURIComponent(`/marcar?servico=${servico}&dia=${dia}&hora=${hora}&modo=conta`)}`,
     );
+  if (await eAdmin()) {
+    return { erro: 'No painel use "Nova marcação" para marcar.' };
+  }
   if (
     !z.string().uuid().safeParse(servico).success ||
     !/^\d{4}-\d{2}-\d{2}$/.test(dia) ||

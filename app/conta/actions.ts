@@ -2,14 +2,14 @@
 
 import { redirect } from "next/navigation";
 
-import { exigirUtilizador } from "@/lib/auth";
+import { exigirCliente } from "@/lib/auth";
 import { permitido } from "@/lib/seguranca";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { normalizarTelemovel } from "@/lib/telemovel";
 
 /** Primeira vez na conta: cria a ficha ou liga-a às marcações antigas com o mesmo telemóvel. */
 export async function completarPerfil(formData: FormData) {
-  const u = await exigirUtilizador("/conta");
+  const u = await exigirCliente("/conta");
   const nome = String(formData.get("nome") ?? "").trim();
   const telefone = normalizarTelemovel(String(formData.get("tel") ?? ""));
 
@@ -32,7 +32,7 @@ export async function completarPerfil(formData: FormData) {
 }
 
 export async function cancelarDaConta(formData: FormData) {
-  const u = await exigirUtilizador("/conta");
+  const u = await exigirCliente("/conta");
   const id = String(formData.get("id") ?? "");
   if (!/^[0-9a-f-]{36}$/.test(id)) redirect("/conta");
   if (!(await permitido(`cancelar-conta:${u.id}`, 20, 600))) {

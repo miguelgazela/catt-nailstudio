@@ -6,7 +6,7 @@ import { FormDados } from "@/components/marca/form-dados";
 import { Passo } from "@/components/marca/passo";
 import { Rodape } from "@/components/marca/rodape";
 import { ServiceCard } from "@/components/marca/service-card";
-import { getUtilizador } from "@/lib/auth";
+import { eAdmin, getUtilizador } from "@/lib/auth";
 import { getFicha } from "@/lib/conta";
 import {
   diaPorExtenso,
@@ -80,10 +80,13 @@ export default async function Marcar({ searchParams }: PageProps<"/marcar">) {
   const horaValida =
     dia && hora && vagas.some((v) => v.dia === dia && v.hora === hora);
   if (dia && hora && horaValida) {
-    const utilizador = await getUtilizador();
+    // Admin não marca como cliente (usa "Nova marcação" no painel): só vê "Sem conta".
+    const admin = await eAdmin();
+    const utilizador = admin ? null : await getUtilizador();
     const ficha = utilizador ? await getFicha(utilizador.id) : null;
     const modo =
-      um(sp.modo) === "conta" || (utilizador && um(sp.modo) !== "convidada")
+      !admin &&
+      (um(sp.modo) === "conta" || (utilizador && um(sp.modo) !== "convidada"))
         ? "conta"
         : "convidada";
     const base = `/marcar?servico=${servico.id}&dia=${dia}&hora=${hora}`;
@@ -113,23 +116,25 @@ export default async function Marcar({ searchParams }: PageProps<"/marcar">) {
               Alterar
             </Link>
           </div>
-          <nav aria-label="Como quer marcar" className="flex gap-2">
-            {(
-              [
-                ["convidada", "Sem conta"],
-                ["conta", "Com conta"],
-              ] as const
-            ).map(([k, rotulo]) => (
-              <Link
-                key={k}
-                href={`${base}&modo=${k}`}
-                aria-current={modo === k ? "page" : undefined}
-                className={`inline-flex min-h-11 flex-1 items-center justify-center rounded-full border text-[15px] font-semibold no-underline ${modo === k ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground"}`}
-              >
-                {rotulo}
-              </Link>
-            ))}
-          </nav>
+          {admin ? null : (
+            <nav aria-label="Como quer marcar" className="flex gap-2">
+              {(
+                [
+                  ["convidada", "Sem conta"],
+                  ["conta", "Com conta"],
+                ] as const
+              ).map(([k, rotulo]) => (
+                <Link
+                  key={k}
+                  href={`${base}&modo=${k}`}
+                  aria-current={modo === k ? "page" : undefined}
+                  className={`inline-flex min-h-11 flex-1 items-center justify-center rounded-full border text-[15px] font-semibold no-underline ${modo === k ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground"}`}
+                >
+                  {rotulo}
+                </Link>
+              ))}
+            </nav>
+          )}
           {modo === "conta" ? (
             utilizador ? (
               <FormConta

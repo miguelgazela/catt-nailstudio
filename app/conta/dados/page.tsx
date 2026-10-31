@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Aviso, campoTexto } from "@/components/marca/aviso";
 import { Cabecalho } from "@/components/marca/cabecalho";
 import { Rodape } from "@/components/marca/rodape";
-import { exigirUtilizador } from "@/lib/auth";
+import { exigirCliente } from "@/lib/auth";
 import { getFicha } from "@/lib/conta";
 
 import { apagarConta, guardarDados } from "./actions";
@@ -20,7 +20,6 @@ const ERROS: Record<string, string> = {
   numero:
     "Não conseguimos usar este número. Contacte o estúdio se precisar de ajuda.",
   limite: "Fez demasiados pedidos. Espere uns minutos e tente outra vez.",
-  admin: "Esta é a conta do estúdio e não pode ser apagada aqui.",
   geral: "Não foi possível concluir. Tente outra vez dentro de instantes.",
 };
 
@@ -30,7 +29,7 @@ const um = (v: string | string[] | undefined) =>
 export default async function Dados({
   searchParams,
 }: PageProps<"/conta/dados">) {
-  const u = await exigirUtilizador("/conta/dados");
+  const u = await exigirCliente("/conta/dados");
   const sp = await searchParams;
   const ficha = await getFicha(u.id);
   const erro = ERROS[um(sp.erro) ?? ""];

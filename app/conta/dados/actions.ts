@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 
-import { eAdmin, exigirUtilizador } from "@/lib/auth";
+import { exigirCliente } from "@/lib/auth";
 import { permitido } from "@/lib/seguranca";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { supabaseSessao } from "@/lib/supabase/sessao";
@@ -11,7 +11,7 @@ import { normalizarTelemovel } from "@/lib/telemovel";
 const DADOS = "/conta/dados";
 
 export async function guardarDados(formData: FormData) {
-  const u = await exigirUtilizador(DADOS);
+  const u = await exigirCliente(DADOS);
   const nome = String(formData.get("nome") ?? "").trim();
   const telefone = normalizarTelemovel(String(formData.get("tel") ?? ""));
 
@@ -33,9 +33,7 @@ export async function guardarDados(formData: FormData) {
 }
 
 export async function apagarConta() {
-  const u = await exigirUtilizador(DADOS);
-  // A conta da Catarina não se apaga por aqui (perderia o acesso ao painel).
-  if (await eAdmin()) redirect(`${DADOS}?erro=admin`);
+  const u = await exigirCliente(DADOS);
   if (!(await permitido(`apagar:${u.id}`, 5, 600))) {
     redirect(`${DADOS}?erro=limite`);
   }
