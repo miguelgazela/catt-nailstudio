@@ -2,19 +2,16 @@ import { NextResponse } from "next/server";
 
 import { caminhoSeguro } from "@/lib/caminho";
 import { COOKIE_PAINEL } from "@/lib/sessao-painel";
-import { supabaseSessao } from "@/lib/supabase/sessao";
 
 export const dynamic = "force-dynamic";
 
-// O painel fechou por tempo: termina a sessão e pede um novo link.
+// O painel fechou por tempo. A sessão (login por email) mantém-se: basta o código da app.
 export async function GET(pedido: Request) {
   const url = new URL(pedido.url);
   const destino = caminhoSeguro(url.searchParams.get("next"));
-  const sb = await supabaseSessao();
-  await sb.auth.signOut();
   const r = NextResponse.redirect(
     new URL(
-      `/entrar?erro=sessao&next=${encodeURIComponent(destino)}`,
+      `/admin/mfa?expirou=1&next=${encodeURIComponent(destino)}`,
       url.origin,
     ),
   );

@@ -49,11 +49,14 @@ test("o painel fecha quando a sessão expira", async ({ page, context }) => {
   const a = await criarAdmin();
   await entrarAdmin(page, a);
   await expect(page.getByRole("heading", { name: "Agenda" })).toBeVisible();
-  // Sem o cookie do painel (expirado ou apagado) volta a pedir entrada.
+  // Sem o cookie do painel (expirado ou apagado) pede só o código, sem novo email.
   await context.clearCookies({ name: "painel" });
   await page.goto("/admin");
-  await expect(page).toHaveURL(/\/entrar\?erro=sessao/);
+  await expect(page).toHaveURL(/\/admin\/mfa\?expirou=1/);
   await expect(page.getByText("O painel fechou por segurança")).toBeVisible();
+  await page.getByLabel("Código da app").fill(totp(a.segredo));
+  await page.getByRole("button", { name: "Entrar no painel" }).click();
+  await expect(page.getByRole("heading", { name: "Agenda" })).toBeVisible();
 });
 
 test("quem não é admin continua a ver 404 (sem pedir MFA)", async ({

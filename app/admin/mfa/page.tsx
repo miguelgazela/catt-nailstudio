@@ -13,7 +13,7 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function Mfa({ searchParams }: PageProps<"/admin/mfa">) {
-  const { next } = await searchParams;
+  const { next, expirou } = await searchParams;
   const destino = caminhoSeguro(
     typeof next === "string" ? next : null,
     "/admin",
@@ -30,6 +30,14 @@ export default async function Mfa({ searchParams }: PageProps<"/admin/mfa">) {
         <h1 className="font-display text-[32px] leading-9 font-semibold">
           {factorId ? "Código de segurança" : "Proteger o painel"}
         </h1>
+        {factorId && expirou ? (
+          <p
+            role="status"
+            className="rounded-lg bg-warning-surface px-4 py-3 text-sm leading-5 text-warning"
+          >
+            O painel fechou por segurança. Escreva o código para continuar.
+          </p>
+        ) : null}
         <FormMfa factorId={factorId} destino={destino} />
         <BotaoSair />
       </main>
