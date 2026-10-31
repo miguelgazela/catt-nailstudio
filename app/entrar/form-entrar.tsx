@@ -68,9 +68,11 @@ function FormCodigo({ email, destino }: { email: string; destino: string }) {
 export function FormEntrar({
   siteKey,
   destino,
+  criarConta = true,
 }: {
   siteKey: string;
   destino: string;
+  criarConta?: boolean;
 }) {
   const [pronto, setPronto] = useState(false);
   const aoMudar = useCallback((p: boolean) => setPronto(p), []);
@@ -144,7 +146,9 @@ export function FormEntrar({
             id="email-ajuda"
             className="text-[13px] leading-[18px] text-muted-foreground"
           >
-            Enviamos um link para entrar. Não precisa de palavra-passe.
+            {criarConta
+              ? "Enviamos um link e um código para entrar. Se for a primeira vez, a conta é criada nesse momento. Não precisa de palavra-passe."
+              : "Enviamos um link e um código para entrar. Não precisa de palavra-passe."}
           </p>
         )}
       </div>

@@ -160,7 +160,7 @@ test("sem sessão, 'Com conta' leva a entrar e volta ao mesmo passo", async ({
   await horas.first().click();
   await page.getByRole("link", { name: "Continuar" }).click();
   await page.getByRole("link", { name: "Com conta" }).click();
-  await page.getByRole("link", { name: "Entrar com email" }).click();
+  await page.getByRole("link", { name: "Entrar ou criar conta" }).click();
   await expect(page).toHaveURL(/\/entrar\?next=%2Fmarcar%3Fservico/);
 });
 

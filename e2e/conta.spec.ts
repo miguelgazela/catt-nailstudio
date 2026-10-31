@@ -51,6 +51,13 @@ test("sem sessão, /conta manda para entrar e volta depois", async ({
 }) => {
   await page.goto("/conta");
   await expect(page).toHaveURL(/\/entrar\?next=%2Fconta/);
+  // Diz que também é aqui que se cria a conta.
+  await expect(
+    page.getByRole("heading", { name: "Entrar ou criar conta" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Se for a primeira vez, a conta é criada nesse momento."),
+  ).toBeVisible();
   await expect(page.getByRole("heading", { name: "Entrar" })).toBeVisible();
 });
 
@@ -64,6 +71,12 @@ test("a página inicial tem 'Entrar' (na app instalada não há barra de endere�
   await expect(
     page.getByRole("link", { name: "Entrar", exact: true }),
   ).toHaveCount(0);
+
+  // Vindo do painel diz só "Entrar": o painel não cria contas.
+  await page.goto("/entrar?next=%2Fadmin");
+  await expect(
+    page.getByRole("heading", { name: "Entrar", exact: true }),
+  ).toBeVisible();
 });
 
 test("pedir o link mostra sempre a mesma resposta, haja conta ou não", async ({
