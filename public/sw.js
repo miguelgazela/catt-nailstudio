@@ -1,6 +1,30 @@
-// Service worker só para notificações do painel. Não guarda páginas em cache.
-self.addEventListener("install", () => self.skipWaiting());
-self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
+// Service worker: notificações do painel e página offline. Só guarda em cache a página
+// offline (nunca páginas da app nem dados), para não mostrar agendas ou horários antigos.
+const CACHE = "cn-offline-v1";
+const OFFLINE = [ "/offline.html", "/icons/icon-192.png" ];
+
+self.addEventListener("install", (e) => {
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(OFFLINE)));
+  self.skipWaiting();
+});
+
+// Só navegações: se a rede falhar, mostra a página offline. O resto passa direto à rede.
+self.addEventListener("fetch", (e) => {
+  if (e.request.mode !== "navigate") return;
+  e.respondWith(
+    fetch(e.request).catch(() =>
+      caches.match("/offline.html").then((r) => r || Response.error()),
+    ),
+  );
+});
+self.addEventListener("activate", (e) =>
+  e.waitUntil(
+    caches
+      .keys()
+      .then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim()),
+  ),
+);
 
 self.addEventListener("push", (evento) => {
   let d = {};

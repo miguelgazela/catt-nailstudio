@@ -51,5 +51,6 @@ export const config = {
     "/entrar",
     "/auth/:path*",
     "/marcar",
+    "/abrir",
   ],
 };
