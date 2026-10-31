@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+import { criarAdmin, entrarAdmin, limparUtilizadores } from "./admin-helpers";
+
 test("manifest tem nome, cores, start_url e ícones que existem", async ({
   request,
 }) => {
@@ -94,4 +96,12 @@ test("o service worker não guarda páginas em cache", async ({ page }) => {
     return out.sort();
   });
   expect(chaves).toEqual(["/icons/icon-192.png", "/offline.html"]);
+});
+
+test("/abrir leva a Catarina (admin) direto ao painel", async ({ page }) => {
+  await limparUtilizadores();
+  const a = await criarAdmin();
+  await entrarAdmin(page, a);
+  await page.goto("/abrir");
+  await expect(page).toHaveURL(/\/admin(\/|$)/);
 });

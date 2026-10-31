@@ -16,7 +16,12 @@ mkdirSync(`${raiz}public/splash`, { recursive: true });
 const recorte = 600;
 const margem = (680 - recorte) / 2;
 const centro = () =>
-  sharp(origem).extract({ left: margem, top: margem, width: recorte, height: recorte });
+  sharp(origem).extract({
+    left: margem,
+    top: margem,
+    width: recorte,
+    height: recorte,
+  });
 
 for (const [nome, lado, fonte] of [
   ["icon-192.png", 192, centro()],
@@ -25,7 +30,10 @@ for (const [nome, lado, fonte] of [
   // Maskable: imagem inteira. A unha (76 % da altura) cabe no círculo de segurança (80 %).
   ["icon-maskable-512.png", 512, sharp(origem)],
 ]) {
-  await fonte.resize(lado, lado).png({ compressionLevel: 9 }).toFile(`${raiz}public/icons/${nome}`);
+  await fonte
+    .resize(lado, lado)
+    .png({ compressionLevel: 9 })
+    .toFile(`${raiz}public/icons/${nome}`);
 }
 
 // Splash iOS: fundo da marca, cartão do logótipo ao centro (como o ecrã de abertura da app).
@@ -51,8 +59,16 @@ for (const { w, h } of SPLASH) {
     .composite([{ input: mascara, blend: "dest-in" }])
     .png()
     .toBuffer();
-  await sharp({ create: { width: w, height: h, channels: 3, background: FUNDO } })
-    .composite([{ input: logo, left: Math.round((w - lado) / 2), top: Math.round((h - lado) / 2) - Math.round(h * 0.03) }])
+  await sharp({
+    create: { width: w, height: h, channels: 3, background: FUNDO },
+  })
+    .composite([
+      {
+        input: logo,
+        left: Math.round((w - lado) / 2),
+        top: Math.round((h - lado) / 2) - Math.round(h * 0.03),
+      },
+    ])
     .png({ compressionLevel: 9, palette: true })
     .toFile(`${raiz}public/splash/${w}x${h}.png`);
 }

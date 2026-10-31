@@ -227,7 +227,7 @@ Respostas da Catarina que bloqueiam etapas (secção 7):
 
 Design ainda em falta (não bloqueia M0 a M4):
 - Template de email de confirmação e lembrete → M5.
-- Logótipo sem fundo para modo escuro, PNG de ícones PWA e splash iOS → M6.
+- Logótipo sem fundo para modo escuro → depois do M6 (ícones PWA e splash iOS feitos no M6).
 
 ### 10.2 Decisões técnicas
 
@@ -413,6 +413,18 @@ Resultado do M5 (código):
 - Modo escuro só se houver logótipo sem fundo; senão fica para depois.
 - Revisão de acessibilidade (teclado, leitor de ecrã, contraste) e Lighthouse no telemóvel.
 - Feito quando: a app instala-se no iPhone e no Android e passa a revisão.
+
+**Resultado do M6** (feito em local, 31 out 2026)
+- `app/manifest.ts` (servido em `/manifest.webmanifest`): nome "Catarina Neves Nails Studio", nome curto "Catarina Neves", `standalone`, fundo `#F7F1EC`, tema `#7A3B52`, ícones 192 e 512 (`any`) e 512 `maskable`.
+- **`start_url` e `scope`**: `scope: "/"` (um só manifest por origem serve clientes e Catarina) e `start_url: "/abrir"`, uma rota que redireciona a Catarina (sessão de admin) para `/admin` e as restantes pessoas para `/`. Assim cada uma abre a app instalada no sítio certo sem a cliente ver o login do painel. As notificações já abrem `/admin`.
+- Ícones e splash gerados por `pnpm icones` (`scripts/gerar-icones.mjs`, `sharp` como devDependency) a partir de `brand/logo-cn-crop.png`, em `public/icons` (192, 512, maskable 512 com a imagem inteira: a unha ocupa 76 % da altura e cabe no círculo de segurança de 80 %; `apple-touch-icon` 180) e `public/splash` (7 tamanhos de iPhone, do X ao 16 Pro Max, cerca de 1 MB no total). Splash: fundo creme com o cartão do logótipo ao centro. **Sem o nome "Catarina Neves" escrito** (a fonte Cormorant não está disponível como ficheiro no script); o ecrã de abertura em React mostra-o logo a seguir. **Por fazer**: splash para iPad e paisagem (o iOS mostra fundo branco/creme nesses casos).
+- `app/layout.tsx`: `icons`, `appleWebApp` (capable, título "Catarina Neves", `statusBarStyle: "default"`, `startupImage`). Escolhido `default` e não `black-translucent`: a barra de estado fica opaca por cima da página e o cabeçalho nunca fica por baixo dela; `viewportFit: "cover"` e os `env(safe-area-inset-*)` das barras fixas ficam como estavam.
+- Offline: `public/offline.html` (autónoma, sem JS de app) e `sw.js` com cache `cn-offline-v1` que guarda **só** `/offline.html` e o ícone 192. O `fetch` do SW trata só navegações (`mode: "navigate"`): rede primeiro e, se falhar, a página offline. Nunca guarda páginas, dados nem respostas, por isso não há agendas ou horários desatualizados. O SW passou a ser registado em todo o site (`components/pwa/registar-sw.tsx`); o registo em Definições continua igual (mesmo URL, idempotente) e `admin-push.spec.ts` passa.
+- **Modo escuro: não feito** (decisão). Não há logótipo sem fundo (o recorte tem fundo creme) e o `colorScheme` fica `light`. Os tokens escuros do Design System existem no CSS para quando houver logótipo.
+- Acessibilidade: `e2e/acessibilidade.spec.ts` corre axe-core (WCAG 2.0/2.1 A e AA, incluindo contraste) em `/`, `/marcar`, `/entrar`, `/privacidade`, `/termos`, `/conta` (cliente com conta) e todas as páginas do painel (agenda, semana, nova, clientes, serviços, horário, definições, detalhe da marcação): **0 violações**, por isso não foi preciso corrigir nada. Também verifica que a primeira tabulação chega a um controlo com foco visível (o `:focus-visible` global em `globals.css` cobre os botões).
+- Lighthouse (CLI, modo telemóvel, contra `next start` local; Desempenho / Acessibilidade / Boas práticas / SEO): `/` 100/100/100/100; `/marcar` 100/100/100/100; `/privacidade` 100/100/100/100; `/entrar` 100/100/100/63 (SEO 63 só por `noindex` de propósito). Sem pontuações perdidas relevantes (bf-cache e dicas informativas).
+- Testes: `e2e/pwa.spec.ts` (manifest e ícones existentes, `/abrir` para cliente e admin, links de manifest/apple-touch/splash, página offline com a rede cortada, cache só com a página offline). Suite completa: lint, typecheck, Vitest (33) e Playwright (64) verdes.
+- **Por fazer (Miguel)**: instalar no iPhone (Safari, Partilhar, Adicionar ao ecrã inicial; confirmar ícone, splash, que o cabeçalho não fica debaixo da barra de estado e que `/abrir` leva a Catarina ao painel) e no Android (Chrome, "Instalar app"; confirmar ícone maskable e abertura). Testar modo avião com a app instalada. Em produção o `/abrir` precisa da mesma sessão de admin (cookie do painel).
 
 **M7. Lançamento** (1–2 dias)
 - Domínio no Cloudflare, SPF, DKIM e DMARC para o email.

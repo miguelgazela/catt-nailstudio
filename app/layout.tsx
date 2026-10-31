@@ -35,9 +35,7 @@ export const metadata: Metadata = {
   description:
     "Marcações online para o estúdio de manicure da Catarina Neves. Em breve.",
   icons: {
-    icon: [
-      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
-    ],
+    icon: [{ url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }],
     apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
   },
   // "default": barra de estado opaca por cima da página, por isso o cabeçalho nunca fica por baixo dela.
@@ -65,7 +63,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="pt-PT"
       className={`${cormorant.variable} ${manrope.variable} h-full`}
     >
-      <body className="flex min-h-full flex-col">{children}
+      <body className="flex min-h-full flex-col">
+        {children}
         <RegistarSw />
       </body>
     </html>
