@@ -250,7 +250,7 @@ test("lembretes: só com segredo, só uma vez", async ({ request }) => {
   });
   expect(errado.status()).toBe(401);
 
-  // Marcação para daqui a ~20 h, "criada" há 3 dias.
+  // Marcação para daqui a ~40 h, "criada" há 4 dias.
   const db = admin();
   const r = await marcarPorRpc({
     email: "ana@example.com",
@@ -259,9 +259,9 @@ test("lembretes: só com segredo, só uma vez", async ({ request }) => {
   await db
     .from("appointments")
     .update({
-      starts_at: new Date(Date.now() + 20 * 3600_000).toISOString(),
-      ends_at: new Date(Date.now() + 21 * 3600_000).toISOString(),
-      created_at: new Date(Date.now() - 72 * 3600_000).toISOString(),
+      starts_at: new Date(Date.now() + 40 * 3600_000).toISOString(),
+      ends_at: new Date(Date.now() + 41 * 3600_000).toISOString(),
+      created_at: new Date(Date.now() - 96 * 3600_000).toISOString(),
     })
     .eq("id", r.appointment_id);
 

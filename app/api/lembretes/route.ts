@@ -30,7 +30,7 @@ export async function POST(pedido: Request) {
     .eq("status", "confirmed")
     .is("reminder_sent_at", null)
     .gt("starts_at", new Date(agora.getTime() + HORA).toISOString())
-    .lte("starts_at", new Date(agora.getTime() + 24 * HORA).toISOString());
+    .lte("starts_at", new Date(agora.getTime() + 48 * HORA).toISOString());
 
   let enviados = 0;
   let falhados = 0;

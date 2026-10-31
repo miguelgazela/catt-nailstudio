@@ -141,7 +141,12 @@ function contacto(d: DadosMarcacao) {
   return d.telefone ? ` ou ligue para ${d.telefone}` : "";
 }
 
-export function emailConfirmacao(d: DadosMarcacao): EmailPronto {
+export function emailConfirmacao(
+  d: DadosMarcacao,
+  agora: Date = new Date(),
+): EmailPronto {
+  // O lembrete só sai a quem marca com mais de 49 h de antecedência (ver lib/lembretes.ts).
+  const haLembrete = d.inicio.getTime() - agora.getTime() > 49 * 3600_000;
   const cancelar = d.tokenCancelar
     ? `${d.siteUrl}/cancelar/${d.tokenCancelar}`
     : null;
@@ -159,7 +164,9 @@ export function emailConfirmacao(d: DadosMarcacao): EmailPronto {
     html: html({
       prehead: `${d.servico}, ${quando(d)}`,
       titulo: "Marcação confirmada",
-      intro: "A sua hora está reservada. Um lembrete chega na véspera.",
+      intro: haLembrete
+        ? "A sua hora está reservada. Enviamos-lhe um lembrete dois dias antes."
+        : "A sua hora está reservada.",
       linhas,
       botoes,
       nota,
@@ -187,13 +194,14 @@ export function emailConfirmacao(d: DadosMarcacao): EmailPronto {
 
 export function emailLembrete(d: DadosMarcacao): EmailPronto {
   const linhas = resumo(d);
-  const nota = `Se não puder vir, avise o estúdio o mais cedo possível${contacto(d)}.`;
+  const limite = emLisboa(new Date(d.inicio.getTime() - 24 * 3600_000));
+  const nota = `Se não puder vir, cancele até ${diaPorExtensoMinusculas(limite.dia)}, ${limite.hora} (24 h antes), pelo link do email de confirmação${contacto(d)}.`;
   return {
     assunto: `Lembrete: ${quando(d)}`,
     html: html({
       prehead: `${d.servico}, ${quando(d)}`,
       titulo: "Até já",
-      intro: "Lembramos que tem uma marcação nas próximas 24 horas.",
+      intro: "Lembramos que tem uma marcação daqui a dois dias.",
       linhas,
       botoes: [
         {

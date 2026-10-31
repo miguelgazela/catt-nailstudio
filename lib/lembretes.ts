@@ -3,9 +3,10 @@ const HORA = 60 * 60 * 1000;
 export type Candidata = { id: string; starts_at: string; created_at: string };
 
 /**
- * Marcações a lembrar agora: começam dentro das próximas 24 h (mas não já a seguir)
- * e foram feitas com mais de 25 h de antecedência. Assim quem marca para o dia seguinte
- * não recebe a confirmação e um lembrete seguidos.
+ * Marcações a lembrar agora: começam dentro das próximas 48 h (mas não já a seguir)
+ * e foram feitas com mais de 49 h de antecedência. Assim quem marca para daqui a um ou dois
+ * dias não recebe a confirmação e um lembrete seguidos. 48 h dá tempo de cancelar (a regra é
+ * até 24 h antes).
  */
 export function elegiveisParaLembrete<T extends Candidata>(
   linhas: T[],
@@ -17,8 +18,8 @@ export function elegiveisParaLembrete<T extends Candidata>(
     const criada = new Date(l.created_at).getTime();
     return (
       inicio > t + HORA &&
-      inicio <= t + 24 * HORA &&
-      criada <= inicio - 25 * HORA
+      inicio <= t + 48 * HORA &&
+      criada <= inicio - 49 * HORA
     );
   });
 }

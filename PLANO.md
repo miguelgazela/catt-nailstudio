@@ -13,7 +13,7 @@ Estado (30 out 2026): identidade e mockups da cliente e do painel feitos (secç�
 | Login | Híbrido: conta com email + magic link **ou** convidada (nome + telemóvel) com limites |
 | Pagamentos | Nenhum na v1. Paga no estúdio |
 | Equipa | Só a Catarina (uma agenda) |
-| Avisos | Email (confirmação, lembrete 24h, cancelamento) + botão "Adicionar ao calendário" (.ics / Google) |
+| Avisos | Email (confirmação, lembrete 48h) + botão "Adicionar ao calendário" (.ics / Google) |
 | Cancelamento | Cliente cancela até 24h antes. Depois disso, contacta o estúdio |
 | Serviços | Um serviço por marcação, preço fixo. **Todas as marcações duram 1 hora** |
 | Horário | Seg a sex 9:00–12:00 e 14:30–18:30; sáb 9:00–13:00; dom fechado (segunda aberta e domingo fechado por confirmar). Horas de início: 9:00, 10:00, 11:00, 14:30, 15:30, 16:30, 17:30 (sáb: 9:00, 10:00, 11:00, 12:00) |
@@ -64,7 +64,7 @@ Supabase
  ├─ Auth (magic link)
  ├─ RPC/Server Actions para criar marcação (validação no servidor)
  ├─ Storage → fotos dos serviços (otimizadas antes do upload)
- └─ pg_cron → lembretes 24h
+ └─ pg_cron → lembretes 48h
 
 Resend (ou Brevo) → emails transacionais
 Cloudflare Turnstile → anti-spam no formulário de convidada
@@ -360,7 +360,7 @@ Resultado do M2:
 - Desenhar o template de email (confirmação, lembrete, cancelamento) com as skills de design.
 - Envio por Resend a partir do servidor.
 - `.ics` e link "Adicionar ao Google Calendar".
-- Lembrete 24 h antes: `pg_cron` + Edge Function do Supabase.
+- Lembrete 48 h antes (era 24 h; mudado a 31 out 2026 porque as marcações são feitas com ~3 semanas de antecedência e às 24 h já não se pode cancelar): `pg_cron` + Edge Function do Supabase.
 - Aviso à Catarina de novas marcações (se ativo nas definições).
 - Feito quando: marcar, cancelar e o lembrete enviam os emails certos (com dados fictícios).
 
@@ -369,7 +369,7 @@ Resultado do M5 (código):
 - Envio por Resend em `lib/email/enviar.ts` (chamada HTTP direta, sem SDK). Os emails saem depois da resposta (`after`), por isso uma falha de email nunca estraga a marcação. Sem `RESEND_API_KEY` não envia.
 - Calendário: `.ics` em UTC (com testes) em `/marcar/confirmada/calendario?id=…` e link do Google; ecrã de confirmação com os dois.
 - `/cancelar/[token]` (página, Server Action com limite por IP, e `/cancelar/ok`): cancela com `cancel_appointment`, regra das 24 h no servidor, link morre depois de usado. Não envia emails.
-- Lembrete 24 h: em vez de Edge Function, o job `send-reminders` do `pg_cron` (de 30 em 30 min) chama `POST /api/lembretes` com `pg_net`; o endereço e o segredo estão no Vault (`site_url`, `cron_secret`). Assim os modelos ficam num só sítio (TypeScript). Só lembra quem marcou com mais de 25 h de antecedência, e reserva a marcação antes de enviar (nunca envia duas vezes). O lembrete não leva link de cancelar (o token já só existe como hash e às 24 h a janela de cancelamento fecha).
+- Lembrete 48 h: em vez de Edge Function, o job `send-reminders` do `pg_cron` (de 30 em 30 min) chama `POST /api/lembretes` com `pg_net`; o endereço e o segredo estão no Vault (`site_url`, `cron_secret`). Assim os modelos ficam num só sítio (TypeScript). Só lembra quem marcou com mais de 49 h de antecedência, e reserva a marcação antes de enviar (nunca envia duas vezes). O lembrete diz até quando se pode cancelar (24 h antes) e remete para o link do email de confirmação; não leva link próprio porque o token só existe como hash. Melhoria futura: token derivado (HMAC) para o lembrete levar o link.
 - Migration `20261031100001_emails.sql`: `settings.notify_on_booking`, `appointments.reminder_sent_at`, job.
 - Testes: Vitest (`pnpm test`, 12 testes: `.ics`, DST, modelos, escape de HTML, regras do lembrete) e Playwright (9: cancelar por link, link inventado, `.ics`, lembretes só com segredo e só uma vez).
 - **Por fazer (Miguel)**: conta no Resend e chave; no Vercel as variáveis `RESEND_API_KEY`, `EMAIL_FROM`, `SITE_URL` e `CRON_SECRET`; aplicar a migration na nuvem e criar os dois segredos no Vault. Enquanto não houver domínio verificado, o Resend só envia para o email do dono da conta.
