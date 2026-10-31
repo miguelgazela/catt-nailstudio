@@ -375,7 +375,7 @@ Resultado do M3:
 - Feito quando: a Catarina consegue gerir uma semana fictícia sozinha no telemóvel (teste com ela).
 
 Resultado do M4 (rotas em `app/admin`, lógica em `lib/admin`, componentes em `components/admin`):
-- **Acesso**: `exigirAdmin` pede MFA (TOTP, nível aal2) e um cookie assinado `painel` (HMAC, `lib/sessao-painel.ts`): fecha após 4 h sem uso ou 12 h no máximo; o `proxy.ts` renova-o enquanto ela usa o painel. Primeira vez: `/admin/mfa` mostra o QR e o código; depois só pede o código. Sessão expirada: `/admin/expirou` termina a sessão e manda para `/entrar?erro=sessao`. `supabase/config.toml` ativa o TOTP (**na nuvem: ativar MFA TOTP no painel do Supabase, Auth › Multi-Factor**).
+- **Acesso**: `exigirAdmin` pede MFA (TOTP, nível aal2) e um cookie assinado `painel` (HMAC, `lib/sessao-painel.ts`): fecha após 3 dias sem uso ou 7 dias no máximo (decisão de 31 out: antes 4 h / 12 h, demasiado para quem usa o telemóvel entre clientes); o `proxy.ts` renova-o enquanto ela usa o painel. Primeira vez: `/admin/mfa` mostra o QR e o código; depois só pede o código. Sessão expirada: `/admin/expirou` termina a sessão e manda para `/entrar?erro=sessao`. `supabase/config.toml` ativa o TOTP (**na nuvem: ativar MFA TOTP no painel do Supabase, Auth › Multi-Factor**).
 - **Agenda**: dia (lista de horas com marcadas, livres, bloqueadas e fora do horário) e semana (cartões por dia no telemóvel, grelha de 7 colunas no computador). Detalhe da marcação: mover (hora do horário ou "fora do horário"), cancelar, marcar falta, concluída, desfazer, ligar/WhatsApp e registo de alterações (`audit_log`; a BD só guarda quem e que campos mudaram, por isso o texto diz "Alterado: hora"). Cancelar no painel não avisa a cliente (decisão de 31 out). Nova marcação manual (cliente nova ou a existente pelo telemóvel/ficha), com hora livre do horário ou fora dele; a exclusão na BD continua a impedir sobreposições.
 - **Horário**: períodos por dia (sem sobreposição, mínimo 1 h), bloqueios de dias/férias e de horas soltas; avisa se já há marcações nesse período (não as cancela).
 - **Serviços**: lista, ordem com botões subir/descer, criar/editar, esconder/mostrar (não há apagar, por causa do histórico), foto (reduzida no telemóvel para 1200 px, validada no servidor, bucket público `servicos`; migration `20261031120001_m4_fotos_servicos.sql`). A foto ainda não aparece na página pública.
@@ -481,7 +481,7 @@ Regras que saem daqui:
 
 Acesso e autenticação:
 - Painel só para quem está na tabela `admins`. **MFA (código de app autenticadora) obrigatório** para a conta da Catarina.
-- Sessão do painel expira após inatividade (ex.: 12 horas). Botão "Sair" visível. Ela usa o telemóvel entre clientes, por isso o bloqueio do telemóvel é a primeira proteção: recomendar.
+- Sessão do painel expira após inatividade (3 dias sem uso, 7 dias no máximo). Botão "Sair" visível. Ela usa o telemóvel entre clientes, por isso o bloqueio do telemóvel é a primeira proteção: recomendar.
 - Links de entrada por email com validade curta (Supabase: 1 hora) e uso único.
 - A chave `service_role` do Supabase nunca vai para o browser. Só em secrets do servidor.
 

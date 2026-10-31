@@ -4,10 +4,10 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 
 export const COOKIE_PAINEL = "painel";
-/** Fecha após 4 h sem usar. */
-export const INATIVIDADE_MS = 4 * 60 * 60 * 1000;
-/** Fecha sempre 12 h depois de verificar o código, mesmo em uso. */
-export const MAXIMO_MS = 12 * 60 * 60 * 1000;
+/** Fecha após 3 dias sem usar. */
+export const INATIVIDADE_MS = 3 * 24 * 60 * 60 * 1000;
+/** Fecha sempre 7 dias depois de verificar o código, mesmo em uso. */
+export const MAXIMO_MS = 7 * 24 * 60 * 60 * 1000;
 
 function segredo(): string {
   const s =

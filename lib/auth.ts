@@ -42,7 +42,7 @@ export async function eAdmin(): Promise<boolean> {
  * Páginas do painel. Quem não entrou vai para /entrar; quem entrou mas não é admin
  * vê 404 (não revelamos que o painel existe). Admin sem o segundo passo (código da
  * app autenticadora, nível aal2) vai para /admin/mfa; e o painel fecha depois de
- * um tempo parado ou de 12 h (ver lib/sessao-painel.ts).
+ * 3 dias parado ou 7 dias no total (ver lib/sessao-painel.ts).
  */
 export async function exigirAdmin(destino = "/admin"): Promise<Utilizador> {
   const u = await exigirUtilizador(destino);
