@@ -3,6 +3,10 @@
 import { redirect } from "next/navigation";
 
 import { exigirCliente } from "@/lib/auth";
+import { urlDoSite } from "@/lib/email/marcacao";
+import { enviarEmail } from "@/lib/email/enviar";
+import { emailConfirmarNovoEmail } from "@/lib/email/modelos";
+import { criarTokenEmail } from "@/lib/mudanca-email";
 import { permitido } from "@/lib/seguranca";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { supabaseSessao } from "@/lib/supabase/sessao";
@@ -47,4 +51,26 @@ export async function apagarConta() {
   const sb = await supabaseSessao();
   await sb.auth.signOut({ scope: "local" });
   redirect("/conta/apagada");
+}
+
+const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+/** Envia um link de confirmação para o email novo. O email só muda quando a pessoa o abre. */
+export async function pedirMudancaEmail(formData: FormData) {
+  const u = await exigirCliente(DADOS);
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .toLowerCase();
+  if (email.length > 254 || !EMAIL.test(email)) redirect(`${DADOS}?erro=email`);
+  if (email === u.email?.toLowerCase()) redirect(`${DADOS}?erro=email-igual`);
+  if (!(await permitido(`mudar-email:${u.id}`, 3, 600))) {
+    redirect(`${DADOS}?erro=limite`);
+  }
+  const link = `${urlDoSite()}/conta/dados/email?t=${encodeURIComponent(criarTokenEmail(u.id, email))}`;
+  const ok = await enviarEmail({
+    para: email,
+    ...emailConfirmarNovoEmail({ link, siteUrl: urlDoSite() }),
+  });
+  if (!ok) redirect(`${DADOS}?erro=geral`);
+  redirect(`${DADOS}?email=enviado`);
 }

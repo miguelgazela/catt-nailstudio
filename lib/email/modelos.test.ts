@@ -82,6 +82,23 @@ describe("emails", () => {
     );
   });
 
+  it("confirmação com conta: aponta para /conta em vez de mandar contactar", () => {
+    const e = emailConfirmacao({ ...d, tokenCancelar: null, comConta: true });
+    expect(e.html).not.toContain("/cancelar/");
+    expect(e.html).toContain("https://exemplo.pt/conta");
+    expect(e.html).toContain("Ver ou cancelar na minha conta");
+    expect(e.texto).toContain("A minha conta: https://exemplo.pt/conta");
+    expect(e.texto).toContain("Pode cancelar até 24 h antes, na sua conta.");
+  });
+
+  it("lembrete com conta indica a conta", () => {
+    const e = emailLembrete({ ...d, tokenCancelar: null, comConta: true });
+    expect(e.texto).toContain("na sua conta (https://exemplo.pt/conta)");
+    expect(emailLembrete(d).texto).toContain(
+      "pelo link do email de confirmação",
+    );
+  });
+
   it("escapa HTML vindo de dados", () => {
     const e = emailConfirmacao({ ...d, servico: "<script>alert(1)</script>" });
     expect(e.html).not.toContain("<script>alert");

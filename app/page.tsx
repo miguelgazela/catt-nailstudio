@@ -98,6 +98,7 @@ export default async function Home() {
                 id={s.id}
                 nome={s.name}
                 precoCents={s.price_cents}
+                fotoUrl={s.photo_url}
               />
             ))}
           </section>

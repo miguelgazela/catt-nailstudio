@@ -17,6 +17,8 @@ export type DadosMarcacao = {
   siteUrl: string;
   /** Só convidadas com email têm token; quem tem conta cancela na conta. */
   tokenCancelar?: string | null;
+  /** A cliente tem conta: gere e cancela em /conta. */
+  comConta?: boolean;
 };
 
 export type EmailPronto = {
@@ -151,15 +153,20 @@ export function emailConfirmacao(
   const cancelar = d.tokenCancelar
     ? `${d.siteUrl}/cancelar/${d.tokenCancelar}`
     : null;
+  const conta = !cancelar && d.comConta ? `${d.siteUrl}/conta` : null;
   const linhas = resumo(d);
   const google = linkGoogleCalendar(evento(d));
   const botoes: Botao[] = [
     { texto: "Adicionar ao Google Calendar", href: google, principal: true },
   ];
   if (cancelar) botoes.push({ texto: "Cancelar marcação", href: cancelar });
+  if (conta)
+    botoes.push({ texto: "Ver ou cancelar na minha conta", href: conta });
   const nota = cancelar
     ? `Pode cancelar até 24 h antes. Depois disso, contacte o estúdio${contacto(d)}. O ficheiro em anexo funciona com qualquer calendário.`
-    : `Para cancelar, contacte o estúdio${contacto(d)}. O ficheiro em anexo funciona com qualquer calendário.`;
+    : conta
+      ? `Pode cancelar até 24 h antes, na sua conta. Depois disso, contacte o estúdio${contacto(d)}. O ficheiro em anexo funciona com qualquer calendário.`
+      : `Para cancelar, contacte o estúdio${contacto(d)}. O ficheiro em anexo funciona com qualquer calendário.`;
   return {
     assunto: `Marcação confirmada: ${quando(d)}`,
     html: html({
@@ -180,6 +187,7 @@ export function emailConfirmacao(
       "",
       `Adicionar ao Google Calendar: ${google}`,
       ...(cancelar ? [`Cancelar marcação: ${cancelar}`] : []),
+      ...(conta ? [`A minha conta: ${conta}`] : []),
       "",
       nota,
     ].join("\n"),
@@ -196,7 +204,10 @@ export function emailConfirmacao(
 export function emailLembrete(d: DadosMarcacao): EmailPronto {
   const linhas = resumo(d);
   const limite = emLisboa(new Date(d.inicio.getTime() - 24 * 3600_000));
-  const nota = `Se não puder vir, cancele até ${diaPorExtensoMinusculas(limite.dia)}, ${limite.hora} (24 h antes), pelo link do email de confirmação${contacto(d)}.`;
+  const onde = d.comConta
+    ? `na sua conta (${d.siteUrl}/conta)`
+    : "pelo link do email de confirmação";
+  const nota = `Se não puder vir, cancele até ${diaPorExtensoMinusculas(limite.dia)}, ${limite.hora} (24 h antes), ${onde}${contacto(d)}.`;
   return {
     assunto: `Lembrete: ${quando(d)}`,
     html: html({
@@ -245,5 +256,59 @@ export function emailEntrada(d: {
       "",
       nota,
     ].join("\n"),
+  };
+}
+
+/** Confirmar o email novo da conta. Vai para o email novo. Válido 1 hora. */
+export function emailConfirmarNovoEmail(d: {
+  link: string;
+  siteUrl: string;
+}): EmailPronto {
+  const nota =
+    "O link expira numa hora. Se não pediu esta mudança, ignore este email: nada muda sem ele.";
+  return {
+    assunto: "Confirme o seu novo email",
+    html: html({
+      prehead: "Carregue no botão para confirmar.",
+      titulo: "Confirmar email",
+      intro:
+        "Pediu para passar a usar este email na sua conta. Carregue no botão para confirmar.",
+      linhas: [],
+      botoes: [{ texto: "Confirmar email", href: d.link, principal: true }],
+      nota,
+      motivo: "pediu para mudar o email da sua conta",
+      siteUrl: d.siteUrl,
+    }),
+    texto: [
+      "Confirmar email",
+      "",
+      `Abra este link para confirmar: ${d.link}`,
+      "",
+      nota,
+    ].join("\n"),
+  };
+}
+
+/** Aviso para o email antigo depois da mudança: se não foi a pessoa, sabe a quem recorrer. */
+export function emailEmailMudado(d: {
+  novoEmail: string;
+  siteUrl: string;
+  telefone?: string | null;
+}): EmailPronto {
+  const nota = `Se não foi você, contacte o estúdio${d.telefone ? ` pelo ${d.telefone}` : ""} o quanto antes.`;
+  const intro = `A sua conta passou a usar o email ${d.novoEmail}. Os próximos emails e links para entrar vão para esse endereço.`;
+  return {
+    assunto: "O email da sua conta mudou",
+    html: html({
+      prehead: "A sua conta passou a usar outro email.",
+      titulo: "Email alterado",
+      intro,
+      linhas: [],
+      botoes: [],
+      nota,
+      motivo: "este era o email da sua conta",
+      siteUrl: d.siteUrl,
+    }),
+    texto: ["Email alterado", "", intro, "", nota].join("\n"),
   };
 }

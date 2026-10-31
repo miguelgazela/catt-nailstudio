@@ -6,7 +6,7 @@ import { Rodape } from "@/components/marca/rodape";
 import { exigirCliente } from "@/lib/auth";
 import { getFicha } from "@/lib/conta";
 
-import { apagarConta, guardarDados } from "./actions";
+import { apagarConta, guardarDados, pedirMudancaEmail } from "./actions";
 
 export const metadata = {
   title: "Os meus dados | Catarina Neves Nails Studio",
@@ -19,6 +19,11 @@ const ERROS: Record<string, string> = {
   tel: "Número inválido. Escreva os 9 números do telemóvel.",
   numero:
     "Não conseguimos usar este número. Contacte o estúdio se precisar de ajuda.",
+  email: "Email inválido. Confirme se tem o @ e o domínio.",
+  "email-igual": "Esse já é o email da sua conta.",
+  "email-uso":
+    "Não foi possível usar esse email. Se já tem outra conta com ele, entre com esse email.",
+  "link-email": "Este link já não é válido. Peça um novo.",
   limite: "Fez demasiados pedidos. Espere uns minutos e tente outra vez.",
   geral: "Não foi possível concluir. Tente outra vez dentro de instantes.",
 };
@@ -52,6 +57,15 @@ export default async function Dados({
         </div>
         {erro ? <Aviso>{erro}</Aviso> : null}
         {um(sp.guardado) ? <Aviso tipo="info">Dados guardados.</Aviso> : null}
+        {um(sp.email) === "enviado" ? (
+          <Aviso tipo="info">
+            Enviámos um link para o email novo. Abra-o na próxima hora para
+            confirmar. Até lá, continua a usar o email atual.
+          </Aviso>
+        ) : null}
+        {um(sp.email) === "mudado" ? (
+          <Aviso tipo="info">Email alterado.</Aviso>
+        ) : null}
 
         {ficha ? (
           <form action={guardarDados} className="flex flex-col gap-[18px]">
@@ -83,15 +97,6 @@ export default async function Dados({
                 className={`${campoTexto} tabular`}
               />
             </div>
-            <div className="flex flex-col gap-1.5">
-              <span className="text-sm font-semibold">Email</span>
-              <p className="min-h-12 rounded-md border border-border bg-secondary px-4 py-3 text-base">
-                {u.email}
-              </p>
-              <p className="text-[13px] leading-[18px] text-muted-foreground">
-                É o email com que entra. Para o mudar, contacte o estúdio.
-              </p>
-            </div>
             <button
               type="submit"
               className="inline-flex h-12 w-full items-center justify-center rounded-full bg-primary text-base font-bold text-primary-foreground hover:bg-primary-pressed"
@@ -108,6 +113,40 @@ export default async function Dados({
             .
           </Aviso>
         )}
+
+        <section className="flex flex-col gap-3 border-t border-border pt-6">
+          <h2 className="font-display text-2xl leading-7 font-semibold">
+            Email
+          </h2>
+          <p className="text-sm leading-5 text-muted-foreground">
+            É o email com que entra e onde recebe as confirmações. Agora:{" "}
+            <span className="font-semibold break-all text-foreground">
+              {u.email}
+            </span>
+          </p>
+          <form action={pedirMudancaEmail} className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="email-novo" className="text-sm font-semibold">
+                Email novo
+              </label>
+              <input
+                id="email-novo"
+                name="email"
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                required
+                className={campoTexto}
+              />
+            </div>
+            <button
+              type="submit"
+              className="inline-flex h-12 w-full items-center justify-center rounded-full bg-secondary text-base font-bold text-secondary-foreground hover:bg-accent"
+            >
+              Enviar link de confirmação
+            </button>
+          </form>
+        </section>
 
         <section className="flex flex-col gap-3 border-t border-border pt-6">
           <h2 className="font-display text-2xl leading-7 font-semibold">

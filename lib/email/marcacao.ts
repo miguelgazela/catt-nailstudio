@@ -16,7 +16,7 @@ export type MarcacaoCompleta = {
 };
 
 const SELECT =
-  "id, starts_at, price_cents, status, services(name), clients(name, phone, email)";
+  "id, starts_at, price_cents, status, services(name), clients(name, phone, email, user_id)";
 
 type Linha = {
   id: string;
@@ -24,7 +24,12 @@ type Linha = {
   price_cents: number;
   status: string;
   services: { name: string } | null;
-  clients: { name: string; phone: string | null; email: string | null } | null;
+  clients: {
+    name: string;
+    phone: string | null;
+    email: string | null;
+    user_id: string | null;
+  } | null;
 };
 
 async function montar(
@@ -45,6 +50,7 @@ async function montar(
       telefone: s?.contact_phone,
       siteUrl: urlDoSite(),
       tokenCancelar,
+      comConta: Boolean(l.clients?.user_id),
     },
     estado: l.status,
     cliente: {

@@ -92,6 +92,11 @@ test("cria um serviço com foto e depois edita o preço", async ({ page }) => {
   expect(data?.photo_url).toContain("/storage/v1/object/public/servicos/");
   const r = await page.request.get(data!.photo_url!);
   expect(r.ok()).toBe(true);
+  // A foto aparece no cartão do serviço na página pública.
+  await page.goto("/");
+  const cartao = page.getByRole("link", { name: /Pedicure/ });
+  await expect(cartao.locator("img")).toHaveAttribute("src", data!.photo_url!);
+  await page.goto("/admin/servicos");
 
   await page.getByRole("link", { name: "Pedicure" }).click();
   await page.getByLabel("Preço (€)").fill("35");

@@ -58,6 +58,7 @@ export default async function Marcar({ searchParams }: PageProps<"/marcar">) {
                 nome={s.name}
                 descricao={s.description}
                 precoCents={s.price_cents}
+                fotoUrl={s.photo_url}
               />
             ))
           ) : (

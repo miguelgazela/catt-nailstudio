@@ -8,6 +8,7 @@ export type Servico = {
   name: string;
   description: string;
   price_cents: number;
+  photo_url: string | null;
 };
 
 export type Definicoes = {
@@ -23,7 +24,7 @@ export type Vaga = { dia: string; hora: string };
 export async function getServicos(): Promise<Servico[]> {
   const { data } = await supabasePublico()
     .from("services")
-    .select("id, name, description, price_cents")
+    .select("id, name, description, price_cents, photo_url")
     .eq("active", true)
     .order("sort_order");
   return data ?? [];
@@ -33,7 +34,7 @@ export async function getServico(id: string): Promise<Servico | null> {
   if (!/^[0-9a-f-]{36}$/.test(id)) return null;
   const { data } = await supabasePublico()
     .from("services")
-    .select("id, name, description, price_cents")
+    .select("id, name, description, price_cents, photo_url")
     .eq("id", id)
     .eq("active", true)
     .maybeSingle();

@@ -1,6 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import { type Page, expect, test } from "@playwright/test";
 
+import { criarTokenEmail } from "../lib/mudanca-email";
+
 const admin = () =>
   createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -216,6 +218,73 @@ test("editar os dados e exportar", async ({ page }) => {
   const j = await r.json();
   expect(j.ficha.name).toBe("Daniela");
   expect(j.conta.email).toBe("dani@example.com");
+});
+
+test("mudar de email: pede, confirma pelo link e passa a usar o novo", async ({
+  page,
+}) => {
+  await entrar(page, "eva@example.com");
+  await page.getByLabel("Nome").fill("Eva");
+  await page.getByLabel("Telemóvel").fill(telefone());
+  await page.getByRole("button", { name: "Guardar" }).click();
+  await page.getByRole("link", { name: "Os meus dados" }).click();
+  await expect(page.getByText("eva@example.com")).toBeVisible();
+
+  await page.getByLabel("Email novo").fill("eva@example.com");
+  await page
+    .getByRole("button", { name: "Enviar link de confirmação" })
+    .click();
+  await expect(page.getByText("Esse já é o email da sua conta.")).toBeVisible();
+
+  await page.getByLabel("Email novo").fill("Eva.Nova@Example.com");
+  await page
+    .getByRole("button", { name: "Enviar link de confirmação" })
+    .click();
+  await expect(
+    page.getByText("Enviámos um link para o email novo"),
+  ).toBeVisible();
+  // Até confirmar, nada muda.
+  const db = admin();
+  const { data: antes } = await db.auth.admin.listUsers();
+  const eva = antes.users.find((u) => u.email === "eva@example.com")!;
+  expect(eva).toBeTruthy();
+
+  // O link do email (o mesmo token que a ação gera).
+  await page.goto("/conta/dados/email?t=inventado");
+  await expect(page.getByText("Este link já não é válido")).toBeVisible();
+  const token = criarTokenEmail(eva.id, "eva.nova@example.com");
+  await page.goto(`/conta/dados/email?t=${encodeURIComponent(token)}`);
+  await expect(page.getByText("Email alterado.")).toBeVisible();
+  await expect(page.getByText("eva.nova@example.com")).toBeVisible();
+
+  const { data: u } = await db.auth.admin.getUserById(eva.id);
+  expect(u.user?.email).toBe("eva.nova@example.com");
+  const { data: ficha } = await db
+    .from("clients")
+    .select("email")
+    .eq("user_id", eva.id)
+    .single();
+  expect(ficha?.email).toBe("eva.nova@example.com");
+});
+
+test("mudar de email para um que já tem conta não junta as contas", async ({
+  page,
+}) => {
+  const db = admin();
+  await db.auth.admin.createUser({
+    email: "ocupado@example.com",
+    email_confirm: true,
+  });
+  await entrar(page, "fil@example.com");
+  const { data: lista } = await db.auth.admin.listUsers();
+  const l = lista.users.find((x) => x.email === "fil@example.com")!;
+  const token = criarTokenEmail(l.id, "ocupado@example.com");
+  await page.goto(`/conta/dados/email?t=${encodeURIComponent(token)}`);
+  await expect(
+    page.getByText("Não foi possível usar esse email"),
+  ).toBeVisible();
+  const { data: u } = await db.auth.admin.getUserById(l.id);
+  expect(u.user?.email).toBe("fil@example.com");
 });
 
 test("a exportação exige sessão", async ({ request }) => {
