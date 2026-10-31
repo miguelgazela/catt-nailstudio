@@ -10,7 +10,9 @@ const FILTROS = [
   ["bloqueadas", "Bloqueadas"],
 ] as const;
 
-export default async function Clientes({ searchParams }: PageProps<"/admin/clientes">) {
+export default async function Clientes({
+  searchParams,
+}: PageProps<"/admin/clientes">) {
   const q = await searchParams;
   await exigirAdmin("/admin/clientes");
   const texto = (typeof q.q === "string" ? q.q : "").trim().slice(0, 60);
@@ -35,16 +37,29 @@ export default async function Clientes({ searchParams }: PageProps<"/admin/clien
   }
   const { data } = await consulta;
   const lista = data ?? [];
-  const feito = q.feito === "apagada" ? "Dados da cliente apagados." : undefined;
+  const feito =
+    q.feito === "apagada" ? "Dados da cliente apagados." : undefined;
 
   return (
     <main className="mx-auto flex max-w-xl flex-col gap-5">
-      <h1 className="font-display text-[32px] leading-9 font-semibold">Clientes</h1>
-      {feito ? <p role="status" className="rounded-lg bg-success-surface px-4 py-3 text-sm text-success">{feito}</p> : null}
+      <h1 className="font-display text-[32px] leading-9 font-semibold">
+        Clientes
+      </h1>
+      {feito ? (
+        <p
+          role="status"
+          className="rounded-lg bg-success-surface px-4 py-3 text-sm text-success"
+        >
+          {feito}
+        </p>
+      ) : null}
       <form role="search" className="flex flex-col gap-3">
         <input type="hidden" name="f" value={filtro} />
         <div className="relative">
-          <Search aria-hidden className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground" />
+          <Search
+            aria-hidden
+            className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground"
+          />
           <input
             type="search"
             name="q"
@@ -68,16 +83,23 @@ export default async function Clientes({ searchParams }: PageProps<"/admin/clien
         ))}
       </nav>
       {lista.length === 0 ? (
-        <p className="rounded-lg border border-border bg-card px-4 py-5 text-base text-muted-foreground">Nenhuma cliente encontrada.</p>
+        <p className="rounded-lg border border-border bg-card px-4 py-5 text-base text-muted-foreground">
+          Nenhuma cliente encontrada.
+        </p>
       ) : (
         <ul className="flex flex-col gap-2">
           {lista.map((c) => (
             <li key={c.id}>
-              <Link href={`/admin/clientes/${c.id}`} className="flex min-h-14 flex-col justify-center gap-0.5 rounded-lg border border-border bg-card px-4 py-2.5 text-foreground no-underline shadow-card">
+              <Link
+                href={`/admin/clientes/${c.id}`}
+                className="flex min-h-14 flex-col justify-center gap-0.5 rounded-lg border border-border bg-card px-4 py-2.5 text-foreground no-underline shadow-card"
+              >
                 <span className="text-base font-bold">{c.name}</span>
                 <span className="text-sm text-muted-foreground">
                   {c.phone ?? c.email ?? "Sem contacto"}
-                  {c.no_show_count ? ` · ${c.no_show_count} ${c.no_show_count === 1 ? "falta" : "faltas"}` : ""}
+                  {c.no_show_count
+                    ? ` · ${c.no_show_count} ${c.no_show_count === 1 ? "falta" : "faltas"}`
+                    : ""}
                   {c.blocked ? " · Bloqueada" : ""}
                 </span>
               </Link>

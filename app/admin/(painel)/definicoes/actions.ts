@@ -7,7 +7,11 @@ import { exigirAdmin } from "@/lib/auth";
 import { supabaseSessao } from "@/lib/supabase/sessao";
 import { normalizarTelemovel } from "@/lib/telemovel";
 
-export type EstadoDefinicoes = { erro?: string; ok?: boolean; campos?: Record<string, string> };
+export type EstadoDefinicoes = {
+  erro?: string;
+  ok?: boolean;
+  campos?: Record<string, string>;
+};
 
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const int = (min: number, max: number, msg: string) =>
@@ -42,9 +46,11 @@ export async function guardarDefinicoes(
   }
   const telBruto = t("telefone");
   const tel = telBruto ? normalizarTelemovel(telBruto) : null;
-  if (telBruto && !tel) campos.telefone = "Número inválido. Escreva os 9 números.";
+  if (telBruto && !tel)
+    campos.telefone = "Número inválido. Escreva os 9 números.";
   const email = t("email");
-  if (email && (!EMAIL.test(email) || email.length > 254)) campos.email = "Email inválido.";
+  if (email && (!EMAIL.test(email) || email.length > 254))
+    campos.email = "Email inválido.";
   if (Object.keys(campos).length || !p.success) {
     return { erro: "Veja os campos assinalados.", campos };
   }

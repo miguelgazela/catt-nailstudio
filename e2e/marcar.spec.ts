@@ -149,7 +149,7 @@ test("duas marcações na mesma hora ao mesmo tempo: só uma ganha", async ({
 
 async function novaPagina(browser: Browser): Promise<Page> {
   const ctx = await browser.newContext({
-    baseURL: "http://localhost:3100",
+    baseURL: `http://localhost:${process.env.E2E_PORT ?? 3100}`,
     locale: "pt-PT",
     timezoneId: "Europe/Lisbon",
     viewport: { width: 412, height: 915 },

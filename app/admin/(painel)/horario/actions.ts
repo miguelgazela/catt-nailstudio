@@ -9,7 +9,8 @@ import { exigirAdmin } from "@/lib/auth";
 import { somarDias } from "@/lib/datas";
 import { supabaseSessao } from "@/lib/supabase/sessao";
 
-const minutos = (h: string) => Number(h.slice(0, 2)) * 60 + Number(h.slice(3, 5));
+const minutos = (h: string) =>
+  Number(h.slice(0, 2)) * 60 + Number(h.slice(3, 5));
 const volta = (q: string) => redirect(`/admin/horario?${q}`);
 
 export async function adicionarPeriodo(dados: FormData) {
@@ -25,12 +26,19 @@ export async function adicionarPeriodo(dados: FormData) {
   const { weekday, inicio, fim } = p.data!;
   if (minutos(fim) < minutos(inicio) + 60) volta("erro=curto");
   const sb = await supabaseSessao();
-  const { data: dia } = await sb.from("weekly_hours").select("start_time, end_time").eq("weekday", weekday);
+  const { data: dia } = await sb
+    .from("weekly_hours")
+    .select("start_time, end_time")
+    .eq("weekday", weekday);
   const choca = (dia ?? []).some(
-    (x) => minutos(x.start_time) < minutos(fim) && minutos(x.end_time) > minutos(inicio),
+    (x) =>
+      minutos(x.start_time) < minutos(fim) &&
+      minutos(x.end_time) > minutos(inicio),
   );
   if (choca) volta("erro=sobrepoe");
-  const { error } = await sb.from("weekly_hours").insert({ weekday, start_time: inicio, end_time: fim });
+  const { error } = await sb
+    .from("weekly_hours")
+    .insert({ weekday, start_time: inicio, end_time: fim });
   if (error) volta("erro=periodo");
   revalidatePath("/admin", "layout");
   volta("feito=periodo");
@@ -49,7 +57,10 @@ export async function removerPeriodo(dados: FormData) {
 export async function adicionarBloqueio(dados: FormData) {
   await exigirAdmin("/admin/horario");
   const tipo = dados.get("tipo") === "horas" ? "horas" : "dias";
-  const motivo = String(dados.get("motivo") ?? "").trim().slice(0, 100) || null;
+  const motivo =
+    String(dados.get("motivo") ?? "")
+      .trim()
+      .slice(0, 100) || null;
   let ini: string;
   let fim: string;
   if (tipo === "dias") {
@@ -62,12 +73,15 @@ export async function adicionarBloqueio(dados: FormData) {
     const dia = String(dados.get("dia") ?? "");
     const h1 = String(dados.get("hora_de") ?? "");
     const h2 = String(dados.get("hora_ate") ?? "");
-    if (!DIA_RE.test(dia) || !HORA_RE.test(h1) || !HORA_RE.test(h2) || h2 <= h1) volta("erro=datas");
+    if (!DIA_RE.test(dia) || !HORA_RE.test(h1) || !HORA_RE.test(h2) || h2 <= h1)
+      volta("erro=datas");
     ini = lisboaParaIso(dia, h1);
     fim = lisboaParaIso(dia, h2);
   }
   const sb = await supabaseSessao();
-  const { error } = await sb.from("time_off").insert({ starts_at: ini, ends_at: fim, reason: motivo });
+  const { error } = await sb
+    .from("time_off")
+    .insert({ starts_at: ini, ends_at: fim, reason: motivo });
   if (error) volta("erro=datas");
   // Aviso (não bloqueia): já há marcações confirmadas nesse período.
   const { count } = await sb

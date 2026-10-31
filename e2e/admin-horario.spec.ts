@@ -18,7 +18,9 @@ test.beforeEach(async ({ page }) => {
   await entrarAdmin(page, await criarAdmin());
 });
 
-test("acrescenta e remove um período, sem aceitar sobreposições", async ({ page }) => {
+test("acrescenta e remove um período, sem aceitar sobreposições", async ({
+  page,
+}) => {
   await page.goto("/admin/horario");
   // Domingo está fechado
   await page.locator("#weekday").selectOption("7");
@@ -34,11 +36,15 @@ test("acrescenta e remove um período, sem aceitar sobreposições", async ({ pa
   await page.getByRole("button", { name: "Acrescentar" }).click();
   await expect(page.getByText("sobrepõe-se")).toBeVisible();
 
-  await page.getByRole("button", { name: /Remover período de Domingo/ }).click();
+  await page
+    .getByRole("button", { name: /Remover período de Domingo/ })
+    .click();
   await expect(page.getByText("Período removido.")).toBeVisible();
 });
 
-test("o bloqueio tira as horas da agenda e avisa se já há marcações", async ({ page }) => {
+test("o bloqueio tira as horas da agenda e avisa se já há marcações", async ({
+  page,
+}) => {
   await criarMarcacao(segunda, "09:00");
   await page.goto("/admin/horario");
   await page.getByLabel("Do dia").fill(segunda);
@@ -50,7 +56,10 @@ test("o bloqueio tira as horas da agenda e avisa se já há marcações", async 
   await page.goto(`/admin?dia=${segunda}`);
   await expect(page.getByText("Bloqueada: Férias").first()).toBeVisible();
   // A vaga online também desaparece (available_slots respeita time_off)
-  const { data } = await db().rpc("available_slots", { p_from: segunda, p_to: segunda });
+  const { data } = await db().rpc("available_slots", {
+    p_from: segunda,
+    p_to: segunda,
+  });
   expect(data ?? []).toHaveLength(0);
 
   await page.goto("/admin/horario");
@@ -67,5 +76,7 @@ test("bloqueia umas horas", async ({ page }) => {
   await expect(page.getByText("Bloqueio guardado.")).toBeVisible();
   await page.goto(`/admin?dia=${segunda}`);
   await expect(page.getByText("Bloqueada").first()).toBeVisible();
-  await expect(page.getByRole("link", { name: /Livre · marcar/ }).first()).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: /Livre · marcar/ }).first(),
+  ).toBeVisible();
 });
