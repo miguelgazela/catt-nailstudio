@@ -1,0 +1,107 @@
+"use client";
+
+import { CircleAlert, LoaderCircle, MailCheck } from "lucide-react";
+import { useActionState, useCallback, useState } from "react";
+
+import { Turnstile } from "@/components/marca/turnstile";
+
+import { type EstadoEntrar, pedirLink } from "./actions";
+
+const inicial: EstadoEntrar = {};
+
+export function FormEntrar({
+  siteKey,
+  destino,
+}: {
+  siteKey: string;
+  destino: string;
+}) {
+  const [pronto, setPronto] = useState(false);
+  const aoMudar = useCallback((p: boolean) => setPronto(p), []);
+  const [estado, acao, pendente] = useActionState(
+    async (anterior: EstadoEntrar, dados: FormData) => {
+      const r = await pedirLink(anterior, dados);
+      setPronto(false);
+      window.turnstile?.reset();
+      return r;
+    },
+    inicial,
+  );
+
+  if (estado.enviado) {
+    return (
+      <div
+        role="status"
+        className="flex flex-col gap-3 rounded-lg border border-border bg-card px-4 py-5"
+      >
+        <MailCheck aria-hidden className="size-7 text-success" />
+        <p className="text-base leading-6">
+          Se o email estiver certo, enviámos-lhe um link para entrar. Abra o
+          email neste telemóvel e carregue em &quot;Entrar&quot;.
+        </p>
+        <p className="text-sm leading-5 text-muted-foreground">
+          Não chegou? Veja o spam e, passados uns minutos, volte a pedir.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <form action={acao} noValidate className="flex flex-col gap-[18px]">
+      <input type="hidden" name="next" value={destino} />
+      {estado.erro ? (
+        <p
+          role="alert"
+          className="flex items-start gap-2.5 rounded-lg bg-danger-surface px-4 py-3 text-sm leading-5 text-danger"
+        >
+          <CircleAlert aria-hidden className="mt-0.5 size-[18px] shrink-0" />
+          {estado.erro}
+        </p>
+      ) : null}
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="email" className="text-sm leading-5 font-semibold">
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          required
+          defaultValue={estado.email}
+          aria-invalid={estado.campoEmail ? true : undefined}
+          aria-describedby={estado.campoEmail ? "email-erro" : "email-ajuda"}
+          placeholder="nome@exemplo.pt"
+          className="min-h-12 w-full rounded-md border border-input bg-card px-4 text-base text-foreground placeholder:text-muted-foreground aria-[invalid=true]:border-2 aria-[invalid=true]:border-destructive"
+        />
+        {estado.campoEmail ? (
+          <p id="email-erro" className="text-[13px] leading-[18px] text-danger">
+            {estado.campoEmail}
+          </p>
+        ) : (
+          <p
+            id="email-ajuda"
+            className="text-[13px] leading-[18px] text-muted-foreground"
+          >
+            Enviamos um link para entrar. Não precisa de palavra-passe.
+          </p>
+        )}
+      </div>
+      <Turnstile siteKey={siteKey} aoMudar={aoMudar} />
+      <button
+        type="submit"
+        disabled={pendente || !pronto}
+        className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary text-base font-bold text-primary-foreground transition-colors hover:bg-primary-pressed disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {pendente ? (
+          <>
+            <LoaderCircle aria-hidden className="size-5 animate-spin" />A enviar
+          </>
+        ) : (
+          "Enviar link"
+        )}
+      </button>
+    </form>
+  );
+}

@@ -53,6 +53,7 @@ function html(opts: {
   linhas: [string, string][];
   botoes: Botao[];
   nota?: string;
+  motivo?: string;
   siteUrl: string;
 }): string {
   const linhas = opts.linhas
@@ -96,7 +97,7 @@ function html(opts: {
       </td></tr>
       <tr><td style="padding:20px 4px 0;font:400 13px/18px ${SANS};color:${COR.suave}">
         Catarina Neves Nails Studio. Pagamento no estúdio.<br>
-        Recebeu este email porque fez uma marcação. Usamos os seus dados só para a gerir e não enviamos publicidade.
+        Recebeu este email porque ${esc(opts.motivo ?? "fez uma marcação")}. Usamos os seus dados só para a gerir e não enviamos publicidade.
         <a href="${esc(opts.siteUrl)}/privacidade" style="color:${COR.ameixa}">Como tratamos os seus dados</a>
       </td></tr>
     </table>
@@ -214,5 +215,35 @@ export function emailLembrete(d: DadosMarcacao): EmailPronto {
       siteUrl: d.siteUrl,
     }),
     texto: ["Até já", "", textoLinhas(linhas), "", nota].join("\n"),
+  };
+}
+
+/** Link para entrar (sem palavra-passe). Válido 1 hora. */
+export function emailEntrada(d: {
+  link: string;
+  siteUrl: string;
+}): EmailPronto {
+  const nota =
+    "O link serve uma vez e expira numa hora. Se não pediu para entrar, ignore este email: ninguém entra sem ele.";
+  return {
+    assunto: "O seu link para entrar",
+    html: html({
+      prehead: "Carregue no botão para entrar.",
+      titulo: "Entrar",
+      intro:
+        "Carregue no botão para entrar na sua conta. Não precisa de palavra-passe.",
+      linhas: [],
+      botoes: [{ texto: "Entrar", href: d.link, principal: true }],
+      nota,
+      motivo: "pediu para entrar na sua conta",
+      siteUrl: d.siteUrl,
+    }),
+    texto: [
+      "Entrar",
+      "",
+      `Abra este link para entrar: ${d.link}`,
+      "",
+      nota,
+    ].join("\n"),
   };
 }

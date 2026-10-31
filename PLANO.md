@@ -333,6 +333,13 @@ Resultado do M2:
 - Migration do rate limit aplicada na nuvem a 30 out 2026 (3 jobs de cron ativos).
 - **Por fazer**: preencher contactos e morada em `settings` (aparecem na página assim que existirem); texto "Sobre" e fotos quando a Catarina os enviar; ver CI e o deploy da Vercel depois do push.
 
+**Alicerce de autenticação** (feito a 31 out 2026, antes de M3 e M4, que correm em paralelo)
+- `lib/supabase/sessao.ts` (cliente com a sessão da pessoa, via cookies, respeita o RLS), `proxy.ts` (renova a sessão só em `/conta`, `/admin`, `/entrar`, `/auth`; as páginas públicas não passam por lá) e `lib/auth.ts`: `getUtilizador()`, `exigirUtilizador(destino)`, `eAdmin()`, `exigirAdmin(destino)` (quem não entrou vai para `/entrar?next=…`; quem entrou e não é admin vê 404). O M4 acrescenta o MFA em `exigirAdmin`.
+- Entrada por link no email, sem palavra-passe: `/entrar` (Turnstile, limite por IP e por email, resposta igual haja conta ou não), `lib/email/entrada.ts` gera o link com `auth.admin.generateLink` e envia-o pelo Resend com o nosso desenho (decisão: não usar o email do Supabase nem SMTP, para não mexer na configuração de Auth do projeto), e `/auth/confirmar` troca o `token_hash` por sessão (funciona noutro browser, ao contrário do PKCE). Link de uso único e validade de 1 hora. O destino (`next`) só aceita caminhos internos (`lib/caminho.ts`, testado).
+- `Sair` (Server Action) e dois esqueletos protegidos: `/conta` (do M3) e `/admin` (do M4).
+- Testes: Vitest (caminho seguro) e Playwright em `e2e/conta.spec.ts` (8: redirecionamento, resposta igual, email inválido, entrar e sair, link de uso único, link inventado, destino seguro, 404 para quem não é admin).
+- Nota: `generateLink` cria o utilizador se o email ainda não existir; Turnstile e limites travam o abuso. Rever no M3 uma limpeza de utilizadores nunca confirmados.
+
 **M3. Conta da cliente** (2 dias)
 - Entrar com link por email (Supabase Auth), em qualquer ponto do fluxo.
 - "As minhas marcações": próximas, anteriores, cancelar até 24 h antes.
