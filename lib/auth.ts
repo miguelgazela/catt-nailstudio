@@ -1,7 +1,9 @@
 import "server-only";
 
+import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 
+import { COOKIE_PAINEL, lerCookiePainel } from "./sessao-painel";
 import { supabaseSessao } from "./supabase/sessao";
 
 export { caminhoSeguro } from "./caminho";
@@ -38,9 +40,27 @@ export async function eAdmin(): Promise<boolean> {
 
 /**
  * Páginas do painel. Quem não entrou vai para /entrar; quem entrou mas não é admin
- * vê 404 (não revelamos que o painel existe). O M4 junta aqui o MFA obrigatório.
+ * vê 404 (não revelamos que o painel existe). Admin sem o segundo passo (código da
+ * app autenticadora, nível aal2) vai para /admin/mfa; e o painel fecha depois de
+ * um tempo parado ou de 12 h (ver lib/sessao-painel.ts).
  */
 export async function exigirAdmin(destino = "/admin"): Promise<Utilizador> {
+  const u = await exigirUtilizador(destino);
+  if (!(await eAdmin())) notFound();
+  const sb = await supabaseSessao();
+  const { data } = await sb.auth.getClaims();
+  if (data?.claims?.aal !== "aal2") {
+    redirect(`/admin/mfa?next=${encodeURIComponent(destino)}`);
+  }
+  const sessao = lerCookiePainel((await cookies()).get(COOKIE_PAINEL)?.value);
+  if (!sessao || sessao.utilizador !== u.id) {
+    redirect(`/admin/expirou?next=${encodeURIComponent(destino)}`);
+  }
+  return u;
+}
+
+/** Para as páginas de MFA: tem de ser admin, mas ainda não precisa do segundo passo. */
+export async function exigirAdminSemMfa(destino: string): Promise<Utilizador> {
   const u = await exigirUtilizador(destino);
   if (!(await eAdmin())) notFound();
   return u;

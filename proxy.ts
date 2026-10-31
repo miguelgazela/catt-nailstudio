@@ -1,6 +1,13 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
+import {
+  COOKIE_PAINEL,
+  criarCookiePainel,
+  lerCookiePainel,
+  opcoesCookiePainel,
+} from "@/lib/sessao-painel";
+
 // Renova a sessão (cookies) nas áreas com login. As páginas públicas não passam por aqui.
 export async function proxy(pedido: NextRequest) {
   let resposta = NextResponse.next({ request: pedido });
@@ -21,6 +28,18 @@ export async function proxy(pedido: NextRequest) {
     },
   );
   await supabase.auth.getClaims();
+
+  // Painel: mantém a sessão viva enquanto a Catarina o usa (no máximo 1 escrita por minuto).
+  if (pedido.nextUrl.pathname.startsWith("/admin")) {
+    const sessao = lerCookiePainel(pedido.cookies.get(COOKIE_PAINEL)?.value);
+    if (sessao && Date.now() - sessao.ultimo > 60_000) {
+      resposta.cookies.set(
+        COOKIE_PAINEL,
+        criarCookiePainel(sessao.utilizador, sessao.inicio),
+        opcoesCookiePainel,
+      );
+    }
+  }
   resposta.headers.set("Cache-Control", "private, no-store");
   return resposta;
 }
