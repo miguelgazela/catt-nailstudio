@@ -31,7 +31,7 @@ export function NavegarDia({
         <ChevronLeft aria-hidden className="size-5" />
       </Link>
       <div className="min-w-0 flex-1 text-center">
-        <p className="truncate text-base font-bold">{titulo}</p>
+        <p className="text-base leading-5 font-bold">{titulo}</p>
         {sub ? (
           <p className="text-[13px] text-muted-foreground">{sub}</p>
         ) : null}

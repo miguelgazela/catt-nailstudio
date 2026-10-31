@@ -117,12 +117,10 @@ export async function guardarServico(
         campos: { foto: "Formato não suportado." },
       };
     const caminho = `${id}-${Date.now()}.${tipo}`;
-    const { error } = await sb.storage
-      .from("servicos")
-      .upload(caminho, bytes, {
-        contentType: MIME[tipo],
-        cacheControl: "31536000",
-      });
+    const { error } = await sb.storage.from("servicos").upload(caminho, bytes, {
+      contentType: MIME[tipo],
+      cacheControl: "31536000",
+    });
     if (error) return { erro: "Não foi possível guardar a foto." };
     nova = sb.storage.from("servicos").getPublicUrl(caminho).data.publicUrl;
   } else if (tirar) {

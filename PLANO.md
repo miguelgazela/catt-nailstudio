@@ -349,7 +349,7 @@ Resultado do M2:
 - Mensagens que não revelam se um email tem conta.
 - Feito quando: o fluxo com conta e o cancelamento funcionam no projeto na nuvem, com testes Playwright (em local).
 
-**M4. Painel da Catarina** (4–5 dias)
+**M4. Painel da Catarina** (4–5 dias) — **código feito a 31 out 2026, testado em local; falta o teste com a Catarina**
 - Entrada e proteção do `/admin`, com MFA obrigatório e sessão que expira.
 - Na ficha: exportar dados da cliente, apagar ou anonimizar. Aviso no campo de notas para não registar dados de saúde.
 - Registo de alterações (`audit_log`) visível na marcação.
@@ -362,6 +362,17 @@ Resultado do M2:
 - Definições.
 - Vista de computador da semana.
 - Feito quando: a Catarina consegue gerir uma semana fictícia sozinha no telemóvel (teste com ela).
+
+Resultado do M4 (rotas em `app/admin`, lógica em `lib/admin`, componentes em `components/admin`):
+- **Acesso**: `exigirAdmin` pede MFA (TOTP, nível aal2) e um cookie assinado `painel` (HMAC, `lib/sessao-painel.ts`): fecha após 4 h sem uso ou 12 h no máximo; o `proxy.ts` renova-o enquanto ela usa o painel. Primeira vez: `/admin/mfa` mostra o QR e o código; depois só pede o código. Sessão expirada: `/admin/expirou` termina a sessão e manda para `/entrar?erro=sessao`. `supabase/config.toml` ativa o TOTP (**na nuvem: ativar MFA TOTP no painel do Supabase, Auth › Multi-Factor**).
+- **Agenda**: dia (lista de horas com marcadas, livres, bloqueadas e fora do horário) e semana (cartões por dia no telemóvel, grelha de 7 colunas no computador). Detalhe da marcação: mover (hora do horário ou "fora do horário"), cancelar, marcar falta, concluída, desfazer, ligar/WhatsApp e registo de alterações (`audit_log`; a BD só guarda quem e que campos mudaram, por isso o texto diz "Alterado: hora"). Cancelar no painel não avisa a cliente (decisão de 31 out). Nova marcação manual (cliente nova ou a existente pelo telemóvel/ficha), com hora livre do horário ou fora dele; a exclusão na BD continua a impedir sobreposições.
+- **Horário**: períodos por dia (sem sobreposição, mínimo 1 h), bloqueios de dias/férias e de horas soltas; avisa se já há marcações nesse período (não as cancela).
+- **Serviços**: lista, ordem com botões subir/descer, criar/editar, esconder/mostrar (não há apagar, por causa do histórico), foto (reduzida no telemóvel para 1200 px, validada no servidor, bucket público `servicos`; migration `20261031120001_m4_fotos_servicos.sql`). A foto ainda não aparece na página pública.
+- **Clientes**: pesquisa (nome, telemóvel, email), filtros (todas, com faltas, bloqueadas), ficha (editar, notas com aviso de saúde, histórico, nova marcação, bloquear), exportar JSON e apagar (anonimiza com `anonymize_client`).
+- **Definições**: antecedências, prazo de cancelamento, política, contactos, `notify_on_booking`.
+- **Web Push**: migration `20261031120002_m4_push.sql` (tabela `push_subscriptions` só de admins, RLS própria, e um trigger em `appointments` que chama `POST /api/push` via `pg_net` com os segredos `site_url` e `cron_secret` do Vault, para marcação online nova ou cancelada pela cliente; cobre todos os caminhos sem mexer no código do M2/M3/M5). `lib/push.ts` (web-push) apaga dispositivos mortos; o conteúdo não leva dados da cliente. `public/sw.js`, botão Ativar/Testar/Desativar em Definições. Sem chaves VAPID não envia nada.
+- **Testes**: Vitest (agenda, tempo, sessão do painel), pgTAP `06_push` e Playwright `e2e/admin-*.spec.ts` (MFA, sessão expirada, agenda, mover/falta/cancelar, marcação manual e fora do horário, horário e bloqueios, serviços com foto, clientes, definições, `/api/push`). `E2E_PORT` permite outra porta (duas worktrees em paralelo). O teste de admin em `conta.spec.ts` passou para `admin-acesso.spec.ts`. Nota: as worktrees partilham o mesmo Supabase local e os testes apagam utilizadores.
+- **Por fazer**: teste com a Catarina (semana fictícia no telemóvel); aplicar as 2 migrations na nuvem (`db push`) e ativar TOTP no Auth; criar o admin dela em `admins`; gerar chaves VAPID (`pnpm dlx web-push generate-vapid-keys`) e pôr `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (e opcionalmente `PAINEL_SESSAO_SECRET`) na Vercel; testar push num iPhone com a app instalada (depende do M6); mostrar a foto do serviço na página pública; pgTAP do `anonymize_client` já existia, falta um teste do cron `send-reminders` com o painel. O push de teste real (entrega ao telemóvel) não foi testado: só o endpoint e a subscrição.
 
 **M5. Emails e calendário** (2 dias) — **código feito a 30 out 2026, testado em local; falta o Resend real**
 - Desenhar o template de email (confirmação, lembrete, cancelamento) com as skills de design.
