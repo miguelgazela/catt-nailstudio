@@ -61,6 +61,8 @@ test("ativar grava a subscrição no servidor e reabrir volta a sincronizar", as
     Object.defineProperty(Notification, "permission", { get: () => "granted" });
     Notification.requestPermission = async () => "granted";
     PushManager.prototype.subscribe = async function () {
+      // Lento como no iPhone (fala com os servidores da Apple).
+      await new Promise((r) => setTimeout(r, 1500));
       localStorage.setItem("e2e-sub", "1");
       return falsa as unknown as PushSubscription;
     };
@@ -76,6 +78,9 @@ test("ativar grava a subscrição no servidor e reabrir volta a sincronizar", as
     page.getByRole("heading", { name: /Notificações neste telemóvel/ }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Ativar notificações" }).click();
+  // Enquanto o iPhone não responde, o ecrã diz o que se passa.
+  await expect(page.getByRole("button", { name: "A ativar…" })).toBeDisabled();
+  await expect(page.getByText("pode demorar alguns segundos")).toBeVisible();
   await expect(page.getByText("Ativas neste telemóvel.")).toBeVisible();
 
   const c = db();

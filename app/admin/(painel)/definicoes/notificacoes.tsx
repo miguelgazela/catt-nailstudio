@@ -1,7 +1,7 @@
 "use client";
 
-import { Bell, BellOff } from "lucide-react";
-import { useEffect, useState, useTransition } from "react";
+import { Bell, BellOff, LoaderCircle } from "lucide-react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 
 import { botaoPrimario, botaoSecundario } from "@/components/admin/campos";
 
@@ -28,9 +28,13 @@ export function Notificacoes({
   const [estado, setEstado] = useState<Estado>("a-ver");
   const [msg, setMsg] = useState<string | null>(null);
   const [pendente, iniciar] = useTransition();
+  const [aAtivar, setAAtivar] = useState(false);
+  const ativando = useRef(false);
 
-  useEffect(() => {
-    (async () => {
+  // Lê o estado do browser e, se estiver subscrito, garante que o servidor sabe.
+  const verificar = useCallback(async () => {
+    if (ativando.current) return;
+    try {
       if (!chavePublica) return setEstado("sem-chaves");
       if (
         !("serviceWorker" in navigator) ||
@@ -43,36 +47,58 @@ export function Notificacoes({
       const reg = await navigator.serviceWorker.getRegistration("/sw.js");
       const s = await reg?.pushManager.getSubscription();
       if (!s) return setEstado("desligado");
-      // O browser pode estar subscrito sem o servidor saber (ex.: falhou ao gravar): volta a gravar.
       const r = await guardarSubscricao(s.toJSON(), navigator.userAgent);
       setEstado(r.ok ? "ligado" : "desligado");
-    })().catch(() => setEstado("sem-suporte"));
+    } catch {
+      setEstado("sem-suporte");
+    }
   }, [chavePublica]);
 
-  function ativar() {
-    iniciar(async () => {
-      setMsg(null);
-      try {
-        const permissao = await Notification.requestPermission();
-        if (permissao !== "granted")
-          return setEstado(permissao === "denied" ? "negado" : "desligado");
-        const reg = await navigator.serviceWorker.register("/sw.js");
-        await navigator.serviceWorker.ready;
-        const sub = await reg.pushManager.subscribe({
+  useEffect(() => {
+    queueMicrotask(verificar);
+    // Na app instalada, sair e voltar não recarrega a página: volta a ver quando fica visível.
+    const aoVoltar = () => {
+      if (document.visibilityState === "visible") verificar();
+    };
+    document.addEventListener("visibilitychange", aoVoltar);
+    return () => document.removeEventListener("visibilitychange", aoVoltar);
+  }, [verificar]);
+
+  async function ativar() {
+    ativando.current = true;
+    setAAtivar(true);
+    setMsg(null);
+    try {
+      const permissao = await Notification.requestPermission();
+      if (permissao !== "granted") {
+        setEstado(permissao === "denied" ? "negado" : "desligado");
+        return;
+      }
+      // O service worker já está registado em todo o site; só regista se faltar.
+      const reg =
+        (await navigator.serviceWorker.getRegistration("/sw.js")) ??
+        (await navigator.serviceWorker.register("/sw.js"));
+      if (!reg.active) await navigator.serviceWorker.ready;
+      // No iPhone isto fala com os servidores da Apple e pode demorar uns segundos.
+      const sub =
+        (await reg.pushManager.getSubscription()) ??
+        (await reg.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: chaveParaBytes(chavePublica!),
-        });
-        const r = await guardarSubscricao(sub.toJSON(), navigator.userAgent);
-        if (!r.ok) {
-          // Não deixa o browser subscrito sem o servidor saber.
-          await sub.unsubscribe();
-          throw new Error("guardar");
-        }
-        setEstado("ligado");
-      } catch {
-        setMsg("Não foi possível ativar. Tente outra vez.");
+        }));
+      const r = await guardarSubscricao(sub.toJSON(), navigator.userAgent);
+      if (!r.ok) {
+        // Não deixa o browser subscrito sem o servidor saber.
+        await sub.unsubscribe();
+        throw new Error("guardar");
       }
-    });
+      setEstado("ligado");
+    } catch {
+      setMsg("Não foi possível ativar. Tente outra vez.");
+    } finally {
+      ativando.current = false;
+      setAAtivar(false);
+    }
   }
 
   function desativar() {
@@ -137,11 +163,24 @@ export function Notificacoes({
           <button
             type="button"
             onClick={ativar}
-            disabled={pendente}
+            disabled={aAtivar}
             className={botaoPrimario}
           >
-            Ativar notificações
+            {aAtivar ? (
+              <>
+                <LoaderCircle aria-hidden className="size-5 animate-spin" />A
+                ativar…
+              </>
+            ) : (
+              "Ativar notificações"
+            )}
           </button>
+          {aAtivar ? (
+            <p role="status" className="text-sm text-muted-foreground">
+              No iPhone pode demorar alguns segundos. Pode continuar a usar o
+              painel.
+            </p>
+          ) : null}
         </>
       ) : null}
       {estado === "ligado" ? (
