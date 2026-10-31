@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { Logo } from "./logo";
 
 // Ecrã de abertura só no arranque a frio (uma vez por sessão). Sai logo que a página
-// está pronta: não atrasa nada de propósito. Sem JS, uma animação CSS tira-o ao fim de 2 s.
+// está pronta: não atrasa nada de propósito. Sem JS, uma animação CSS esconde-o ao fim de 2 s.
 export function Splash() {
   useEffect(() => {
     const el = document.getElementById("splash");
@@ -13,9 +13,8 @@ export function Splash() {
     try {
       sessionStorage.setItem("cn-splash", "1");
     } catch {}
+    // Só esconde (nunca remove o nó: o React é dono dele e falharia ao sair da página).
     el.classList.add("splash-saiu");
-    const t = setTimeout(() => el.remove(), 400);
-    return () => clearTimeout(t);
   }, []);
 
   return (

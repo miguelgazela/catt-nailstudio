@@ -53,6 +53,30 @@ async function preencher(page: Page, nome: string, tel: string, email = "") {
   return enviar;
 }
 
+test("da página inicial para o fluxo de marcação sem erros no browser", async ({
+  page,
+}) => {
+  const erros: string[] = [];
+  page.on("pageerror", (e) => erros.push(e.message));
+  await page.goto("/");
+  // Uma pessoa real demora mais de meio segundo a tocar em "Marcar".
+  await page.waitForTimeout(800);
+  await page.getByRole("link", { name: "Marcar", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Escolha o serviço" }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: /Manicure simples/ }).click();
+  await expect(
+    page.getByRole("heading", { name: "Escolha o dia e a hora" }),
+  ).toBeVisible();
+  await page.goBack();
+  await page.goBack();
+  await expect(
+    page.getByRole("heading", { name: /Mãos cuidadas/ }),
+  ).toBeVisible();
+  expect(erros).toEqual([]);
+});
+
 test("convidada marca do início ao fim", async ({ page }) => {
   const tel = telefone();
   await escolherPrimeiraHora(page);
