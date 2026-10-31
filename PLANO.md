@@ -340,7 +340,7 @@ Resultado do M2:
 - Testes: Vitest (caminho seguro) e Playwright em `e2e/conta.spec.ts` (8: redirecionamento, resposta igual, email inválido, entrar e sair, link de uso único, link inventado, destino seguro, 404 para quem não é admin).
 - Nota: `generateLink` cria o utilizador se o email ainda não existir; Turnstile e limites travam o abuso. Rever no M3 uma limpeza de utilizadores nunca confirmados.
 
-**M3. Conta da cliente** (2 dias)
+**M3. Conta da cliente** (2 dias) — **código feito a 31 out 2026, testado em local; falta aplicar a migration na nuvem**
 - Entrar com link por email (Supabase Auth), em qualquer ponto do fluxo.
 - "As minhas marcações": próximas, anteriores, cancelar até 24 h antes.
 - Associar marcações antigas sem conta ao criar conta com o mesmo telemóvel.
@@ -348,6 +348,17 @@ Resultado do M2:
 - "Os meus dados": editar, exportar e apagar conta.
 - Mensagens que não revelam se um email tem conta.
 - Feito quando: o fluxo com conta e o cancelamento funcionam no projeto na nuvem, com testes Playwright (em local).
+
+Resultado do M3:
+- **Entrar em qualquer ponto**: em `/marcar`, no passo dos dados, o separador "Com conta" (por omissão quando já há sessão) manda para `/entrar?next=…` e volta ao mesmo passo. `proxy.ts` passou a renovar a sessão também em `/marcar`. Marcar com conta não leva Turnstile (a identidade vem da sessão, que já o passou ao entrar); tem limite por conta. Sem limite de marcações futuras; não gera token (cancela-se em `/conta`).
+- **`/conta`**: sem ficha pede nome e telemóvel (`claim_client`); com ficha mostra "Próximas" (cancelar até 24 h antes, `cancel_window_hours`), "Anteriores" (inclui canceladas e faltas) e "Nova marcação". Regras de apresentação em `lib/conta-regras.ts` (Vitest).
+- **Associar marcações antigas**: pelo telemóvel, mas **só se o email da ficha antiga coincidir com o da conta, ou se a ficha não tiver email**. O telemóvel não é verificado, por isso sem esta regra quem escrevesse o número de outra pessoa herdava as marcações dela. Número de outra conta ou ficha com outro email dão a mesma mensagem. A mesma regra foi posta em `book_appointment` (`create or replace` na migration M3). Risco que fica: uma ficha antiga sem email pode ser reclamada por quem souber o telemóvel (só vê hora e serviço). Verificar o telemóvel por SMS fica fora do âmbito.
+- **`/cancelar/[token]`**: o M5 já tinha tudo (página, ação com limite, regra das 24 h, link morre ao usar); só foi confirmado com teste.
+- **Os meus dados** (`/conta/dados`): editar nome e telemóvel (o email é o da entrada; mudar exige o estúdio), exportar JSON (`/conta/dados/exportar`, lido com a sessão da pessoa, por isso o RLS garante que só vê o seu), apagar conta com confirmação (`delete_my_data`: cancela o futuro, anonimiza a ficha como no painel, e o servidor apaga o utilizador do Auth). A conta de admin não se apaga por aqui.
+- **Mensagens neutras**: `/entrar` já respondia igual; as ligações de conta usam uma só mensagem para "número de outra conta" e "ficha com outro email".
+- **Utilizadores nunca confirmados**: `generateLink` cria o utilizador mesmo que ninguém clique. Job diário `purge-unconfirmed-users` apaga os sem confirmação, sem login, com mais de 2 dias, sem ficha e que não sejam admin.
+- Migration `20261031200001_m3_conta.sql`. Testes: pgTAP `07_m3_conta.test.sql` (17), Vitest (5 novos), Playwright `e2e/m3-conta.spec.ts` (9: ligar por telemóvel e email, não herdar com outro email, marcar com conta e cancelar, entrar a meio do fluxo, 24 h, editar e exportar, exportação exige sessão, apagar conta, cancelar por link). Suite completa: 26 Playwright verdes.
+- **Por fazer**: aplicar a migration na nuvem (`supabase db push`, com o Miguel); os emails de confirmação de quem tem conta ainda dizem "contacte o estúdio" para cancelar, quando deviam apontar para `/conta` (texto em `lib/email/modelos.ts`, com teste); mudar de email na conta; no CI o pgTAP corre em BD limpa (em local o `03_rls` falha se sobrarem clientes de testes Playwright anteriores).
 
 **M4. Painel da Catarina** (4–5 dias)
 - Entrada e proteção do `/admin`, com MFA obrigatório e sessão que expira.
