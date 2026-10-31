@@ -67,6 +67,24 @@ test("pedir o link mostra sempre a mesma resposta, haja conta ou não", async ({
   ).toBeVisible();
 });
 
+test("pedido de entrada no painel: quem não é admin não recebe link nem fica com conta", async ({
+  page,
+}) => {
+  const email = `cliente${aleatorio(6)}@example.com`;
+  await page.goto("/entrar?next=%2Fadmin");
+  await page.getByLabel("Email").fill(email);
+  const enviar = page.getByRole("button", { name: "Enviar link" });
+  await expect(enviar).toBeEnabled({ timeout: 30_000 });
+  await enviar.click();
+  // A resposta é a mesma (não revela quem é admin)...
+  await expect(
+    page.getByText("Se o email estiver certo, enviámos-lhe um link"),
+  ).toBeVisible();
+  // ...mas não foi gerado link, por isso o utilizador nem existe.
+  const { data } = await admin().auth.admin.listUsers();
+  expect(data.users.some((u) => u.email === email)).toBe(false);
+});
+
 test("email inválido mostra erro no campo", async ({ page }) => {
   await page.goto("/entrar");
   await page.getByLabel("Email").fill("isto-nao-e-email");

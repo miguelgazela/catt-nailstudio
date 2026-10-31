@@ -378,6 +378,7 @@ export type Database = {
       };
       delete_my_data: { Args: { p_user_id: string }; Returns: Json };
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
+      is_admin_email: { Args: { p_email: string }; Returns: boolean };
       rate_limit_hit: {
         Args: { p_key: string; p_limit: number; p_window_seconds: number };
         Returns: boolean;
