@@ -13,7 +13,9 @@ export const LEGAL = {
   /** Idade a partir da qual se marca sem um adulto. */
   idadeMinima: null as number | null,
   /** O que acontece a quem falta sem avisar (frase completa), ou null. */
-  faltas: null as string | null,
+  faltas:
+    "Por agora, faltar não tem penalização, mas as faltas ficam registadas na sua ficha." as
+      string | null,
   atualizado: "1 de novembro de 2026",
 };
 
