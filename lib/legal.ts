@@ -3,14 +3,17 @@
 
 export const LEGAL = {
   /** Nome de quem presta o serviço e trata os dados (pessoa ou empresa). */
-  responsavel: null as string | null,
-  morada: null as string | null,
+  responsavel: "Catarina Neves" as string | null,
+  morada: "Largo de Santo António, São Cosme, Gondomar" as string | null,
   /** Email para pedidos sobre dados e reclamações. */
   email: "kiks1711@gmail.com" as string | null,
   /** Entidade de resolução alternativa de litígios competente para a zona do estúdio. */
-  ral: null as { nome: string; url: string } | null,
+  ral: {
+    nome: "CICAP – Centro de Informação de Consumo e Arbitragem do Porto",
+    url: "https://www.cicap.pt/",
+  } as { nome: string; url: string } | null,
   /** Idade a partir da qual se marca sem um adulto. */
-  idadeMinima: null as number | null,
+  idadeMinima: 16 as number | null,
   /** O que acontece a quem falta sem avisar (frase completa), ou null. */
   faltas:
     "Por agora, faltar não tem penalização, mas as faltas ficam registadas na sua ficha." as

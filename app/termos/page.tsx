@@ -66,7 +66,7 @@ export default function Termos() {
           >
             Livro de Reclamações Eletrónico
           </a>
-          . Em caso de litígio, pode recorrer a{" "}
+          . Em caso de litígio, pode recorrer ao{" "}
           {LEGAL.ral ? (
             <a href={LEGAL.ral.url} target="_blank" rel="noopener noreferrer">
               {LEGAL.ral.nome}
