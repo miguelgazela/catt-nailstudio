@@ -83,7 +83,7 @@ const NOMES_DIAS = [
   "domingo",
 ];
 
-/** Linhas de horário a mostrar, a partir de weekly_hours: "Segunda a sexta, 9:00 às 12:00 e 14:30 às 18:30". */
+/** Linhas de horário a mostrar, a partir de weekly_hours: "Segunda a sexta, 9:00 às 13:00 e 14:30 às 18:30". */
 export async function getHorario(): Promise<string[]> {
   const { data } = await supabasePublico()
     .from("weekly_hours")
