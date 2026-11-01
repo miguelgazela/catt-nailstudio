@@ -182,3 +182,29 @@
     opacity: 1;
   }
 }
+
+/* Barra de navegação (components/barra-navegacao.tsx): só aparece se a página demorar mais
+   de 120 ms, para não piscar nas mudanças imediatas. */
+.barra-navegacao {
+  width: 0;
+  opacity: 0;
+  animation:
+    barra-aparece 0s linear 120ms forwards,
+    barra-avanca 10s cubic-bezier(0.08, 0.7, 0.2, 1) 120ms forwards;
+}
+@keyframes barra-aparece {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes barra-avanca {
+  to {
+    width: 90%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .barra-navegacao {
+    width: 100%;
+    animation: barra-aparece 0s linear 120ms forwards;
+  }
+}

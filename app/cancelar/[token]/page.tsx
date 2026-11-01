@@ -7,6 +7,7 @@ import { getDefinicoes } from "@/lib/dados";
 import { carregarPorToken } from "@/lib/email/marcacao";
 
 import { cancelarMarcacao } from "./actions";
+import { BotaoEnviar } from "@/components/botao-enviar";
 
 export const metadata = {
   title: "Cancelar marcação | Catarina Neves Nails Studio",
@@ -91,12 +92,9 @@ export default async function Cancelar({
 
         <form action={cancelarMarcacao} className="flex flex-col gap-2">
           <input type="hidden" name="token" value={token} />
-          <button
-            type="submit"
-            className="inline-flex h-12 w-full items-center justify-center rounded-full bg-danger-surface text-base font-bold text-danger transition-colors hover:bg-danger-surface/70"
-          >
+          <BotaoEnviar className="inline-flex h-12 w-full items-center justify-center rounded-full bg-danger-surface text-base font-bold text-danger transition-colors hover:bg-danger-surface/70">
             Cancelar marcação
-          </button>
+          </BotaoEnviar>
           <Link
             href="/"
             className="inline-flex h-12 w-full items-center justify-center rounded-full text-base font-bold text-primary no-underline hover:bg-accent"

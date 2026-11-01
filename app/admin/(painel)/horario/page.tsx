@@ -11,6 +11,7 @@ import {
   removerBloqueio,
   removerPeriodo,
 } from "./actions";
+import { BotaoEnviar } from "@/components/botao-enviar";
 
 const DIAS = [
   "Segunda",
@@ -132,13 +133,13 @@ export default async function Horario({
                         </span>
                         <form action={removerPeriodo}>
                           <input type="hidden" name="id" value={p.id} />
-                          <button
-                            type="submit"
+                          <BotaoEnviar
+                            soIcone
                             className={botaoLixo}
                             aria-label={`Remover período de ${nome} ${p.start_time.slice(0, 5)}`}
                           >
                             <Trash2 aria-hidden className="size-5" />
-                          </button>
+                          </BotaoEnviar>
                         </form>
                       </li>
                     ))}
@@ -169,9 +170,7 @@ export default async function Horario({
             <Campo id="inicio" rotulo="Das" type="time" required />
             <Campo id="fim" rotulo="Às" type="time" required />
           </div>
-          <button type="submit" className={botaoPrimario}>
-            Acrescentar
-          </button>
+          <BotaoEnviar className={botaoPrimario}>Acrescentar</BotaoEnviar>
         </form>
       </section>
 
@@ -198,13 +197,13 @@ export default async function Horario({
               </span>
               <form action={removerBloqueio}>
                 <input type="hidden" name="id" value={f.id} />
-                <button
-                  type="submit"
+                <BotaoEnviar
+                  soIcone
                   className={botaoLixo}
                   aria-label="Remover bloqueio"
                 >
                   <Trash2 aria-hidden className="size-5" />
-                </button>
+                </BotaoEnviar>
               </form>
             </li>
           ))}
@@ -237,9 +236,7 @@ export default async function Horario({
             rotulo="Motivo (opcional)"
             maxLength={100}
           />
-          <button type="submit" className={botaoPrimario}>
-            Bloquear dias
-          </button>
+          <BotaoEnviar className={botaoPrimario}>Bloquear dias</BotaoEnviar>
         </form>
 
         <form
@@ -265,9 +262,7 @@ export default async function Horario({
             rotulo="Motivo (opcional)"
             maxLength={100}
           />
-          <button type="submit" className={botaoPrimario}>
-            Bloquear horas
-          </button>
+          <BotaoEnviar className={botaoPrimario}>Bloquear horas</BotaoEnviar>
         </form>
       </section>
     </main>

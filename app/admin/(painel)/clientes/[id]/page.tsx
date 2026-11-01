@@ -11,6 +11,7 @@ import { supabaseSessao } from "@/lib/supabase/sessao";
 
 import { apagarCliente, mudarBloqueio } from "../actions";
 import { FormCliente } from "./form-cliente";
+import { BotaoEnviar } from "@/components/botao-enviar";
 
 export default async function Ficha({
   params,
@@ -135,9 +136,9 @@ export default async function Ficha({
               name="bloquear"
               value={c.blocked ? "0" : "1"}
             />
-            <button type="submit" className={botaoSecundario}>
+            <BotaoEnviar className={botaoSecundario}>
               {c.blocked ? "Desbloquear" : "Bloquear (não pode marcar online)"}
-            </button>
+            </BotaoEnviar>
           </form>
           <a
             href={`/admin/clientes/${c.id}/exportar`}
@@ -158,12 +159,9 @@ export default async function Ficha({
                 Apaga nome, telemóvel, email e notas. O histórico de marcações
                 fica como “Cliente apagada”. Não se pode desfazer.
               </p>
-              <button
-                type="submit"
-                className="inline-flex h-12 items-center justify-center rounded-full bg-danger-surface text-base font-bold text-danger"
-              >
+              <BotaoEnviar className="inline-flex h-12 items-center justify-center rounded-full bg-danger-surface text-base font-bold text-danger">
                 Apagar dados
-              </button>
+              </BotaoEnviar>
             </form>
           </details>
         </section>

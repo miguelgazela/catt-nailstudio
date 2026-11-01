@@ -7,6 +7,7 @@ import { exigirCliente } from "@/lib/auth";
 import { getFicha } from "@/lib/conta";
 
 import { apagarConta, guardarDados, pedirMudancaEmail } from "./actions";
+import { BotaoEnviar } from "@/components/botao-enviar";
 
 export const metadata = {
   title: "Os meus dados | Catarina Neves Nails Studio",
@@ -97,12 +98,9 @@ export default async function Dados({
                 className={`${campoTexto} tabular`}
               />
             </div>
-            <button
-              type="submit"
-              className="inline-flex h-12 w-full items-center justify-center rounded-full bg-primary text-base font-bold text-primary-foreground hover:bg-primary-pressed"
-            >
+            <BotaoEnviar className="inline-flex h-12 w-full items-center justify-center rounded-full bg-primary text-base font-bold text-primary-foreground hover:bg-primary-pressed">
               Guardar
-            </button>
+            </BotaoEnviar>
           </form>
         ) : (
           <Aviso tipo="info">
@@ -139,12 +137,9 @@ export default async function Dados({
                 className={campoTexto}
               />
             </div>
-            <button
-              type="submit"
-              className="inline-flex h-12 w-full items-center justify-center rounded-full bg-secondary text-base font-bold text-secondary-foreground hover:bg-accent"
-            >
+            <BotaoEnviar className="inline-flex h-12 w-full items-center justify-center rounded-full bg-secondary text-base font-bold text-secondary-foreground hover:bg-accent">
               Enviar link de confirmação
-            </button>
+            </BotaoEnviar>
           </form>
         </section>
 
@@ -176,12 +171,9 @@ export default async function Dados({
                 telemóvel e email. Isto não se pode desfazer.
               </Aviso>
               <form action={apagarConta} className="flex flex-col gap-2">
-                <button
-                  type="submit"
-                  className="inline-flex h-12 w-full items-center justify-center rounded-full bg-danger-surface text-base font-bold text-danger hover:bg-danger-surface/70"
-                >
+                <BotaoEnviar className="inline-flex h-12 w-full items-center justify-center rounded-full bg-danger-surface text-base font-bold text-danger hover:bg-danger-surface/70">
                   Sim, apagar a minha conta
-                </button>
+                </BotaoEnviar>
                 <Link
                   href="/conta/dados"
                   className="inline-flex h-12 w-full items-center justify-center rounded-full text-base font-bold text-primary no-underline hover:bg-accent"

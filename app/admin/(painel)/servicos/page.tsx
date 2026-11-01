@@ -7,6 +7,7 @@ import { precoEmEuros } from "@/lib/datas";
 import { supabaseSessao } from "@/lib/supabase/sessao";
 
 import { moverServico, mudarAtivo } from "./actions";
+import { BotaoEnviar } from "@/components/botao-enviar";
 
 const FEITOS: Record<string, string> = {
   criado: "Serviço criado.",
@@ -73,26 +74,26 @@ export default async function Servicos({
                 <form action={moverServico}>
                   <input type="hidden" name="id" value={s.id} />
                   <input type="hidden" name="dir" value="cima" />
-                  <button
-                    type="submit"
+                  <BotaoEnviar
+                    soIcone
                     disabled={i === 0}
                     className={seta}
                     aria-label={`Subir ${s.name}`}
                   >
                     <ArrowUp aria-hidden className="size-5" />
-                  </button>
+                  </BotaoEnviar>
                 </form>
                 <form action={moverServico}>
                   <input type="hidden" name="id" value={s.id} />
                   <input type="hidden" name="dir" value="baixo" />
-                  <button
-                    type="submit"
+                  <BotaoEnviar
+                    soIcone
                     disabled={i === lista.length - 1}
                     className={seta}
                     aria-label={`Descer ${s.name}`}
                   >
                     <ArrowDown aria-hidden className="size-5" />
-                  </button>
+                  </BotaoEnviar>
                 </form>
               </div>
             </div>
@@ -110,12 +111,9 @@ export default async function Servicos({
                   name="ativo"
                   value={s.active ? "0" : "1"}
                 />
-                <button
-                  type="submit"
-                  className="inline-flex h-11 w-full items-center justify-center rounded-full bg-secondary text-sm font-bold text-secondary-foreground"
-                >
+                <BotaoEnviar className="inline-flex h-11 w-full items-center justify-center rounded-full bg-secondary text-sm font-bold text-secondary-foreground">
                   {s.active ? "Esconder" : "Mostrar"}
-                </button>
+                </BotaoEnviar>
               </form>
             </div>
           </li>

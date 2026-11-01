@@ -11,6 +11,7 @@ import { diaPorExtenso, emLisboa, intervalo, precoEmEuros } from "@/lib/datas";
 import { getDefinicoes } from "@/lib/dados";
 
 import { cancelarDaConta, completarPerfil } from "./actions";
+import { BotaoEnviar } from "@/components/botao-enviar";
 
 export const metadata = {
   title: "A minha conta | Catarina Neves Nails Studio",
@@ -56,12 +57,9 @@ function Linha({ m, cancelavel }: { m: MarcacaoConta; cancelavel: boolean }) {
       {cancelavel ? (
         <form action={cancelarDaConta}>
           <input type="hidden" name="id" value={m.id} />
-          <button
-            type="submit"
-            className="inline-flex min-h-11 items-center px-1 text-[15px] font-semibold text-danger underline-offset-4 hover:underline"
-          >
+          <BotaoEnviar className="inline-flex min-h-11 items-center px-1 text-[15px] font-semibold text-danger underline-offset-4 hover:underline">
             Cancelar
-          </button>
+          </BotaoEnviar>
         </form>
       ) : null}
     </li>
@@ -114,12 +112,9 @@ export default async function Conta({ searchParams }: PageProps<"/conta">) {
                 className={`${campoTexto} tabular`}
               />
             </div>
-            <button
-              type="submit"
-              className="inline-flex h-12 w-full items-center justify-center rounded-full bg-primary text-base font-bold text-primary-foreground hover:bg-primary-pressed"
-            >
+            <BotaoEnviar className="inline-flex h-12 w-full items-center justify-center rounded-full bg-primary text-base font-bold text-primary-foreground hover:bg-primary-pressed">
               Guardar
-            </button>
+            </BotaoEnviar>
           </form>
           <BotaoSair />
         </main>

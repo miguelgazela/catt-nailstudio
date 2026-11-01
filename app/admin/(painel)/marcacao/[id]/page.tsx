@@ -15,6 +15,7 @@ import {
   marcarFalta,
   reabrirMarcacao,
 } from "../actions";
+import { BotaoEnviar } from "@/components/botao-enviar";
 
 const FEITO: Record<string, string> = {
   criada: "Marcação guardada.",
@@ -49,12 +50,11 @@ function Confirmar({
       >
         <input type="hidden" name="id" value={id} />
         <p className="text-sm leading-5 text-muted-foreground">{texto}</p>
-        <button
-          type="submit"
+        <BotaoEnviar
           className={`inline-flex h-12 items-center justify-center rounded-full text-base font-bold ${perigo ? "bg-danger-surface text-danger" : "bg-primary text-primary-foreground"}`}
         >
           {rotulo}
-        </button>
+        </BotaoEnviar>
       </form>
     </details>
   );

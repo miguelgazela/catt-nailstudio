@@ -1,7 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 
+import { Suspense } from "react";
+
 import { Analise } from "@/components/analise";
+import { BarraNavegacao } from "@/components/barra-navegacao";
 import { RegistarSw } from "@/components/pwa/registar-sw";
 
 import "./globals.css";
@@ -65,6 +68,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${cormorant.variable} ${manrope.variable} h-full`}
     >
       <body className="flex min-h-full flex-col">
+        {/* Suspense: useSearchParams não pode obrigar as páginas estáticas a gerar no browser. */}
+        <Suspense fallback={null}>
+          <BarraNavegacao />
+        </Suspense>
         {children}
         <RegistarSw />
         {/* Só na Vercel: localmente e nos testes o script não existe. */}
