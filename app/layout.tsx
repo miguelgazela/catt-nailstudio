@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 
+import { Analise } from "@/components/analise";
 import { RegistarSw } from "@/components/pwa/registar-sw";
 
 import "./globals.css";
@@ -66,6 +67,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col">
         {children}
         <RegistarSw />
+        {/* Só na Vercel: localmente e nos testes o script não existe. */}
+        {process.env.VERCEL ? <Analise /> : null}
       </body>
     </html>
   );

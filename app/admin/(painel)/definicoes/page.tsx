@@ -1,3 +1,6 @@
+import { ChartColumn, ChevronRight } from "lucide-react";
+import Link from "next/link";
+
 import { exigirAdmin } from "@/lib/auth";
 import { supabaseSessao } from "@/lib/supabase/sessao";
 
@@ -19,6 +22,14 @@ export default async function Definicoes() {
       <h1 className="font-display text-[32px] leading-9 font-semibold">
         Definições
       </h1>
+      <Link
+        href="/admin/estatisticas"
+        className="flex min-h-14 items-center gap-3 rounded-2xl border border-border bg-card px-4 text-foreground no-underline hover:bg-accent"
+      >
+        <ChartColumn aria-hidden className="size-5 text-primary" />
+        <span className="flex-1 font-semibold">Estatísticas</span>
+        <ChevronRight aria-hidden className="size-5 text-muted-foreground" />
+      </Link>
       <Notificacoes
         chavePublica={process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? null}
       />

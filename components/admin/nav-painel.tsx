@@ -27,7 +27,7 @@ const ITENS = [
     href: "/admin/definicoes",
     rotulo: "Definições",
     Icone: Settings,
-    base: [],
+    base: ["/admin/estatisticas"],
   },
 ];
 
@@ -35,7 +35,7 @@ function ativo(p: string, href: string, base: string[]) {
   if (href === "/admin") {
     return p === "/admin" || base.some((b) => p.startsWith(b));
   }
-  return p.startsWith(href);
+  return p.startsWith(href) || base.some((b) => p.startsWith(b));
 }
 
 // Dentro do <Link>: `pending` fica true no instante do toque, por isso a tab marca-se logo,

@@ -48,6 +48,14 @@ export default function Privacidade() {
           alojamento e base de dados na União Europeia, e um teste anti-spam da
           Cloudflare no formulário. Só usamos cookies essenciais.
         </p>
+        <h2 className="font-display text-[22px] font-semibold">
+          Estatísticas de visitas
+        </h2>
+        <p>
+          Contamos as visitas ao site com o Vercel Web Analytics, sem cookies e
+          sem a identificar: vemos só que páginas são vistas, de onde vêm as
+          visitas e o tipo de aparelho.
+        </p>
       </main>
       <Rodape />
     </>

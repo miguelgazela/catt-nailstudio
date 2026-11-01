@@ -83,6 +83,7 @@ test("painel", async ({ page }) => {
     "/admin/servicos",
     "/admin/horario",
     "/admin/definicoes",
+    "/admin/estatisticas",
     `/admin/marcacao/${id}`,
   ]) {
     await semViolacoes(page, c);
