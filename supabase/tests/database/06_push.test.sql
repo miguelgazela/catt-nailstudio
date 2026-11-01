@@ -8,7 +8,7 @@ insert into public.admins (user_id) values ('00000000-0000-0000-0000-0000000000a
 
 -- admin guarda o seu dispositivo
 set local role authenticated;
-select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-0000000000a1","role":"authenticated","aal":"aal2"}', true);
 select lives_ok($$insert into public.push_subscriptions (user_id, endpoint, p256dh, auth)
   values ('00000000-0000-0000-0000-0000000000a1', 'https://push.example/1', 'k', 'a')$$, 'admin guarda subscrição');
 select is((select count(*)::int from public.push_subscriptions), 1, 'admin vê a sua');
@@ -16,7 +16,7 @@ select throws_ok($$insert into public.push_subscriptions (user_id, endpoint, p25
   values ('00000000-0000-0000-0000-0000000000b2', 'https://push.example/2', 'k', 'a')$$, '42501', null, 'admin não guarda em nome de outra');
 
 -- cliente que não é admin
-select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000b2', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-0000000000b2","role":"authenticated","aal":"aal2"}', true);
 select is((select count(*)::int from public.push_subscriptions), 0, 'cliente não vê subscrições');
 select throws_ok($$insert into public.push_subscriptions (user_id, endpoint, p256dh, auth)
   values ('00000000-0000-0000-0000-0000000000b2', 'https://push.example/3', 'k', 'a')$$, '42501', null, 'cliente não pode subscrever');

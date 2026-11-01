@@ -54,7 +54,7 @@ async function verificar(
 ): Promise<EstadoCodigo> {
   const u = await exigirAdminSemMfa("/admin/mfa");
   if (!CODIGO.test(codigo)) return { erro: "O código tem 6 números." };
-  if (!(await permitido(`mfa:${u.id}`, 8, 600))) {
+  if (!(await permitido(`mfa:${u.id}`, 8, 600, true))) {
     return { erro: "Demasiadas tentativas. Espere uns minutos." };
   }
   const sb = await supabaseSessao();

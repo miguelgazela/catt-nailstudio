@@ -1,5 +1,5 @@
 begin;
-select plan(22);
+select plan(24);
 
 -- Dados (como superutilizador)
 insert into auth.users (id, email) values
@@ -52,9 +52,16 @@ select throws_ok($$select public.anonymize_client('00000000-0000-0000-0000-00000
 reset role;
 select is((select name from public.clients where id = '00000000-0000-0000-0000-0000000000cb'), 'Beatriz', 'cliente não altera a ficha de outra');
 
+-- Admin só com o link do email (sem o código): não vê nada
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-0000000000ad","role":"authenticated","aal":"aal1"}', true);
+select is((select count(*)::int from public.clients), 0, 'admin sem código (aal1) não vê clientes');
+select throws_ok($$select public.anonymize_client('00000000-0000-0000-0000-0000000000cb')$$, '42501', null, 'admin sem código não anonimiza');
+reset role;
+
 -- Admin
 set local role authenticated;
-select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-0000000000ad","role":"authenticated"}', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-0000000000ad","role":"authenticated","aal":"aal2"}', true);
 select is((select count(*)::int from public.clients), 3, 'admin vê todas as clientes');
 select is((select count(*)::int from public.time_off), 1, 'admin vê folgas');
 reset role;

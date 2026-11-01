@@ -88,7 +88,10 @@ export async function reservar(
   }
   const limiteOk =
     (await permitido(`ip:${ip ?? "?"}`, 10, 600)) &&
-    (await permitido(`tel:${telefone}`, 5, 600));
+    (await permitido(`tel:${telefone}`, 5, 600)) &&
+    // O email recebe a confirmação: sem este limite, dava para encher a caixa de alguém.
+    (!d.email ||
+      (await permitido(`marcar-email:${d.email.toLowerCase()}`, 3, 3600)));
   if (!limiteOk) {
     return {
       erro: "Fez demasiados pedidos. Espere uns minutos e tente outra vez.",

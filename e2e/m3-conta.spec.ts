@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { type Page, expect, test } from "@playwright/test";
 
 import { criarTokenEmail } from "../lib/mudanca-email";
+import { proximaSegunda } from "./admin-helpers";
 
 const admin = () =>
   createClient(
@@ -121,8 +122,9 @@ test("marcar com conta e cancelar em /conta", async ({ page }) => {
   const tel = telefone();
   const id = await servicoId();
   await entrar(page, "bia@example.com", "/marcar");
-  // dia e hora pelo fluxo normal
-  await page.goto(`/marcar?servico=${id}`);
+  // dia e hora pelo fluxo normal; um dia a mais de 24 h para poder cancelar (ao domingo, o
+  // primeiro dia livre é amanhã)
+  await page.goto(`/marcar?servico=${id}&dia=${proximaSegunda()}`);
   const horas = page
     .getByRole("group", { name: "Horas livres" })
     .getByRole("button");

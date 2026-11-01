@@ -33,7 +33,7 @@ select is((select details from public.audit_log where entity = 'services' and ac
 
 -- Anonimização (admin)
 set local role authenticated;
-select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-0000000000ad","role":"authenticated"}', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-0000000000ad","role":"authenticated","aal":"aal2"}', true);
 select lives_ok($$select public.anonymize_client('00000000-0000-0000-0000-0000000000c1')$$, 'admin anonimiza');
 reset role;
 select is((select name || '|' || coalesce(phone, 'null') || '|' || coalesce(email, 'null') || '|' || coalesce(notes, 'null')

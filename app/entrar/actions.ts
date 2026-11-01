@@ -80,8 +80,8 @@ export async function entrarComCodigo(
   const ip =
     h.get("x-real-ip") ?? h.get("x-forwarded-for")?.split(",")[0]?.trim();
   const ok =
-    (await permitido(`codigo-ip:${ip ?? "?"}`, 20, 600)) &&
-    (await permitido(`codigo-email:${chaveEmail(email)}`, 5, 600));
+    (await permitido(`codigo-ip:${ip ?? "?"}`, 20, 600, true)) &&
+    (await permitido(`codigo-email:${chaveEmail(email)}`, 5, 600, true));
   if (!ok) {
     return { erro: "Demasiadas tentativas. Espere uns minutos e peça outro." };
   }

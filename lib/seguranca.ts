@@ -19,14 +19,18 @@ export async function permitido(
   chave: string,
   max: number,
   janelaSegundos: number,
+  /** Se o limitador falhar: false (por omissão) deixa passar; true bloqueia. */
+  fecharSeFalhar = false,
 ): Promise<boolean> {
   const { data, error } = await supabaseAdmin().rpc("rate_limit_hit", {
     p_key: hash(chave),
     p_limit: max,
     p_window_seconds: janelaSegundos,
   });
-  // Se o limitador falhar, não bloqueia a cliente: o Turnstile e a BD continuam a proteger.
-  return error ? true : data === true;
+  // Se o limitador falhar, não bloqueia a cliente (o Turnstile e a BD continuam a proteger),
+  // exceto onde adivinhar códigos é o risco: aí bloqueia.
+  if (error) return !fecharSeFalhar;
+  return data === true;
 }
 
 export async function verificarTurnstile(

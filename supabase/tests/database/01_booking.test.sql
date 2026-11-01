@@ -11,7 +11,8 @@ update public.settings set min_notice_minutes = 120, max_advance_days = 42, canc
 
 create temp table ctx as
 select
-  (date_trunc('week', now() at time zone 'Europe/Lisbon')::date + 7) as mon,
+  -- segunda da próxima semana, sempre a mais de 24 h (ao domingo seria amanhã)
+  (date_trunc('week', (now() at time zone 'Europe/Lisbon') + interval '2 days')::date + 7) as mon,
   (select id from public.services order by sort_order limit 1) as svc;
 
 create function pg_temp.at(p_day date, p_time time) returns timestamptz

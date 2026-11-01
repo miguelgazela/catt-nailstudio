@@ -436,6 +436,13 @@ Resultado do M5 (código):
 - Importar marcações futuras que a Catarina já tenha.
 - Feito quando: a app está no domínio final com dados reais.
 
+**Progresso do M7 (1 nov 2026)**
+- Textos legais: `/privacidade` e `/termos` reescritos; os dados do estúdio vêm de `lib/legal.ts` (nome, NIF, morada, entidade RAL, idade mínima, regra das faltas). Enquanto houver campos a `null`, as páginas mostram "[a definir]" e o aviso de texto provisório. Livro de Reclamações no rodapé e nos termos; Portal do Consumidor nos termos; queixa à CNPD e lista de subcontratantes na política.
+- RGPD: `docs/rgpd/registo-de-atividades.md` e `docs/rgpd/incidentes.md`. Falta aceitar os DPA (caixas por marcar no registo) e guardar as cópias.
+- Revisão de segurança (sem achados graves). Corrigido: `is_admin()` passa a exigir `aal2` na própria BD (migration `20261101100001_admin_aal2.sql`; antes, um link mágico roubado dava acesso às tabelas pela API sem o código); limite de 3 marcações por email por hora (evita encher a caixa de alguém); o limitador fecha se falhar nos códigos (MFA e código de entrada). Aceite: as notas da ficha são visíveis para a cliente (direito de acesso), por isso nunca escrever nelas o que ela não possa ler; limite de hosts no endpoint de push não feito (só admins); `PAINEL_SESSAO_SECRET` tem de estar definido na Vercel (senão usa a chave de serviço como segredo).
+- Testes que falhavam ao domingo (a "próxima segunda" era amanhã, a menos de 24 h) corrigidos.
+- Dados de teste em produção: só a ficha de convidada "Miguel" (1 marcação) e os 3 serviços placeholder.
+
 **M8. Piloto** (2 semanas de uso)
 - 5 a 10 clientes de confiança marcam a sério.
 - Recolher problemas, corrigir e só depois pôr o link no Instagram.
