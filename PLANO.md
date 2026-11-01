@@ -363,7 +363,7 @@ Resultado do M3:
 - Migration aplicada na nuvem a 31 out 2026.
 - **Por fazer**: no CI o pgTAP corre em BD limpa (em local o `03_rls` falha se sobrarem clientes de testes Playwright anteriores).
 
-**M4. Painel da Catarina** (4–5 dias) — **código feito a 31 out 2026, testado em local; falta o teste com a Catarina**
+**M4. Painel da Catarina** (4–5 dias) — **feito; conta da Catarina criada e testada com ela a 1 nov 2026**
 - Entrada e proteção do `/admin`, com MFA obrigatório e sessão que expira.
 - Na ficha: exportar dados da cliente, apagar ou anonimizar. Aviso no campo de notas para não registar dados de saúde.
 - Registo de alterações (`audit_log`) visível na marcação.
@@ -427,7 +427,8 @@ Resultado do M5 (código):
 - **Por fazer (Miguel)**: instalar no iPhone (Safari, Partilhar, Adicionar ao ecrã inicial; confirmar ícone, splash, que o cabeçalho não fica debaixo da barra de estado e que `/abrir` leva a Catarina ao painel) e no Android (Chrome, "Instalar app"; confirmar ícone maskable e abertura). Testar modo avião com a app instalada. Em produção o `/abrir` precisa da mesma sessão de admin (cookie do painel).
 
 **M7. Lançamento** (1–2 dias)
-- Domínio no Cloudflare, SPF, DKIM e DMARC para o email.
+- **Decidido (1 nov 2026)**: o site fica em https://catt-nailstudio.vercel.app (sem domínio próprio). Os emails saem do subdomínio `catt-nailstudio.miguelgazela.com`, já verificado no Resend: `EMAIL_FROM` = `Catarina Neves Nails Studio <marcacoes@catt-nailstudio.miguelgazela.com>` e `EMAIL_REPLY_TO` = email da Catarina.
+- SPF, DKIM e DMARC para o email.
 - Política de privacidade, termos e condições, link do Livro de Reclamações e entidade RAL (secção 11). Rever com alguém da área.
 - DPA aceites (Supabase, Cloudflare, Resend), registo de atividades de tratamento e plano de incidentes em `docs/rgpd/`.
 - Revisão de segurança antes de abrir: RLS, secrets, cabeçalhos, MFA da Catarina.

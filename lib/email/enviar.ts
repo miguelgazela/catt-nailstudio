@@ -26,8 +26,12 @@ export async function enviarEmail(e: Email): Promise<boolean> {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: process.env.EMAIL_FROM ?? DE,
+        from: DE,
         to: [e.para],
+        // Respostas das clientes vão para a Catarina, não para o endereço de envio.
+        ...(process.env.EMAIL_REPLY_TO
+          ? { reply_to: process.env.EMAIL_REPLY_TO }
+          : {}),
         subject: e.assunto,
         html: e.html,
         text: e.texto,
