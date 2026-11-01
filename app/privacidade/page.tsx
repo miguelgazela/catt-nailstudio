@@ -23,9 +23,9 @@ export default function Privacidade() {
         <p>
           Nome e telemóvel para fazer e gerir a sua marcação. O email é
           opcional, serve para a confirmação, o lembrete e o link de
-          cancelamento; se criar conta, é com ele que entra.
-          Guardamos também o histórico das suas marcações. Não pedimos nem
-          guardamos alergias ou outros dados de saúde.
+          cancelamento; se criar conta, é com ele que entra. Guardamos também o
+          histórico das suas marcações. Não pedimos nem guardamos alergias ou
+          outros dados de saúde.
         </p>
         <h2 className="font-display text-[22px] font-semibold">Para quê</h2>
         <p>
@@ -59,12 +59,12 @@ export default function Privacidade() {
           Quem trata os dados
         </h2>
         <p>
-          O responsável é {LEGAL.responsavel ?? aDefinir} (NIF{" "}
-          {LEGAL.nif ?? aDefinir}), {LEGAL.morada ?? aDefinir}. Para isso usamos
-          estes serviços, com contratos de proteção de dados: Supabase (base de
-          dados e contas, na União Europeia), Vercel (alojamento do site),
-          Resend (envio de emails, na União Europeia) e Cloudflare (teste
-          anti-spam no formulário de marcação).
+          O responsável é {LEGAL.responsavel ?? aDefinir},{" "}
+          {LEGAL.morada ?? aDefinir}. Para isso usamos estes serviços, com
+          contratos de proteção de dados: Supabase (base de dados e contas, na
+          União Europeia), Vercel (alojamento do site), Resend (envio de emails,
+          na União Europeia) e Cloudflare (teste anti-spam no formulário de
+          marcação).
         </p>
         <h2 className="font-display text-[22px] font-semibold">Cookies</h2>
         <p>

@@ -21,9 +21,8 @@ export default function Termos() {
         )}
         <h2 className={h2}>Quem presta o serviço</h2>
         <p>
-          {LEGAL.responsavel ?? aDefinir}, NIF {LEGAL.nif ?? aDefinir}, com
-          estúdio em {LEGAL.morada ?? aDefinir}. Contacto:{" "}
-          {LEGAL.email ?? aDefinir}.
+          {LEGAL.responsavel ?? aDefinir}, com estúdio em{" "}
+          {LEGAL.morada ?? aDefinir}. Contacto: {LEGAL.email ?? aDefinir}.
         </p>
         <h2 className={h2}>Marcações</h2>
         <p>

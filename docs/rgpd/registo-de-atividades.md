@@ -4,7 +4,7 @@ Artigo 30.º do RGPD. Atualizado a 1 de novembro de 2026. Rever sempre que a app
 
 ## Responsável
 
-- **Responsável pelo tratamento:** [nome da Catarina ou da empresa], NIF [a definir], [morada do estúdio].
+- **Responsável pelo tratamento:** [nome da Catarina ou da empresa], [morada do estúdio].
 - **Contacto para dados:** kiks1711@gmail.com
 - **Encarregado de proteção de dados:** não é obrigatório (microempresa, sem tratamento em grande escala nem dados sensíveis).
 

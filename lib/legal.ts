@@ -4,7 +4,6 @@
 export const LEGAL = {
   /** Nome de quem presta o serviço e trata os dados (pessoa ou empresa). */
   responsavel: null as string | null,
-  nif: null as string | null,
   morada: null as string | null,
   /** Email para pedidos sobre dados e reclamações. */
   email: "kiks1711@gmail.com" as string | null,
@@ -20,15 +19,7 @@ export const LEGAL = {
 };
 
 export const legalCompleto = (
-  [
-    "responsavel",
-    "nif",
-    "morada",
-    "email",
-    "ral",
-    "idadeMinima",
-    "faltas",
-  ] as const
+  ["responsavel", "morada", "email", "ral", "idadeMinima", "faltas"] as const
 ).every((k) => LEGAL[k] !== null);
 
 export const aDefinir = "[a definir]";
