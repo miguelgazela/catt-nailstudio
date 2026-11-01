@@ -2,7 +2,6 @@ import { AtSign, Clock, MapPin, Phone } from "lucide-react";
 import Link from "next/link";
 
 import { Cabecalho } from "@/components/marca/cabecalho";
-import { Logo } from "@/components/marca/logo";
 import { Rodape } from "@/components/marca/rodape";
 import { ServiceCard } from "@/components/marca/service-card";
 import { Splash } from "@/components/marca/splash";
@@ -56,14 +55,16 @@ export default async function Home() {
       <Cabecalho />
       <main className="mx-auto flex w-full max-w-xl flex-col gap-12 px-5 pt-1 pb-8">
         <section className="flex flex-col gap-5">
-          <div className="flex h-[220px] items-center justify-center rounded-xl bg-blush">
-            <Logo
-              size={150}
-              alt="Logótipo Catarina Neves Nails Studio"
-              priority
-              className="rounded-[28px] shadow-card"
-            />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/fotos/hero.jpg"
+            alt="Mãos com verniz gel cor de ameixa (imagem ilustrativa)"
+            width={900}
+            height={678}
+            fetchPriority="high"
+            decoding="async"
+            className="h-[250px] w-full rounded-3xl bg-blush object-cover"
+          />
           <h1 className="font-display text-[40px] leading-11 font-semibold text-balance">
             Mãos cuidadas, com tempo para si.
           </h1>

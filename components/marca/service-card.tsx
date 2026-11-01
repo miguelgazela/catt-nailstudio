@@ -3,6 +3,15 @@ import Link from "next/link";
 
 import { precoEmEuros } from "@/lib/datas";
 
+// Foto de reserva (imagens ilustrativas) quando o serviço ainda não tem foto própria.
+function fotoPadrao(nome: string): string | null {
+  const n = nome.toLowerCase();
+  if (n.includes("remo")) return "/fotos/remocao-gel.jpg";
+  if (n.includes("manuten")) return "/fotos/manutencao-gel.jpg";
+  if (n.includes("gel")) return "/fotos/manicure-gel.jpg";
+  return null;
+}
+
 export function ServiceCard({
   id,
   nome,
@@ -16,16 +25,17 @@ export function ServiceCard({
   precoCents: number;
   fotoUrl?: string | null;
 }) {
+  const foto = fotoUrl ?? fotoPadrao(nome);
   return (
     <Link
       href={`/marcar?servico=${id}`}
       className="flex min-h-20 items-center gap-3.5 rounded-lg border border-border bg-card py-3 pr-3.5 pl-4 text-card-foreground no-underline shadow-card transition-colors hover:bg-accent active:bg-accent"
     >
-      {fotoUrl ? (
+      {foto ? (
         // Decorativa: o nome do serviço já está no texto do cartão.
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={fotoUrl}
+          src={foto}
           alt=""
           width={72}
           height={72}
