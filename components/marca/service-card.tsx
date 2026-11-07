@@ -8,6 +8,9 @@ function fotoPadrao(nome: string): string | null {
   const n = nome.toLowerCase();
   if (n.includes("remo")) return "/fotos/remocao-gel.jpg";
   if (n.includes("manuten")) return "/fotos/manutencao-gel.jpg";
+  if (n.includes("pedicure") && n.includes("completa")) return "/fotos/pedicure-completa.jpg";
+  if (n.includes("pedicure")) return "/fotos/pedicure-normal.jpg";
+  if (n.includes("verniz")) return "/fotos/manicure-verniz-gel.jpg";
   if (n.includes("gel")) return "/fotos/manicure-gel.jpg";
   return null;
 }
