@@ -163,7 +163,7 @@ export function FormDados({
         recebes um link para cancelar até 24 h antes.
       </p>
 
-      <Turnstile siteKey={siteKey} aoMudar={aoMudar} />
+      <Turnstile siteKey={siteKey} pronto={pronto} aoMudar={aoMudar} />
 
       <div className="flex flex-col gap-2.5">
         <button
@@ -181,9 +181,7 @@ export function FormDados({
           )}
         </button>
         <p className="text-center text-[13px] leading-[18px] text-muted-foreground">
-          {pronto || pendente
-            ? "Usamos estes dados só para gerir a tua marcação. "
-            : "A verificar que és uma pessoa. "}
+          Usamos estes dados só para gerir a tua marcação.{" "}
           <Link
             href="/privacidade"
             className="font-semibold text-primary underline-offset-4 hover:underline"

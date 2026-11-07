@@ -152,7 +152,7 @@ export function FormEntrar({
           </p>
         )}
       </div>
-      <Turnstile siteKey={siteKey} aoMudar={aoMudar} />
+      <Turnstile siteKey={siteKey} pronto={pronto} aoMudar={aoMudar} />
       <button
         type="submit"
         disabled={pendente || !pronto}
