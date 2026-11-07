@@ -1,11 +1,12 @@
 import Link from "next/link";
 
+import { LinkConta } from "./link-conta";
 import { Logo } from "./logo";
 
 /**
- * "Entrar" leva a /conta: sem sessão vai para /entrar e volta; cliente vê as marcações;
+ * "Entrar" (ou "A minha conta", se há sessão) leva a /conta: sem sessão vai para /entrar e volta; cliente vê as marcações;
  * admin é mandada para o painel. Sem ler a sessão aqui, as páginas estáticas continuam estáticas.
- * Na app instalada não há barra de endereço, por isso este é o caminho para entrar.
+ * Nas páginas da conta mostra "Início". Na app instalada não há barra de endereço, por isso este é o caminho para entrar.
  */
 export function Cabecalho({ semEntrar = false }: { semEntrar?: boolean }) {
   return (
@@ -19,13 +20,15 @@ export function Cabecalho({ semEntrar = false }: { semEntrar?: boolean }) {
           Catarina Neves
         </span>
       </Link>
-      {semEntrar ? null : (
+      {semEntrar ? (
         <Link
-          href="/conta"
+          href="/"
           className="inline-flex min-h-11 items-center px-1 text-[15px] font-semibold text-primary underline-offset-4 hover:underline"
         >
-          Entrar
+          Início
         </Link>
+      ) : (
+        <LinkConta />
       )}
     </header>
   );

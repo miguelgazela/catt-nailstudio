@@ -82,8 +82,8 @@ export default async function Conta({ searchParams }: PageProps<"/conta">) {
           </h1>
           {erro ? <Aviso>{erro}</Aviso> : null}
           <p className="text-base leading-6 text-muted-foreground">
-            Sessão iniciada com {u.email}. Diz-nos o teu nome e telemóvel. Se
-            já marcaste connosco com este número, as tuas marcações aparecem aqui.
+            Sessão iniciada com {u.email}. Diz-nos o teu nome e telemóvel. Se já
+            marcaste connosco com este número, as tuas marcações aparecem aqui.
           </p>
           <form action={completarPerfil} className="flex flex-col gap-[18px]">
             <div className="flex flex-col gap-1.5">
@@ -137,11 +137,9 @@ export default async function Conta({ searchParams }: PageProps<"/conta">) {
       <Cabecalho semEntrar />
       <main className="mx-auto flex w-full max-w-xl flex-col gap-5 px-5 pt-4 pb-10">
         <h1 className="font-display text-[32px] leading-9 font-semibold">
-          As minhas marcações
+          Olá, {ficha.nome.trim().split(/\s+/)[0]}
         </h1>
-        <p className="text-sm text-muted-foreground">
-          {ficha.nome} · {u.email}
-        </p>
+        <p className="text-sm text-muted-foreground">{u.email}</p>
         {erro ? <Aviso>{erro}</Aviso> : null}
         {um(sp.cancelada) ? (
           <Aviso tipo="info">Marcação cancelada. A hora ficou livre.</Aviso>
@@ -159,7 +157,7 @@ export default async function Conta({ searchParams }: PageProps<"/conta">) {
             id="proximas"
             className="font-display text-2xl leading-7 font-semibold"
           >
-            Próximas
+            As tuas marcações
           </h2>
           {proximas.length ? (
             <ul className="m-0 flex list-none flex-col gap-3 p-0">
@@ -176,12 +174,14 @@ export default async function Conta({ searchParams }: PageProps<"/conta">) {
               Não tens marcações futuras.
             </p>
           )}
-          <p className="text-[13px] leading-[18px] text-muted-foreground">
-            Podes cancelar até {janela} h antes.
-            {def.contact_phone
-              ? ` Depois disso, liga para ${def.contact_phone}.`
-              : " Depois disso, contacta o estúdio."}
-          </p>
+          {proximas.length ? (
+            <p className="text-sm leading-5 text-muted-foreground">
+              Podes cancelar até {janela} h antes.
+              {def.contact_phone
+                ? ` Depois disso, liga para ${def.contact_phone}.`
+                : " Depois disso, contacta o estúdio."}
+            </p>
+          ) : null}
           <Link
             href="/marcar?modo=conta"
             className="inline-flex h-12 w-full items-center justify-center rounded-full bg-primary text-base font-bold text-primary-foreground no-underline hover:bg-primary-pressed"
@@ -206,7 +206,7 @@ export default async function Conta({ searchParams }: PageProps<"/conta">) {
           </section>
         ) : null}
 
-        <nav className="flex flex-wrap gap-x-5">
+        <nav className="flex flex-wrap items-center justify-between gap-x-5">
           <Link
             href="/conta/dados"
             className="inline-flex min-h-11 items-center px-1 text-[15px] font-semibold text-primary underline-offset-4 hover:underline"
