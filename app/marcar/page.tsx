@@ -148,7 +148,7 @@ export default async function Marcar({ searchParams }: PageProps<"/marcar">) {
               <div className="flex flex-col gap-3 rounded-lg border border-border bg-card px-4 py-5">
                 <p className="text-base leading-6">
                   Entra ou cria conta com o teu email, sem palavra-passe.
-                  Enviamos-te um link e um código, e voltas a este passo.
+                  Enviamos-te um código, e voltas a este passo.
                 </p>
                 <Link
                   href={`/entrar?next=${encodeURIComponent(`${base}&modo=conta`)}`}

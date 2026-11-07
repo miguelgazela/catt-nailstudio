@@ -99,15 +99,12 @@ describe("emails", () => {
     );
   });
 
-  it("entrada: link e código (para a app instalada)", () => {
-    const e = emailEntrada({
-      link: "https://exemplo.pt/auth/confirmar?x",
-      siteUrl: "https://exemplo.pt",
-      codigo: "482913",
-    });
-    expect(e.html).toContain("482913");
+  it("entrada: só código, sem link (scanners de email gastavam o link)", () => {
+    const e = emailEntrada({ siteUrl: "https://exemplo.pt", codigo: "482913" });
+    expect(e.assunto).toBe("482913 é o teu código para entrar");
     expect(e.html).toContain("Código: 482913");
-    expect(e.texto).toContain("Ou escreve este código na app: 482913");
+    expect(e.html).not.toContain("auth/confirmar");
+    expect(e.texto).toContain("Código: 482913");
   });
 
   it("escapa HTML vindo de dados", () => {

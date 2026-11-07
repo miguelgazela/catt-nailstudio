@@ -9,7 +9,7 @@ import {
   type EstadoCodigo,
   type EstadoEntrar,
   entrarComCodigo,
-  pedirLink,
+  pedirCodigo,
 } from "./actions";
 
 const inicial: EstadoEntrar = {};
@@ -42,14 +42,11 @@ function FormCodigo({ email, destino }: { email: string; destino: string }) {
           name="codigo"
           inputMode="numeric"
           autoComplete="one-time-code"
+          autoFocus
           maxLength={12}
           required
           className="tabular min-h-12 w-full rounded-md border border-input bg-card px-4 text-center text-xl tracking-[0.3em] text-foreground"
         />
-        <p className="text-[13px] leading-[18px] text-muted-foreground">
-          Na app instalada no telemóvel, o link abre noutro browser. Escreve
-          aqui o código para entrar na app.
-        </p>
       </div>
       <button
         type="submit"
@@ -78,7 +75,7 @@ export function FormEntrar({
   const aoMudar = useCallback((p: boolean) => setPronto(p), []);
   const [estado, acao, pendente] = useActionState(
     async (anterior: EstadoEntrar, dados: FormData) => {
-      const r = await pedirLink(anterior, dados);
+      const r = await pedirCodigo(anterior, dados);
       setPronto(false);
       window.turnstile?.reset();
       return r;
@@ -95,9 +92,8 @@ export function FormEntrar({
         >
           <MailCheck aria-hidden className="size-7 text-success" />
           <p className="text-base leading-6">
-            Se o email estiver certo, enviámos-te um link e um código para
-            entrar. Carrega em &quot;Entrar&quot; no email, ou escreve o código
-            aqui em baixo.
+            Se o email estiver certo, enviámos-te um código para entrar.
+            Escreve-o aqui em baixo.
           </p>
           <p className="text-sm leading-5 text-muted-foreground">
             Não chegou? Vê o spam e, passados uns minutos, volta a pedir.
@@ -147,8 +143,8 @@ export function FormEntrar({
             className="text-[13px] leading-[18px] text-muted-foreground"
           >
             {criarConta
-              ? "Enviamos um link e um código para entrar. Se for a primeira vez, a conta é criada nesse momento. Não precisas de palavra-passe."
-              : "Enviamos um link e um código para entrar. Não precisas de palavra-passe."}
+              ? "Enviamos um código para entrar. Se for a primeira vez, a conta é criada nesse momento. Não precisas de palavra-passe."
+              : "Enviamos um código para entrar. Não precisas de palavra-passe."}
           </p>
         )}
       </div>
@@ -163,7 +159,7 @@ export function FormEntrar({
             <LoaderCircle aria-hidden className="size-5 animate-spin" />A enviar
           </>
         ) : (
-          "Enviar link"
+          "Enviar código"
         )}
       </button>
     </form>

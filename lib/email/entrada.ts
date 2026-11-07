@@ -8,11 +8,14 @@ import { urlDoSite } from "./marcacao";
 import { supabaseAdmin } from "../supabase/admin";
 
 /**
- * Gera o link de entrada (válido 1 hora, uso único) e envia-o pelo Resend.
+ * Gera o código de entrada (válido 1 hora, uso único) e envia-o pelo Resend.
+ * Só código, sem link: os scanners de email (Gmail, Outlook) e o browser dentro da app de
+ * email abriam o link antes da pessoa e gastavam o token (o código ia junto), e o login
+ * ficava no browser errado.
  * Devolve sempre sem erro, quer o email exista quer não: quem pede nunca descobre se há conta.
  * Para o painel (/admin) só envia a admins: os outros não recebem nada nem ficam com conta criada.
  */
-export async function enviarLinkDeEntrada(
+export async function enviarCodigoDeEntrada(
   email: string,
   destino: string,
 ): Promise<void> {
@@ -28,20 +31,15 @@ export async function enviarLinkDeEntrada(
       type: "magiclink",
       email,
     });
-    const token = data?.properties?.hashed_token;
-    if (error || !token) {
-      console.error("Não foi possível gerar o link de entrada");
+    const codigo = data?.properties?.email_otp;
+    if (error || !codigo) {
+      console.error("Não foi possível gerar o código de entrada");
       return;
     }
-    const link = `${urlDoSite()}/auth/confirmar?token_hash=${encodeURIComponent(token)}&type=magiclink&next=${encodeURIComponent(destino)}`;
-    const e = emailEntrada({
-      link,
-      siteUrl: urlDoSite(),
-      codigo: data?.properties?.email_otp,
-    });
+    const e = emailEntrada({ codigo, siteUrl: urlDoSite() });
     await enviarEmail({ para: email, ...e });
   } catch {
-    console.error("Falha ao enviar o link de entrada");
+    console.error("Falha ao enviar o código de entrada");
   }
 }
 

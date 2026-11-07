@@ -84,11 +84,11 @@ test("pedir o link mostra sempre a mesma resposta, haja conta ou não", async ({
 }) => {
   await page.goto("/entrar");
   await page.getByLabel("Email").fill(`ninguem${aleatorio(6)}@example.com`);
-  const enviar = page.getByRole("button", { name: "Enviar link" });
+  const enviar = page.getByRole("button", { name: "Enviar código" });
   await expect(enviar).toBeEnabled({ timeout: 30_000 });
   await enviar.click();
   await expect(
-    page.getByText("Se o email estiver certo, enviámos-te um link"),
+    page.getByText("Se o email estiver certo, enviámos-te um código"),
   ).toBeVisible();
 });
 
@@ -98,12 +98,12 @@ test("pedido de entrada no painel: quem não é admin não recebe link nem fica 
   const email = `cliente${aleatorio(6)}@example.com`;
   await page.goto("/entrar?next=%2Fadmin");
   await page.getByLabel("Email").fill(email);
-  const enviar = page.getByRole("button", { name: "Enviar link" });
+  const enviar = page.getByRole("button", { name: "Enviar código" });
   await expect(enviar).toBeEnabled({ timeout: 30_000 });
   await enviar.click();
   // A resposta é a mesma (não revela quem é admin)...
   await expect(
-    page.getByText("Se o email estiver certo, enviámos-te um link"),
+    page.getByText("Se o email estiver certo, enviámos-te um código"),
   ).toBeVisible();
   // ...mas não foi gerado link, por isso o utilizador nem existe.
   const { data } = await admin().auth.admin.listUsers();
@@ -118,7 +118,7 @@ test("entrar com o código do email (app instalada, onde o link abre noutro brow
   await db.auth.admin.createUser({ email, email_confirm: true });
   await page.goto("/entrar");
   await page.getByLabel("Email").fill(email);
-  const enviar = page.getByRole("button", { name: "Enviar link" });
+  const enviar = page.getByRole("button", { name: "Enviar código" });
   await expect(enviar).toBeEnabled({ timeout: 30_000 });
   await enviar.click();
   await expect(page.getByLabel("Código do email")).toBeVisible();
@@ -140,7 +140,7 @@ test("entrar com o código do email (app instalada, onde o link abre noutro brow
 test("email inválido mostra erro no campo", async ({ page }) => {
   await page.goto("/entrar");
   await page.getByLabel("Email").fill("isto-nao-e-email");
-  const enviar = page.getByRole("button", { name: "Enviar link" });
+  const enviar = page.getByRole("button", { name: "Enviar código" });
   await expect(enviar).toBeEnabled({ timeout: 30_000 });
   await enviar.click();
   await expect(page.getByText("Email inválido")).toBeVisible();

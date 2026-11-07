@@ -54,6 +54,8 @@ function html(opts: {
   intro: string;
   linhas: [string, string][];
   botoes: Botao[];
+  /** Texto grande em destaque (ex.: código de entrada). */
+  destaque?: string;
   nota?: string;
   motivo?: string;
   siteUrl: string;
@@ -93,7 +95,8 @@ function html(opts: {
       <tr><td style="background:${COR.cartao};border:1px solid ${COR.borda};border-radius:16px;padding:28px 24px">
         <h1 style="margin:0 0 10px;font:600 32px/36px ${SERIFA};color:${COR.texto}">${esc(opts.titulo)}</h1>
         <p style="margin:0 0 20px;font:400 16px/24px ${SANS};color:${COR.suave}">${esc(opts.intro)}</p>
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px">${linhas}</table>
+        ${opts.destaque ? `<p style="margin:0 0 24px;padding:18px 12px;background:${COR.fundo};border-radius:12px;text-align:center;font:700 34px/40px ${SANS};letter-spacing:8px;color:${COR.texto}">${esc(opts.destaque)}</p>` : ""}
+        ${linhas ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px">${linhas}</table>` : ""}
         <div>${botoes}</div>
         ${opts.nota ? `<p style="margin:16px 0 0;font:400 14px/20px ${SANS};color:${COR.suave}">${esc(opts.nota)}</p>` : ""}
       </td></tr>
@@ -232,36 +235,29 @@ export function emailLembrete(d: DadosMarcacao): EmailPronto {
 /** Link e código para entrar (sem palavra-passe). Válidos 1 hora. O código serve na app instalada,
  * onde o link abriria fora dela (noutro browser, sem a sessão). */
 export function emailEntrada(d: {
-  link: string;
+  codigo: string;
   siteUrl: string;
-  codigo?: string;
 }): EmailPronto {
   const nota =
-    "O link e o código servem uma vez e expiram numa hora. Se não pediste para entrar, ignora este email: ninguém entra sem eles.";
+    "O código serve uma vez e expira numa hora. Se não pediste para entrar, ignora este email: ninguém entra sem ele.";
+  const intro =
+    "Escreve este código no ecrã onde pediste para entrar. Não precisas de palavra-passe.";
   return {
-    assunto: "O teu link para entrar",
+    assunto: `${d.codigo} é o teu código para entrar`,
     html: html({
-      prehead: d.codigo
-        ? `Código: ${d.codigo}`
-        : "Carrega no botão para entrar.",
+      prehead: `Código: ${d.codigo}`,
       titulo: "Entrar",
-      intro: d.codigo
-        ? "Carrega no botão para entrar na tua conta. Se estiveres na app instalada no telemóvel, escreve lá este código."
-        : "Carrega no botão para entrar na tua conta. Não precisas de palavra-passe.",
-      linhas: d.codigo ? [["Código", d.codigo]] : [],
-      botoes: [{ texto: "Entrar", href: d.link, principal: true }],
+      intro,
+      destaque: d.codigo,
+      linhas: [],
+      botoes: [],
       nota,
       motivo: "pediste para entrar na tua conta",
       siteUrl: d.siteUrl,
     }),
-    texto: [
-      "Entrar",
-      "",
-      `Abre este link para entrar: ${d.link}`,
-      ...(d.codigo ? [`Ou escreve este código na app: ${d.codigo}`] : []),
-      "",
-      nota,
-    ].join("\n"),
+    texto: ["Entrar", "", intro, "", `Código: ${d.codigo}`, "", nota].join(
+      "\n",
+    ),
   };
 }
 

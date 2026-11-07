@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { caminhoSeguro } from "@/lib/caminho";
-import { chaveEmail, enviarLinkDeEntrada } from "@/lib/email/entrada";
+import { chaveEmail, enviarCodigoDeEntrada } from "@/lib/email/entrada";
 import { permitido, verificarTurnstile } from "@/lib/seguranca";
 import { supabaseSessao } from "@/lib/supabase/sessao";
 
@@ -17,7 +17,7 @@ export type EstadoEntrar = {
 
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
-export async function pedirLink(
+export async function pedirCodigo(
   _anterior: EstadoEntrar,
   formData: FormData,
 ): Promise<EstadoEntrar> {
@@ -54,7 +54,7 @@ export async function pedirLink(
     };
   }
 
-  await enviarLinkDeEntrada(email, destino);
+  await enviarCodigoDeEntrada(email, destino);
   // Mesma resposta haja ou não conta: não revelamos quem tem conta.
   return { enviado: true, email };
 }
@@ -63,7 +63,7 @@ export type EstadoCodigo = { erro?: string };
 
 const CODIGO = /^\d{6,10}$/;
 
-/** Entrar com o código do email (para a app instalada, onde o link abre noutro browser). */
+/** Entrar com o código do email. */
 export async function entrarComCodigo(
   _anterior: EstadoCodigo,
   formData: FormData,
