@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Rodape } from "@/components/marca/rodape";
-import { StatusBadge } from "@/components/marca/status-badge";
 import { linkGoogleCalendar } from "@/lib/calendario";
 import { diaPorExtenso, emLisboa, intervalo, precoEmEuros } from "@/lib/datas";
 import { getDefinicoes } from "@/lib/dados";
@@ -46,16 +45,13 @@ export default async function Confirmada({
           <span className="flex size-16 items-center justify-center rounded-full bg-success-surface text-success">
             <Check aria-hidden className="size-[30px]" strokeWidth={2.25} />
           </span>
-          <div>
-            <StatusBadge estado="confirmada" />
-          </div>
           <h1 className="font-display text-[32px] leading-9 font-semibold">
             Marcação confirmada
           </h1>
           <p className="text-base leading-6 text-muted-foreground">
             {e === "1"
-              ? "A sua hora está reservada. Enviámos os detalhes para o seu email."
-              : "A sua hora está reservada. Guarde a data no calendário ou tire uma captura deste ecrã."}
+              ? "A tua hora está reservada. Enviámos os detalhes para o teu email."
+              : "A tua hora está reservada. Guarda a data no calendário ou tire uma captura deste ecrã."}
           </p>
         </div>
 
@@ -86,7 +82,7 @@ export default async function Confirmada({
               id,
               inicio: new Date(data.starts_at),
               titulo: `${data.services?.name ?? "Marcação"}, Catarina Neves Nails Studio`,
-              descricao: "Pagamento no estúdio. Pode cancelar até 24 h antes.",
+              descricao: "Pagamento no estúdio. Podes cancelar até 24 h antes.",
               local: def.address,
             })}
             target="_blank"
@@ -100,7 +96,7 @@ export default async function Confirmada({
         <p className="flex items-start gap-2.5 text-sm leading-5 text-muted-foreground">
           <CalendarClock aria-hidden className="mt-0.5 size-[18px] shrink-0" />
           <span>
-            Pode cancelar até 24 h antes
+            Podes cancelar até 24 h antes
             {def.contact_phone ? (
               <>
                 , ligando para o estúdio:{" "}

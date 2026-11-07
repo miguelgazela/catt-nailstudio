@@ -119,7 +119,7 @@ export function FormDados({
       <Campo
         id="tel"
         rotulo="Telemóvel"
-        ajuda="Só para a Catarina a contactar se precisar."
+        ajuda="Só para a Catarina a contactar se precisares."
         erro={c.tel}
       >
         <input
@@ -159,8 +159,8 @@ export function FormDados({
 
       <p className="flex items-start gap-2.5 rounded-lg bg-secondary px-4 py-3.5 text-sm leading-5 text-secondary-foreground">
         <Info aria-hidden className="mt-px size-[18px] shrink-0" />
-        Sem conta pode ter 1 marcação futura de cada vez. Se deixar o email,
-        recebe um link para cancelar até 24 h antes.
+        Sem conta podes ter 1 marcação futura de cada vez. Se deixares o email,
+        recebes um link para cancelar até 24 h antes.
       </p>
 
       <Turnstile siteKey={siteKey} aoMudar={aoMudar} />
@@ -182,13 +182,13 @@ export function FormDados({
         </button>
         <p className="text-center text-[13px] leading-[18px] text-muted-foreground">
           {pronto || pendente
-            ? "Usamos estes dados só para gerir a sua marcação. "
-            : "A verificar que é uma pessoa. "}
+            ? "Usamos estes dados só para gerir a tua marcação. "
+            : "A verificar que és uma pessoa. "}
           <Link
             href="/privacidade"
             className="font-semibold text-primary underline-offset-4 hover:underline"
           >
-            Como tratamos os seus dados
+            Como tratamos os teus dados
           </Link>
         </p>
       </div>

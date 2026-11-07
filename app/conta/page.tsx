@@ -20,13 +20,13 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 const ERROS: Record<string, string> = {
-  nome: "Escreva o seu nome.",
-  tel: "Número inválido. Escreva os 9 números do telemóvel.",
+  nome: "Escreve o teu nome.",
+  tel: "Número inválido. Escreve os 9 números do telemóvel.",
   numero:
-    "Não conseguimos associar este número à sua conta. Contacte o estúdio se precisar de ajuda.",
-  limite: "Fez demasiados pedidos. Espere uns minutos e tente outra vez.",
-  tarde: "Só é possível cancelar até 24 h antes. Contacte o estúdio.",
-  geral: "Não foi possível concluir. Tente outra vez dentro de instantes.",
+    "Não conseguimos associar este número à tua conta. Contacta o estúdio se precisares de ajuda.",
+  limite: "Fizeste demasiados pedidos. Espera uns minutos e tenta outra vez.",
+  tarde: "Só é possível cancelar até 24 h antes. Contacta o estúdio.",
+  geral: "Não foi possível concluir. Tenta outra vez dentro de instantes.",
 };
 
 const um = (v: string | string[] | undefined) =>
@@ -78,12 +78,12 @@ export default async function Conta({ searchParams }: PageProps<"/conta">) {
         <Cabecalho semEntrar />
         <main className="mx-auto flex w-full max-w-xl flex-col gap-5 px-5 pt-4 pb-10">
           <h1 className="font-display text-[32px] leading-9 font-semibold">
-            Complete a sua conta
+            Completa a tua conta
           </h1>
           {erro ? <Aviso>{erro}</Aviso> : null}
           <p className="text-base leading-6 text-muted-foreground">
-            Sessão iniciada com {u.email}. Diga-nos o seu nome e telemóvel. Se
-            já marcou connosco com este número, as suas marcações aparecem aqui.
+            Sessão iniciada com {u.email}. Diz-nos o teu nome e telemóvel. Se
+            já marcaste connosco com este número, as tuas marcações aparecem aqui.
           </p>
           <form action={completarPerfil} className="flex flex-col gap-[18px]">
             <div className="flex flex-col gap-1.5">
@@ -149,8 +149,8 @@ export default async function Conta({ searchParams }: PageProps<"/conta">) {
         {ligadas > 0 ? (
           <Aviso tipo="info">
             Encontrámos {ligadas}{" "}
-            {ligadas === 1 ? "marcação antiga" : "marcações antigas"} com o seu
-            telemóvel e juntámos à sua conta.
+            {ligadas === 1 ? "marcação antiga" : "marcações antigas"} com o teu
+            telemóvel e juntámos à tua conta.
           </Aviso>
         ) : null}
 
@@ -173,14 +173,14 @@ export default async function Conta({ searchParams }: PageProps<"/conta">) {
             </ul>
           ) : (
             <p className="text-base text-muted-foreground">
-              Não tem marcações futuras.
+              Não tens marcações futuras.
             </p>
           )}
           <p className="text-[13px] leading-[18px] text-muted-foreground">
-            Pode cancelar até {janela} h antes.
+            Podes cancelar até {janela} h antes.
             {def.contact_phone
-              ? ` Depois disso, ligue para ${def.contact_phone}.`
-              : " Depois disso, contacte o estúdio."}
+              ? ` Depois disso, liga para ${def.contact_phone}.`
+              : " Depois disso, contacta o estúdio."}
           </p>
           <Link
             href="/marcar?modo=conta"

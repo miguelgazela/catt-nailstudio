@@ -2,6 +2,7 @@ import { AtSign, Clock, MapPin, Phone } from "lucide-react";
 import Link from "next/link";
 
 import { Cabecalho } from "@/components/marca/cabecalho";
+import { MiniMapa } from "@/components/marca/mini-mapa";
 import { Rodape } from "@/components/marca/rodape";
 import { ServiceCard } from "@/components/marca/service-card";
 import { Splash } from "@/components/marca/splash";
@@ -69,7 +70,7 @@ export default async function Home() {
             Mãos cuidadas, com tempo para si.
           </h1>
           <p className="text-lg leading-7 text-muted-foreground">
-            Manicure e unhas de gel. Escolha o serviço e a hora em menos de um
+            Manicure e unhas de gel. Escolhe o serviço e a hora em menos de um
             minuto.
           </p>
           <div className="flex flex-col gap-3">
@@ -112,6 +113,7 @@ export default async function Home() {
           >
             Onde estamos
           </h2>
+          {def.address ? <MiniMapa morada={def.address} /> : null}
           <div className="rounded-lg border border-border bg-card px-4 py-1">
             {def.address ? (
               <Linha icone={<MapPin aria-hidden />}>

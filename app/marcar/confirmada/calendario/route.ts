@@ -15,7 +15,7 @@ export async function GET(pedido: Request) {
     id: m.marcacao.id,
     inicio: m.marcacao.inicio,
     titulo: `${m.marcacao.servico}, Catarina Neves Nails Studio`,
-    descricao: "Pagamento no estúdio. Pode cancelar até 24 h antes.",
+    descricao: "Pagamento no estúdio. Podes cancelar até 24 h antes.",
     local: m.marcacao.morada,
   });
   return new Response(ics, {

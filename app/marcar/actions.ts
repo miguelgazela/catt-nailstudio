@@ -26,9 +26,9 @@ const dados = z.object({
   nome: z
     .string()
     .trim()
-    .min(1, "Escreva o seu nome.")
+    .min(1, "Escreve o teu nome.")
     .max(100, "O nome é demasiado longo."),
-  tel: z.string().trim().min(1, "Escreva o seu telemóvel."),
+  tel: z.string().trim().min(1, "Escreve o teu telemóvel."),
   email: z.string().trim().max(254, "O email é demasiado longo."),
   token: z.string(),
 });
@@ -36,7 +36,7 @@ const dados = z.object({
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
 const MENSAGEM_GERAL =
-  "Não foi possível concluir. Tente outra vez dentro de instantes.";
+  "Não foi possível concluir. Tenta outra vez dentro de instantes.";
 
 export async function reservar(
   _anterior: EstadoForm,
@@ -71,9 +71,9 @@ export async function reservar(
   const campos: NonNullable<EstadoForm["campos"]> = {};
   const telefone = normalizarTelemovel(d.tel);
   if (!telefone)
-    campos.tel = "Número inválido. Escreva os 9 números do telemóvel.";
+    campos.tel = "Número inválido. Escreve os 9 números do telemóvel.";
   if (d.email && !EMAIL.test(d.email))
-    campos.email = "Email inválido. Confirme se tem o @ e o domínio.";
+    campos.email = "Email inválido. Confirma se tens o @ e o domínio.";
   if (Object.keys(campos).length) return { campos, valores };
 
   const h = await headers();
@@ -82,7 +82,7 @@ export async function reservar(
 
   if (!(await verificarTurnstile(d.token, ip))) {
     return {
-      erro: "Não conseguimos confirmar que é uma pessoa. Tente outra vez.",
+      erro: "Não conseguimos confirmar que és uma pessoa. Tenta outra vez.",
       valores,
     };
   }
@@ -94,7 +94,7 @@ export async function reservar(
       (await permitido(`marcar-email:${d.email.toLowerCase()}`, 3, 3600)));
   if (!limiteOk) {
     return {
-      erro: "Fez demasiados pedidos. Espere uns minutos e tente outra vez.",
+      erro: "Fizeste demasiados pedidos. Espera uns minutos e tenta outra vez.",
       valores,
     };
   }
@@ -168,22 +168,22 @@ async function concluir(d: Pedido): Promise<EstadoForm> {
       redirect(voltar);
     case "blocked":
       return {
-        erro: "Este número não pode fazer marcações online. Contacte o estúdio.",
+        erro: "Este número não pode fazer marcações online. Contacta o estúdio.",
         valores,
       };
     case "guest_limit":
       return {
-        erro: "Já tem uma marcação futura com este número. Para marcar outra, contacte o estúdio.",
+        erro: "Já tens uma marcação futura com este número. Para marcar outra, contacta o estúdio.",
         valores,
       };
     case "phone_in_use":
       return {
-        erro: "Não conseguimos usar este número. Contacte o estúdio.",
+        erro: "Não conseguimos usar este número. Contacta o estúdio.",
         valores,
       };
     case "invalid_phone":
       return {
-        campos: { tel: "Número inválido. Escreva os 9 números do telemóvel." },
+        campos: { tel: "Número inválido. Escreve os 9 números do telemóvel." },
         valores,
       };
     default:
@@ -229,15 +229,15 @@ export async function reservarComConta(
   const nome = ficha?.name ?? String(formData.get("nome") ?? "").trim();
   const bruto = ficha?.phone ?? String(formData.get("tel") ?? "");
   const campos: NonNullable<EstadoConta["campos"]> = {};
-  if (!nome || nome.length > 100) campos.nome = "Escreva o seu nome.";
+  if (!nome || nome.length > 100) campos.nome = "Escreve o teu nome.";
   const telefone = normalizarTelemovel(bruto);
   if (!telefone)
-    campos.tel = "Número inválido. Escreva os 9 números do telemóvel.";
+    campos.tel = "Número inválido. Escreve os 9 números do telemóvel.";
   if (Object.keys(campos).length) return { campos };
 
   if (!(await permitido(`marcar-conta:${u.id}`, 10, 600))) {
     return {
-      erro: "Fez demasiados pedidos. Espere uns minutos e tente outra vez.",
+      erro: "Fizeste demasiados pedidos. Espera uns minutos e tenta outra vez.",
     };
   }
 

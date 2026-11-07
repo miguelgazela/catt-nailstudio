@@ -35,7 +35,7 @@ export default async function Cancelar({
           </h1>
           <p className="text-base leading-6 text-muted-foreground">
             A marcação pode já ter sido cancelada ou já passou.
-            {telefone ? ` Se precisar de ajuda, ligue para ${telefone}.` : ""}
+            {telefone ? ` Se precisares de ajuda, liga para ${telefone}.` : ""}
           </p>
           <Link
             href="/marcar"
@@ -82,11 +82,11 @@ export default async function Cancelar({
             className="rounded-lg bg-danger-surface px-4 py-3 text-sm leading-5 text-danger"
           >
             Só é possível cancelar até 24 h antes.
-            {telefone ? ` Ligue para ${telefone}.` : " Contacte o estúdio."}
+            {telefone ? ` Liga para ${telefone}.` : " Contacta o estúdio."}
           </p>
         ) : (
           <p className="text-sm leading-5 text-muted-foreground">
-            Pode cancelar até 24 h antes. A hora fica livre para outra pessoa.
+            Podes cancelar até 24 h antes. A hora fica livre para outra pessoa.
           </p>
         )}
 

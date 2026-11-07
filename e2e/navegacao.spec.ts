@@ -25,7 +25,7 @@ test("mudar de página mostra logo o ecrã de espera", async ({ page }) => {
     timeout: 500,
   });
   await expect(
-    page.getByRole("heading", { name: "Escolha o dia e a hora" }),
+    page.getByRole("heading", { name: "Escolhe o dia e a hora" }),
   ).toBeVisible();
 });
 
@@ -36,7 +36,7 @@ test("mudar só os parâmetros mostra a barra no topo até a página chegar", as
   await page.goto("/marcar");
   await page.getByRole("link", { name: /Manicure simples/ }).click();
   await expect(
-    page.getByRole("heading", { name: "Escolha o dia e a hora" }),
+    page.getByRole("heading", { name: "Escolhe o dia e a hora" }),
   ).toBeVisible();
   await page.goto(`${page.url()}&dia=${proximaSegunda()}`);
   await page
@@ -48,7 +48,7 @@ test("mudar só os parâmetros mostra a barra no topo até a página chegar", as
   const barra = page.locator("[data-barra-navegacao]");
   await expect(barra).toHaveCount(1, { timeout: 500 });
   await expect(
-    page.getByRole("heading", { name: "Os seus dados" }),
+    page.getByRole("heading", { name: "Os teus dados" }),
   ).toBeVisible();
   await expect(barra).toHaveCount(0);
 });

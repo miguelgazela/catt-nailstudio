@@ -73,8 +73,8 @@ export function FormConta({
               <p className="text-[13px] leading-[18px] text-danger">{c.tel}</p>
             ) : (
               <p className="text-[13px] leading-[18px] text-muted-foreground">
-                Se já marcou connosco com este número, juntamos as marcações à
-                sua conta.
+                Se já marcaste connosco com este número, juntamos as marcações à
+                tua conta.
               </p>
             )}
           </div>
@@ -97,7 +97,7 @@ export function FormConta({
       )}
 
       <p className="text-[13px] leading-[18px] text-muted-foreground">
-        Com conta pode ver e cancelar as marcações em &quot;A minha conta&quot;,
+        Com conta podes ver e cancelar as marcações em &quot;A minha conta&quot;,
         até 24 h antes.
       </p>
 

@@ -19,7 +19,7 @@ export default function Cancelada() {
           Marcação cancelada
         </h1>
         <p className="text-base leading-6 text-muted-foreground">
-          A hora ficou livre. Quando quiser, pode marcar outra.
+          A hora ficou livre. Quando quiseres, podes marcar outra.
         </p>
         <Link
           href="/marcar"

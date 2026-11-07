@@ -32,7 +32,7 @@ export default async function Entrar({ searchParams }: PageProps<"/entrar">) {
             role="alert"
             className="rounded-lg bg-danger-surface px-4 py-3 text-sm leading-5 text-danger"
           >
-            Este link já não é válido. Peça um novo.
+            Este link já não é válido. Pede um novo.
           </p>
         ) : null}
         <FormEntrar

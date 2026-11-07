@@ -45,7 +45,7 @@ export default async function Marcar({ searchParams }: PageProps<"/marcar">) {
         <Passo n={1} voltar="/" />
         <main className="mx-auto flex w-full max-w-xl flex-col gap-3 px-5 pt-6 pb-10">
           <h1 className="font-display text-[32px] leading-9 font-semibold">
-            Escolha o serviço
+            Escolhe o serviço
           </h1>
           <p className="mb-2 text-[15px] text-muted-foreground">
             Todas as marcações têm 1 hora.
@@ -64,7 +64,7 @@ export default async function Marcar({ searchParams }: PageProps<"/marcar">) {
           ) : (
             <p className="text-base text-muted-foreground">
               Ainda não há serviços disponíveis para marcar online.
-              {def.contact_phone ? ` Ligue para ${def.contact_phone}.` : ""}
+              {def.contact_phone ? ` Liga para ${def.contact_phone}.` : ""}
             </p>
           )}
         </main>
@@ -85,9 +85,8 @@ export default async function Marcar({ searchParams }: PageProps<"/marcar">) {
     const admin = await eAdmin();
     const utilizador = admin ? null : await getUtilizador();
     const ficha = utilizador ? await getFicha(utilizador.id) : null;
-    const modo =
-      !admin &&
-      (um(sp.modo) === "conta" || (utilizador && um(sp.modo) !== "convidada"))
+    // Com sessão iniciada marca sempre com a conta: a escolha só existe para quem não entrou.
+    const modo = !admin && (um(sp.modo) === "conta" || utilizador)
         ? "conta"
         : "convidada";
     const base = `/marcar?servico=${servico.id}&dia=${dia}&hora=${hora}`;
@@ -96,7 +95,7 @@ export default async function Marcar({ searchParams }: PageProps<"/marcar">) {
         <Passo n={3} voltar={`/marcar?servico=${servico.id}&dia=${dia}`} />
         <main className="mx-auto flex w-full max-w-xl flex-col gap-5 px-5 pt-4 pb-10">
           <h1 className="font-display text-[32px] leading-9 font-semibold">
-            Os seus dados
+            Os teus dados
           </h1>
           <div className="tabular flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3.5">
             <div className="flex flex-1 flex-col gap-0.5">
@@ -117,8 +116,8 @@ export default async function Marcar({ searchParams }: PageProps<"/marcar">) {
               Alterar
             </Link>
           </div>
-          {admin ? null : (
-            <nav aria-label="Como quer marcar" className="flex gap-2">
+          {admin || utilizador ? null : (
+            <nav aria-label="Como queres marcar" className="flex gap-2">
               {(
                 [
                   ["convidada", "Sem conta"],
@@ -148,8 +147,8 @@ export default async function Marcar({ searchParams }: PageProps<"/marcar">) {
             ) : (
               <div className="flex flex-col gap-3 rounded-lg border border-border bg-card px-4 py-5">
                 <p className="text-base leading-6">
-                  Entre ou crie conta com o seu email, sem palavra-passe.
-                  Enviamos-lhe um link e um código, e volta a este passo.
+                  Entra ou cria conta com o teu email, sem palavra-passe.
+                  Enviamos-te um link e um código, e voltas a este passo.
                 </p>
                 <Link
                   href={`/entrar?next=${encodeURIComponent(`${base}&modo=conta`)}`}
@@ -188,14 +187,14 @@ export default async function Marcar({ searchParams }: PageProps<"/marcar">) {
             {def.contact_phone ? (
               <>
                 {" "}
-                Ligue para{" "}
+                Liga para{" "}
                 <span className="tabular font-semibold text-foreground">
                   {def.contact_phone}
                 </span>{" "}
                 para combinar uma hora.
               </>
             ) : (
-              " Volte a tentar daqui a uns dias."
+              " Volta a tentar daqui a uns dias."
             )}
           </p>
         </main>

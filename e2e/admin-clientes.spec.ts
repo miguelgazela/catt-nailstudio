@@ -114,5 +114,6 @@ test("nova marcação a partir da ficha", async ({ page }) => {
   const a = await criarMarcacao(segunda, "09:00", "Ana Silva", "+351911111111");
   await page.goto(`/admin/clientes/${a.clienteId}`);
   await page.getByRole("link", { name: "Nova marcação" }).click();
-  await expect(page.getByText("Cliente: Ana Silva")).toBeVisible();
+  await expect(page.getByText("Ana Silva")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Trocar" })).toBeVisible();
 });

@@ -3,12 +3,11 @@
 import { LoaderCircle } from "lucide-react";
 import { useActionState } from "react";
 
+import { AvisoErro, Campo, botaoPrimario } from "@/components/admin/campos";
 import {
-  AvisoErro,
-  Campo,
-  botaoPrimario,
-  classeInput,
-} from "@/components/admin/campos";
+  type ClienteLista,
+  EscolherCliente,
+} from "@/components/admin/escolher-cliente";
 import { EscolherHora } from "@/components/admin/escolher-hora";
 
 import { type EstadoForm, criarMarcacao } from "../marcacao/actions";
@@ -18,78 +17,53 @@ export function FormNova({
   dia,
   hora,
   cliente,
+  clientes,
 }: {
   servicos: { id: string; name: string; price_cents: number }[];
   dia: string;
   hora?: string;
-  cliente?: { id: string; name: string };
+  cliente?: ClienteLista;
+  clientes: ClienteLista[];
 }) {
   const [e, acao, pendente] = useActionState(criarMarcacao, {} as EstadoForm);
   return (
     <form action={acao} noValidate className="flex flex-col gap-[18px]">
       {e.erro ? <AvisoErro>{e.erro}</AvisoErro> : null}
-      {cliente ? (
-        <>
-          <input type="hidden" name="cliente" value={cliente.id} />
-          <p className="rounded-lg bg-secondary px-4 py-3 text-base">
-            Cliente: <strong>{cliente.name}</strong>
-          </p>
-        </>
-      ) : (
-        <>
-          <Campo
-            id="nome"
-            rotulo="Nome"
-            autoComplete="off"
-            erro={e.campos?.nome}
-          />
-          <Campo
-            id="tel"
-            rotulo="Telemóvel"
-            type="tel"
-            inputMode="tel"
-            autoComplete="off"
-            erro={e.campos?.tel}
-            ajuda="Se já existir uma cliente com este número, usa a ficha dela."
-          />
-          <Campo
-            id="email"
-            rotulo="Email (opcional)"
-            type="email"
-            autoComplete="off"
-            erro={e.campos?.email}
-          />
-        </>
-      )}
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor="servico" className="text-sm font-semibold">
+      <EscolherCliente
+        clientes={clientes}
+        inicial={cliente}
+        erros={e.campos}
+      />
+      <fieldset className="m-0 flex flex-col gap-2 border-0 p-0">
+        <legend className="mb-2 p-0 text-sm leading-5 font-semibold">
           Serviço
-        </label>
-        <select
-          id="servico"
-          name="servico"
-          required
-          defaultValue=""
-          aria-invalid={e.campos?.servico ? true : undefined}
-          className={classeInput}
-        >
-          <option value="" disabled>
-            Escolha o serviço
-          </option>
+        </legend>
+        <div className="flex flex-wrap gap-2">
           {servicos.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name} ·{" "}
-              {(s.price_cents / 100).toLocaleString("pt-PT", {
-                minimumFractionDigits: 0,
-              })}{" "}
-              €
-            </option>
+            <label key={s.id} className="cursor-pointer">
+              <input
+                type="radio"
+                name="servico"
+                value={s.id}
+                required
+                className="peer sr-only"
+              />
+              <span className="inline-flex min-h-11 items-center rounded-full border border-input bg-card px-4 text-sm font-bold text-foreground transition-colors peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ring">
+                {s.name}
+                <span className="tabular ml-1.5 font-normal opacity-80">
+                  {(s.price_cents / 100).toLocaleString("pt-PT", {
+                    minimumFractionDigits: 0,
+                  })}{" "}
+                  €
+                </span>
+              </span>
+            </label>
           ))}
-        </select>
+        </div>
         {e.campos?.servico ? (
           <p className="text-[13px] text-danger">{e.campos.servico}</p>
         ) : null}
-      </div>
+      </fieldset>
       <EscolherHora
         diaInicial={dia}
         horaInicial={hora}

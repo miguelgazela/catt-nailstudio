@@ -17,8 +17,8 @@ export default function Apagada() {
           Conta apagada
         </h1>
         <p className="text-base leading-6 text-muted-foreground">
-          Cancelámos as suas marcações futuras e apagámos os seus dados. Será
-          sempre bem-vinda para marcar outra vez.
+          Cancelámos as tuas marcações futuras e apagámos os teus dados. Podes
+          marcar outra vez quando quiseres.
         </p>
         <Link
           href="/"

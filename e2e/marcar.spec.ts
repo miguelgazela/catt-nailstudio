@@ -31,7 +31,7 @@ async function escolherPrimeiraHora(page: Page) {
   await page.goto("/marcar");
   await page.getByRole("link", { name: /Manicure simples/ }).click();
   await expect(
-    page.getByRole("heading", { name: "Escolha o dia e a hora" }),
+    page.getByRole("heading", { name: "Escolhe o dia e a hora" }),
   ).toBeVisible();
   const horas = page
     .getByRole("group", { name: "Horas livres" })
@@ -40,7 +40,7 @@ async function escolherPrimeiraHora(page: Page) {
   await horas.first().click();
   await page.getByRole("link", { name: "Continuar" }).click();
   await expect(
-    page.getByRole("heading", { name: "Os seus dados" }),
+    page.getByRole("heading", { name: "Os teus dados" }),
   ).toBeVisible();
 }
 
@@ -63,11 +63,11 @@ test("da página inicial para o fluxo de marcação sem erros no browser", async
   await page.waitForTimeout(800);
   await page.getByRole("link", { name: "Marcar", exact: true }).click();
   await expect(
-    page.getByRole("heading", { name: "Escolha o serviço" }),
+    page.getByRole("heading", { name: "Escolhe o serviço" }),
   ).toBeVisible();
   await page.getByRole("link", { name: /Manicure simples/ }).click();
   await expect(
-    page.getByRole("heading", { name: "Escolha o dia e a hora" }),
+    page.getByRole("heading", { name: "Escolhe o dia e a hora" }),
   ).toBeVisible();
   await page.goBack();
   await page.goBack();
@@ -107,7 +107,7 @@ test("a mesma pessoa não marca duas vezes sem conta", async ({ page }) => {
   await escolherPrimeiraHora(page);
   await (await preencher(page, "Ana Ribeiro", tel)).click();
   await expect(
-    page.getByRole("alert").filter({ hasText: "Já tem uma marcação futura" }),
+    page.getByRole("alert").filter({ hasText: "Já tens uma marcação futura" }),
   ).toBeVisible();
 });
 
@@ -125,7 +125,7 @@ test("duas marcações na mesma hora ao mesmo tempo: só uma ganha", async ({
   const b = await novaPagina(browser);
   await escolherPrimeiraHora(a);
   await b.goto(a.url());
-  await expect(b.getByRole("heading", { name: "Os seus dados" })).toBeVisible();
+  await expect(b.getByRole("heading", { name: "Os teus dados" })).toBeVisible();
 
   const enviarA = await preencher(a, "Ana", telefone());
   const enviarB = await preencher(b, "Rita", telefone());

@@ -78,7 +78,7 @@ describe("emails", () => {
     const e = emailConfirmacao({ ...d, tokenCancelar: null });
     expect(e.html).not.toContain("/cancelar/");
     expect(e.texto).toContain(
-      "Para cancelar, contacte o estúdio ou ligue para 912 345 678",
+      "Para cancelar, contacta o estúdio ou liga para 912 345 678",
     );
   });
 
@@ -88,12 +88,12 @@ describe("emails", () => {
     expect(e.html).toContain("https://exemplo.pt/conta");
     expect(e.html).toContain("Ver ou cancelar na minha conta");
     expect(e.texto).toContain("A minha conta: https://exemplo.pt/conta");
-    expect(e.texto).toContain("Pode cancelar até 24 h antes, na sua conta.");
+    expect(e.texto).toContain("Podes cancelar até 24 h antes, na tua conta.");
   });
 
   it("lembrete com conta indica a conta", () => {
     const e = emailLembrete({ ...d, tokenCancelar: null, comConta: true });
-    expect(e.texto).toContain("na sua conta (https://exemplo.pt/conta)");
+    expect(e.texto).toContain("na tua conta (https://exemplo.pt/conta)");
     expect(emailLembrete(d).texto).toContain(
       "pelo link do email de confirmação",
     );
@@ -107,7 +107,7 @@ describe("emails", () => {
     });
     expect(e.html).toContain("482913");
     expect(e.html).toContain("Código: 482913");
-    expect(e.texto).toContain("Ou escreva este código na app: 482913");
+    expect(e.texto).toContain("Ou escreve este código na app: 482913");
   });
 
   it("escapa HTML vindo de dados", () => {

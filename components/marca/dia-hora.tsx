@@ -86,7 +86,7 @@ export function DiaHora({
     <>
       <main className="mx-auto flex w-full max-w-xl flex-col gap-4 px-5 pt-4 pb-36">
         <h1 className="font-display text-[32px] leading-9 font-semibold">
-          Escolha o dia e a hora
+          Escolhe o dia e a hora
         </h1>
 
         {ocupada ? (
@@ -95,7 +95,7 @@ export function DiaHora({
             className="flex items-start gap-2.5 rounded-lg bg-danger-surface px-4 py-3 text-sm leading-5 text-danger"
           >
             <CircleAlert aria-hidden className="mt-0.5 size-[18px] shrink-0" />
-            Esta hora acabou de ser ocupada. Escolha outra.
+            Esta hora acabou de ser ocupada. Escolhe outra.
           </p>
         ) : null}
 
@@ -175,7 +175,7 @@ export function DiaHora({
           {!mesTemVagas ? (
             <p className="text-sm text-muted-foreground">
               Sem vagas em {nomeDoMes(mes)}.
-              {mes < ultimoMes ? " Veja o mês seguinte." : ""}
+              {mes < ultimoMes ? " Vê o mês seguinte." : ""}
             </p>
           ) : null}
         </section>
@@ -218,7 +218,7 @@ export function DiaHora({
             <span className="truncate text-base font-semibold">
               {dia && hora
                 ? `${diaPorExtensoMinusculas(dia).replace(/^./, (c) => c.toUpperCase())}, ${hora}`
-                : "Escolha uma hora"}
+                : "Escolhe uma hora"}
             </span>
             <span className="truncate text-sm text-muted-foreground">
               {servicoNome}, 1 hora

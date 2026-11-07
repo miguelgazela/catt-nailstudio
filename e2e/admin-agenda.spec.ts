@@ -97,7 +97,7 @@ test("nova marcação manual no horário e fora do horário", async ({ page }) =
   await page.goto(`/admin/nova?dia=${segunda}&hora=09:00`);
   await page.getByLabel("Nome").fill("Marta Manual");
   await page.getByLabel("Telemóvel").fill("913555666");
-  await page.getByLabel("Serviço").selectOption({ index: 1 });
+  await page.getByRole("radio").nth(1).check({ force: true });
   await expect(page.getByText("09:00", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Guardar marcação" }).click();
   await expect(page.getByText("Marcação guardada.")).toBeVisible();
@@ -108,7 +108,7 @@ test("nova marcação manual no horário e fora do horário", async ({ page }) =
   await page.goto(`/admin/nova?dia=${segunda}`);
   await page.getByLabel("Nome").fill("Marta Manual");
   await page.getByLabel("Telemóvel").fill("913555666");
-  await page.getByLabel("Serviço").selectOption({ index: 1 });
+  await page.getByRole("radio").nth(1).check({ force: true });
   await page.getByLabel("Fora do horário").check();
   await page.getByLabel(/Hora \(1 hora/).fill("13:00");
   await page.getByRole("button", { name: "Guardar marcação" }).click();
@@ -126,7 +126,7 @@ test("não deixa marcar duas vezes a mesma hora", async ({ page }) => {
   await page.goto(`/admin/nova?dia=${segunda}`);
   await page.getByLabel("Nome").fill("Sobreposta");
   await page.getByLabel("Telemóvel").fill("913777888");
-  await page.getByLabel("Serviço").selectOption({ index: 1 });
+  await page.getByRole("radio").nth(1).check({ force: true });
   await page.getByLabel("Fora do horário").check();
   await page.getByLabel(/Hora \(1 hora/).fill("09:30");
   await page.getByRole("button", { name: "Guardar marcação" }).click();

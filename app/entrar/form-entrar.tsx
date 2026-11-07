@@ -47,7 +47,7 @@ function FormCodigo({ email, destino }: { email: string; destino: string }) {
           className="tabular min-h-12 w-full rounded-md border border-input bg-card px-4 text-center text-xl tracking-[0.3em] text-foreground"
         />
         <p className="text-[13px] leading-[18px] text-muted-foreground">
-          Na app instalada no telemóvel, o link abre noutro browser. Escreva
+          Na app instalada no telemóvel, o link abre noutro browser. Escreve
           aqui o código para entrar na app.
         </p>
       </div>
@@ -95,12 +95,12 @@ export function FormEntrar({
         >
           <MailCheck aria-hidden className="size-7 text-success" />
           <p className="text-base leading-6">
-            Se o email estiver certo, enviámos-lhe um link e um código para
-            entrar. Carregue em &quot;Entrar&quot; no email, ou escreva o código
+            Se o email estiver certo, enviámos-te um link e um código para
+            entrar. Carrega em &quot;Entrar&quot; no email, ou escreve o código
             aqui em baixo.
           </p>
           <p className="text-sm leading-5 text-muted-foreground">
-            Não chegou? Veja o spam e, passados uns minutos, volte a pedir.
+            Não chegou? Vê o spam e, passados uns minutos, volta a pedir.
           </p>
         </div>
         <FormCodigo email={estado.email ?? ""} destino={destino} />
@@ -147,8 +147,8 @@ export function FormEntrar({
             className="text-[13px] leading-[18px] text-muted-foreground"
           >
             {criarConta
-              ? "Enviamos um link e um código para entrar. Se for a primeira vez, a conta é criada nesse momento. Não precisa de palavra-passe."
-              : "Enviamos um link e um código para entrar. Não precisa de palavra-passe."}
+              ? "Enviamos um link e um código para entrar. Se for a primeira vez, a conta é criada nesse momento. Não precisas de palavra-passe."
+              : "Enviamos um link e um código para entrar. Não precisas de palavra-passe."}
           </p>
         )}
       </div>

@@ -27,10 +27,10 @@ export async function pedirLink(
   const destino = caminhoSeguro(String(formData.get("next") ?? ""));
   const token = String(formData.get("cf-turnstile-response") ?? "");
 
-  if (!email) return { campoEmail: "Escreva o seu email.", email };
+  if (!email) return { campoEmail: "Escreve o teu email.", email };
   if (email.length > 254 || !EMAIL.test(email)) {
     return {
-      campoEmail: "Email inválido. Confirme se tem o @ e o domínio.",
+      campoEmail: "Email inválido. Confirma se tens o @ e o domínio.",
       email,
     };
   }
@@ -40,7 +40,7 @@ export async function pedirLink(
     h.get("x-real-ip") ?? h.get("x-forwarded-for")?.split(",")[0]?.trim();
   if (!(await verificarTurnstile(token, ip))) {
     return {
-      erro: "Não conseguimos confirmar que é uma pessoa. Tente outra vez.",
+      erro: "Não conseguimos confirmar que és uma pessoa. Tenta outra vez.",
       email,
     };
   }
@@ -49,7 +49,7 @@ export async function pedirLink(
     (await permitido(`entrar-email:${chaveEmail(email)}`, 3, 600));
   if (!ok) {
     return {
-      erro: "Fez demasiados pedidos. Espere uns minutos e tente outra vez.",
+      erro: "Fizeste demasiados pedidos. Espera uns minutos e tenta outra vez.",
       email,
     };
   }
@@ -74,7 +74,7 @@ export async function entrarComCodigo(
   const codigo = String(formData.get("codigo") ?? "").replace(/\s/g, "");
   const destino = caminhoSeguro(String(formData.get("next") ?? ""));
   if (!EMAIL.test(email) || !CODIGO.test(codigo)) {
-    return { erro: "Escreva o código que recebeu no email." };
+    return { erro: "Escreve o código que recebeste no email." };
   }
   const h = await headers();
   const ip =
@@ -83,7 +83,7 @@ export async function entrarComCodigo(
     (await permitido(`codigo-ip:${ip ?? "?"}`, 20, 600, true)) &&
     (await permitido(`codigo-email:${chaveEmail(email)}`, 5, 600, true));
   if (!ok) {
-    return { erro: "Demasiadas tentativas. Espere uns minutos e peça outro." };
+    return { erro: "Demasiadas tentativas. Espera uns minutos e pede outro." };
   }
   const sb = await supabaseSessao();
   const { error } = await sb.auth.verifyOtp({
@@ -91,6 +91,6 @@ export async function entrarComCodigo(
     token: codigo,
     type: "email",
   });
-  if (error) return { erro: "Código errado ou expirado. Confirme no email." };
+  if (error) return { erro: "Código errado ou expirado. Confirma no email." };
   redirect(destino);
 }

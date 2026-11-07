@@ -99,8 +99,8 @@ function html(opts: {
       </td></tr>
       <tr><td style="padding:20px 4px 0;font:400 13px/18px ${SANS};color:${COR.suave}">
         Catarina Neves Nails Studio. Pagamento no estúdio.<br>
-        Recebeu este email porque ${esc(opts.motivo ?? "fez uma marcação")}. Usamos os seus dados só para a gerir e não enviamos publicidade.
-        <a href="${esc(opts.siteUrl)}/privacidade" style="color:${COR.ameixa}">Como tratamos os seus dados</a>
+        Recebeste este email porque ${esc(opts.motivo ?? "fizeste uma marcação")}. Usamos os teus dados só para a gerir e não enviamos publicidade.
+        <a href="${esc(opts.siteUrl)}/privacidade" style="color:${COR.ameixa}">Como tratamos os teus dados</a>
       </td></tr>
     </table>
   </td></tr>
@@ -130,7 +130,7 @@ function evento(d: DadosMarcacao) {
     id: d.id,
     inicio: d.inicio,
     titulo: `${d.servico}, Catarina Neves Nails Studio`,
-    descricao: "Pagamento no estúdio. Pode cancelar até 24 h antes.",
+    descricao: "Pagamento no estúdio. Podes cancelar até 24 h antes.",
     local: d.morada,
   };
 }
@@ -141,7 +141,7 @@ const quando = (d: DadosMarcacao) => {
 };
 
 function contacto(d: DadosMarcacao) {
-  return d.telefone ? ` ou ligue para ${d.telefone}` : "";
+  return d.telefone ? ` ou liga para ${d.telefone}` : "";
 }
 
 export function emailConfirmacao(
@@ -163,18 +163,18 @@ export function emailConfirmacao(
   if (conta)
     botoes.push({ texto: "Ver ou cancelar na minha conta", href: conta });
   const nota = cancelar
-    ? `Pode cancelar até 24 h antes. Depois disso, contacte o estúdio${contacto(d)}. O ficheiro em anexo funciona com qualquer calendário.`
+    ? `Podes cancelar até 24 h antes. Depois disso, contacta o estúdio${contacto(d)}. O ficheiro em anexo funciona com qualquer calendário.`
     : conta
-      ? `Pode cancelar até 24 h antes, na sua conta. Depois disso, contacte o estúdio${contacto(d)}. O ficheiro em anexo funciona com qualquer calendário.`
-      : `Para cancelar, contacte o estúdio${contacto(d)}. O ficheiro em anexo funciona com qualquer calendário.`;
+      ? `Podes cancelar até 24 h antes, na tua conta. Depois disso, contacta o estúdio${contacto(d)}. O ficheiro em anexo funciona com qualquer calendário.`
+      : `Para cancelar, contacta o estúdio${contacto(d)}. O ficheiro em anexo funciona com qualquer calendário.`;
   return {
     assunto: `Marcação confirmada: ${quando(d)}`,
     html: html({
       prehead: `${d.servico}, ${quando(d)}`,
       titulo: "Marcação confirmada",
       intro: haLembrete
-        ? "A sua hora está reservada. Enviamos-lhe um lembrete dois dias antes."
-        : "A sua hora está reservada.",
+        ? "A tua hora está reservada. Enviamos-te um lembrete dois dias antes."
+        : "A tua hora está reservada.",
       linhas,
       botoes,
       nota,
@@ -205,15 +205,15 @@ export function emailLembrete(d: DadosMarcacao): EmailPronto {
   const linhas = resumo(d);
   const limite = emLisboa(new Date(d.inicio.getTime() - 24 * 3600_000));
   const onde = d.comConta
-    ? `na sua conta (${d.siteUrl}/conta)`
+    ? `na tua conta (${d.siteUrl}/conta)`
     : "pelo link do email de confirmação";
-  const nota = `Se não puder vir, cancele até ${diaPorExtensoMinusculas(limite.dia)}, ${limite.hora} (24 h antes), ${onde}${contacto(d)}.`;
+  const nota = `Se não puderes vir, cancela até ${diaPorExtensoMinusculas(limite.dia)}, ${limite.hora} (24 h antes), ${onde}${contacto(d)}.`;
   return {
     assunto: `Lembrete: ${quando(d)}`,
     html: html({
       prehead: `${d.servico}, ${quando(d)}`,
       titulo: "Até já",
-      intro: "Lembramos que tem uma marcação daqui a dois dias.",
+      intro: "Lembramos que tens uma marcação daqui a dois dias.",
       linhas,
       botoes: [
         {
@@ -237,28 +237,28 @@ export function emailEntrada(d: {
   codigo?: string;
 }): EmailPronto {
   const nota =
-    "O link e o código servem uma vez e expiram numa hora. Se não pediu para entrar, ignore este email: ninguém entra sem eles.";
+    "O link e o código servem uma vez e expiram numa hora. Se não pediste para entrar, ignora este email: ninguém entra sem eles.";
   return {
-    assunto: "O seu link para entrar",
+    assunto: "O teu link para entrar",
     html: html({
       prehead: d.codigo
         ? `Código: ${d.codigo}`
-        : "Carregue no botão para entrar.",
+        : "Carrega no botão para entrar.",
       titulo: "Entrar",
       intro: d.codigo
-        ? "Carregue no botão para entrar na sua conta. Se estiver na app instalada no telemóvel, escreva lá este código."
-        : "Carregue no botão para entrar na sua conta. Não precisa de palavra-passe.",
+        ? "Carrega no botão para entrar na tua conta. Se estiveres na app instalada no telemóvel, escreve lá este código."
+        : "Carrega no botão para entrar na tua conta. Não precisas de palavra-passe.",
       linhas: d.codigo ? [["Código", d.codigo]] : [],
       botoes: [{ texto: "Entrar", href: d.link, principal: true }],
       nota,
-      motivo: "pediu para entrar na sua conta",
+      motivo: "pediste para entrar na tua conta",
       siteUrl: d.siteUrl,
     }),
     texto: [
       "Entrar",
       "",
-      `Abra este link para entrar: ${d.link}`,
-      ...(d.codigo ? [`Ou escreva este código na app: ${d.codigo}`] : []),
+      `Abre este link para entrar: ${d.link}`,
+      ...(d.codigo ? [`Ou escreve este código na app: ${d.codigo}`] : []),
       "",
       nota,
     ].join("\n"),
@@ -271,24 +271,24 @@ export function emailConfirmarNovoEmail(d: {
   siteUrl: string;
 }): EmailPronto {
   const nota =
-    "O link expira numa hora. Se não pediu esta mudança, ignore este email: nada muda sem ele.";
+    "O link expira numa hora. Se não pediste esta mudança, ignora este email: nada muda sem ele.";
   return {
-    assunto: "Confirme o seu novo email",
+    assunto: "Confirma o teu novo email",
     html: html({
-      prehead: "Carregue no botão para confirmar.",
+      prehead: "Carrega no botão para confirmar.",
       titulo: "Confirmar email",
       intro:
-        "Pediu para passar a usar este email na sua conta. Carregue no botão para confirmar.",
+        "Pediste para passar a usar este email na tua conta. Carrega no botão para confirmar.",
       linhas: [],
       botoes: [{ texto: "Confirmar email", href: d.link, principal: true }],
       nota,
-      motivo: "pediu para mudar o email da sua conta",
+      motivo: "pediste para mudar o email da tua conta",
       siteUrl: d.siteUrl,
     }),
     texto: [
       "Confirmar email",
       "",
-      `Abra este link para confirmar: ${d.link}`,
+      `Abre este link para confirmar: ${d.link}`,
       "",
       nota,
     ].join("\n"),
@@ -301,18 +301,18 @@ export function emailEmailMudado(d: {
   siteUrl: string;
   telefone?: string | null;
 }): EmailPronto {
-  const nota = `Se não foi você, contacte o estúdio${d.telefone ? ` pelo ${d.telefone}` : ""} o quanto antes.`;
-  const intro = `A sua conta passou a usar o email ${d.novoEmail}. Os próximos emails e links para entrar vão para esse endereço.`;
+  const nota = `Se não foste tu, contacta o estúdio${d.telefone ? ` pelo ${d.telefone}` : ""} o quanto antes.`;
+  const intro = `A tua conta passou a usar o email ${d.novoEmail}. Os próximos emails e links para entrar vão para esse endereço.`;
   return {
-    assunto: "O email da sua conta mudou",
+    assunto: "O email da tua conta mudou",
     html: html({
-      prehead: "A sua conta passou a usar outro email.",
+      prehead: "A tua conta passou a usar outro email.",
       titulo: "Email alterado",
       intro,
       linhas: [],
       botoes: [],
       nota,
-      motivo: "este era o email da sua conta",
+      motivo: "este era o email da tua conta",
       siteUrl: d.siteUrl,
     }),
     texto: ["Email alterado", "", intro, "", nota].join("\n"),

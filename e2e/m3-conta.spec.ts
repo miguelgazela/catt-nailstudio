@@ -91,7 +91,7 @@ test("completar a conta liga as marcações antigas do mesmo telemóvel e email"
   await marcarNaBD(tel, "ana@example.com", 5);
   await entrar(page, "ana@example.com");
   await expect(
-    page.getByRole("heading", { name: "Complete a sua conta" }),
+    page.getByRole("heading", { name: "Completa a tua conta" }),
   ).toBeVisible();
   await page.getByLabel("Nome").fill("Ana");
   await page.getByLabel("Telemóvel").fill(tel);
@@ -131,11 +131,9 @@ test("marcar com conta e cancelar em /conta", async ({ page }) => {
   await expect(horas.first()).toBeVisible();
   await horas.first().click();
   await page.getByRole("link", { name: "Continuar" }).click();
-  // com sessão, o separador "Com conta" é o padrão
-  await expect(page.getByRole("link", { name: "Com conta" })).toHaveAttribute(
-    "aria-current",
-    "page",
-  );
+  // com sessão marca-se sempre com a conta: a escolha "Sem conta / Com conta" não aparece
+  await expect(page.getByRole("link", { name: "Com conta" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Sem conta" })).toHaveCount(0);
   await page.getByLabel("Nome").fill("Bia");
   await page.getByLabel("Telemóvel").fill(tel);
   await page.getByRole("button", { name: "Confirmar marcação" }).click();
@@ -147,7 +145,7 @@ test("marcar com conta e cancelar em /conta", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Próximas" })).toBeVisible();
   await page.getByRole("button", { name: "Cancelar" }).click();
   await expect(page.getByText("Marcação cancelada")).toBeVisible();
-  await expect(page.getByText("Não tem marcações futuras.")).toBeVisible();
+  await expect(page.getByText("Não tens marcações futuras.")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Anteriores" })).toBeVisible();
 });
 
@@ -236,7 +234,7 @@ test("mudar de email: pede, confirma pelo link e passa a usar o novo", async ({
   await page
     .getByRole("button", { name: "Enviar link de confirmação" })
     .click();
-  await expect(page.getByText("Esse já é o email da sua conta.")).toBeVisible();
+  await expect(page.getByText("Esse já é o email da tua conta.")).toBeVisible();
 
   await page.getByLabel("Email novo").fill("Eva.Nova@Example.com");
   await page

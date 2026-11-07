@@ -88,7 +88,7 @@ test("pedir o link mostra sempre a mesma resposta, haja conta ou não", async ({
   await expect(enviar).toBeEnabled({ timeout: 30_000 });
   await enviar.click();
   await expect(
-    page.getByText("Se o email estiver certo, enviámos-lhe um link"),
+    page.getByText("Se o email estiver certo, enviámos-te um link"),
   ).toBeVisible();
 });
 
@@ -103,7 +103,7 @@ test("pedido de entrada no painel: quem não é admin não recebe link nem fica 
   await enviar.click();
   // A resposta é a mesma (não revela quem é admin)...
   await expect(
-    page.getByText("Se o email estiver certo, enviámos-lhe um link"),
+    page.getByText("Se o email estiver certo, enviámos-te um link"),
   ).toBeVisible();
   // ...mas não foi gerado link, por isso o utilizador nem existe.
   const { data } = await admin().auth.admin.listUsers();

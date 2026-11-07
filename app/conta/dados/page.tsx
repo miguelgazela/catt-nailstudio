@@ -16,17 +16,17 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 const ERROS: Record<string, string> = {
-  nome: "Escreva o seu nome.",
-  tel: "Número inválido. Escreva os 9 números do telemóvel.",
+  nome: "Escreve o teu nome.",
+  tel: "Número inválido. Escreve os 9 números do telemóvel.",
   numero:
-    "Não conseguimos usar este número. Contacte o estúdio se precisar de ajuda.",
-  email: "Email inválido. Confirme se tem o @ e o domínio.",
-  "email-igual": "Esse já é o email da sua conta.",
+    "Não conseguimos usar este número. Contacta o estúdio se precisares de ajuda.",
+  email: "Email inválido. Confirma se tens o @ e o domínio.",
+  "email-igual": "Esse já é o email da tua conta.",
   "email-uso":
-    "Não foi possível usar esse email. Se já tem outra conta com ele, entre com esse email.",
-  "link-email": "Este link já não é válido. Peça um novo.",
-  limite: "Fez demasiados pedidos. Espere uns minutos e tente outra vez.",
-  geral: "Não foi possível concluir. Tente outra vez dentro de instantes.",
+    "Não foi possível usar esse email. Se já tens outra conta com ele, entra com esse email.",
+  "link-email": "Este link já não é válido. Pede um novo.",
+  limite: "Fizeste demasiados pedidos. Espera uns minutos e tenta outra vez.",
+  geral: "Não foi possível concluir. Tenta outra vez dentro de instantes.",
 };
 
 const um = (v: string | string[] | undefined) =>
@@ -60,7 +60,7 @@ export default async function Dados({
         {um(sp.guardado) ? <Aviso tipo="info">Dados guardados.</Aviso> : null}
         {um(sp.email) === "enviado" ? (
           <Aviso tipo="info">
-            Enviámos um link para o email novo. Abra-o na próxima hora para
+            Enviámos um link para o email novo. Abre-o na próxima hora para
             confirmar. Até lá, continua a usar o email atual.
           </Aviso>
         ) : null}
@@ -106,7 +106,7 @@ export default async function Dados({
           <Aviso tipo="info">
             Ainda não completou a conta.{" "}
             <Link href="/conta" className="font-semibold underline">
-              Complete-a aqui
+              Completa-a aqui
             </Link>
             .
           </Aviso>
@@ -167,7 +167,7 @@ export default async function Dados({
           {aApagar ? (
             <>
               <Aviso>
-                Vamos cancelar as suas marcações futuras e apagar o seu nome,
+                Vamos cancelar as tuas marcações futuras e apagar o teu nome,
                 telemóvel e email. Isto não se pode desfazer.
               </Aviso>
               <form action={apagarConta} className="flex flex-col gap-2">
@@ -185,8 +185,8 @@ export default async function Dados({
           ) : (
             <>
               <p className="text-sm leading-5 text-muted-foreground">
-                Cancela as marcações futuras e apaga os seus dados pessoais. O
-                estúdio fica só com o registo das horas, sem o seu nome.
+                Cancela as marcações futuras e apaga os teus dados pessoais. O
+                estúdio fica só com o registo das horas, sem o teu nome.
               </p>
               <Link
                 href="/conta/dados?apagar=1"
