@@ -83,6 +83,7 @@ console.log("Ícones e splash gerados.");
       sharp(origem)
         .extract({ left: 70, top: 70, width: 540, height: 540 })
         .resize(l, l)
+        .ensureAlpha() // o Next recusa ICO com PNG sem canal alfa (RGB)
         .png({ compressionLevel: 9 })
         .toBuffer(),
     ),
