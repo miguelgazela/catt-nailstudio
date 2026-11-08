@@ -73,3 +73,34 @@ for (const { w, h } of SPLASH) {
     .toFile(`${raiz}public/splash/${w}x${h}.png`);
 }
 console.log("Ícones e splash gerados.");
+
+// favicon.ico (16/32/48, PNG embutido): recorte mais apertado, para a unha ler-se em tamanho pequeno.
+{
+  const { writeFileSync } = await import("node:fs");
+  const lados = [16, 32, 48];
+  const pngs = await Promise.all(
+    lados.map((l) =>
+      sharp(origem)
+        .extract({ left: 70, top: 70, width: 540, height: 540 })
+        .resize(l, l)
+        .png({ compressionLevel: 9 })
+        .toBuffer(),
+    ),
+  );
+  const cab = Buffer.alloc(6);
+  cab.writeUInt16LE(1, 2);
+  cab.writeUInt16LE(lados.length, 4);
+  let desvio = 6 + 16 * lados.length;
+  const entradas = pngs.map((png, i) => {
+    const e = Buffer.alloc(16);
+    e[0] = lados[i];
+    e[1] = lados[i];
+    e.writeUInt16LE(1, 4);
+    e.writeUInt16LE(32, 6);
+    e.writeUInt32LE(png.length, 8);
+    e.writeUInt32LE(desvio, 12);
+    desvio += png.length;
+    return e;
+  });
+  writeFileSync(`${raiz}app/favicon.ico`, Buffer.concat([cab, ...entradas, ...pngs]));
+}
