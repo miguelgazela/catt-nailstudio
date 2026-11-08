@@ -208,3 +208,18 @@
     animation: barra-aparece 0s linear 120ms forwards;
   }
 }
+
+.aviso-instalar {
+  animation: aviso-sobe 0.3s ease-out;
+}
+@keyframes aviso-sobe {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .aviso-instalar {
+    animation: none;
+  }
+}

@@ -5,6 +5,7 @@ import { Suspense } from "react";
 
 import { Analise } from "@/components/analise";
 import { BarraNavegacao } from "@/components/barra-navegacao";
+import { AvisoInstalar } from "@/components/pwa/aviso-instalar";
 import { RegistarSw } from "@/components/pwa/registar-sw";
 
 import "./globals.css";
@@ -74,6 +75,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </Suspense>
         {children}
         <RegistarSw />
+        <AvisoInstalar />
         {/* Só na Vercel: localmente e nos testes o script não existe. */}
         {process.env.VERCEL ? <Analise /> : null}
       </body>
